@@ -6,6 +6,5 @@ namespace RestauranteAPI.Models
         public const string Soporte = "Soporte";
         public const string Empleado = "Empleado";
         public const string User = "User";
-        public const string UserPro = "UserPro";
     }
 }
