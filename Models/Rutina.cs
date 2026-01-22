@@ -1,40 +1,26 @@
-namespace RepsAPI.Models
+namespace REPS_backend.Models
 {
-    public enum NivelRutina
-    {
-        Principiante,
-        Intermedio,
-        Avanzado
-    }
-
-    public enum VisibilidadRutina
-    {
-        Privada,
-        Publica
-    }
-
-    public enum EstadoRutina
-    {
-        EnEspera,
-        Publicada,
-        Rechazada,
-        Bloqueada
-    }
-
     public class Rutina
     {
         public int Id { get; set; }
-        public string Nombre { get; set; } = string.Empty;
-        
         public int UsuarioId { get; set; }
-        public Usuario Usuario { get; set; }
 
-        public NivelRutina Nivel { get; set; }
-        public VisibilidadRutina Visibilidad { get; set; }
-        public EstadoRutina Estado { get; set; }
+        public string Nombre { get; set; } = "";
+        public string Descripcion { get; set; } = "";
+        public string ImagenUrl { get; set; } = ""; 
         
-        public string? MotivoRechazo { get; set; }
+        public string Nivel { get; set; } = "Intermedio"; 
+        public int DuracionMinutos { get; set; } 
 
-        public List<RutinaEjercicio> RutinaEjercicios { get; set; } = new List<RutinaEjercicio>();
+        // --- PUBLICACIÓN ---
+        public bool EsPublica { get; set; } 
+        public EstadoRutina Estado { get; set; } = EstadoRutina.Privada;
+
+        // Stats
+        public bool EsGeneradaPorIA { get; set; } 
+        public int Likes { get; set; } 
+        public int Descargas { get; set; }
+
+        public List<RutinaEjercicio> Ejercicios { get; set; } = new List<RutinaEjercicio>();
     }
 }

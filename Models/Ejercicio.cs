@@ -1,26 +1,19 @@
-namespace RepsAPI.Models
+namespace REPS_backend.Models
 {
-    public enum GrupoMuscular
-    {
-        Pecho,
-        Espalda,
-        Hombro,
-        Pierna,
-        Brazo,
-        Abdomen,
-        Gluteos,
-        Otros
-    }
-
     public class Ejercicio
     {
         public int Id { get; set; }
-        public string Nombre { get; set; } = string.Empty;
-        public string Descripcion { get; set; } = string.Empty;
-        public GrupoMuscular GrupoMuscular { get; set; }
-        public NivelRutina Nivel { get; set; } // Reutilizamos el Enum de Rutina
-        public string Imagen { get; set; } = string.Empty;
+        
+        // NULL = Ejercicio del Sistema (público)
+        // CON ID = Ejercicio creado por usuario (privado)
+        public int? UsuarioCreadorId { get; set; } 
 
-        public List<RutinaEjercicio> RutinaEjercicios { get; set; } = new List<RutinaEjercicio>();
+        public string Nombre { get; set; } = ""; 
+        public string GrupoMuscular { get; set; } = ""; 
+        public string VideoUrl { get; set; } = ""; 
+        
+        // --- PESTAÑAS DETALLE ---
+        public string DescripcionTecnica { get; set; } = ""; 
+        public string ImagenMusculosUrl { get; set; } = ""; 
     }
 }

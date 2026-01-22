@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\marcos\\DesarrolloEntornoServidor\\TFG\\REPS-backend\\REPS-backend\\REPS-backend.csproj": {}
+    "D:\\Daniel\\REPS-backend\\REPS-backend.csproj": {}
   },
   "projects": {
-    "D:\\marcos\\DesarrolloEntornoServidor\\TFG\\REPS-backend\\REPS-backend\\REPS-backend.csproj": {
+    "D:\\Daniel\\REPS-backend\\REPS-backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\marcos\\DesarrolloEntornoServidor\\TFG\\REPS-backend\\REPS-backend\\REPS-backend.csproj",
+        "projectUniqueName": "D:\\Daniel\\REPS-backend\\REPS-backend.csproj",
         "projectName": "REPS-backend",
-        "projectPath": "D:\\marcos\\DesarrolloEntornoServidor\\TFG\\REPS-backend\\REPS-backend\\REPS-backend.csproj",
+        "projectPath": "D:\\Daniel\\REPS-backend\\REPS-backend.csproj",
         "packagesPath": "C:\\Users\\S2-PC00\\.nuget\\packages\\",
-        "outputPath": "D:\\marcos\\DesarrolloEntornoServidor\\TFG\\REPS-backend\\REPS-backend\\obj\\",
+        "outputPath": "D:\\Daniel\\REPS-backend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -52,6 +52,18 @@
             "BCrypt.Net-Next": {
               "target": "Package",
               "version": "[4.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "target": "Package",
+              "version": "[8.0.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

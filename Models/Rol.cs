@@ -1,10 +1,10 @@
-namespace RestauranteAPI.Models
+namespace REPS_backend.Models
 {
     public static class Rol
     {
         public const string Admin = "Admin";
         public const string Soporte = "Soporte";
-        public const string Empleado = "Empleado";
+        public const string Empleado = "Empleado"; 
         public const string User = "User";
     }
 }

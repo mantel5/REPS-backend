@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "U01dyQOyV7XISraix4qov33TswIQ7YxjlX215awi+lQ=",
+  "Source": "REPS-backend",
+  "BasePath": "_content/REPS-backend",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "REPS-backend\\wwwroot",
+      "Source": "REPS-backend",
+      "ContentRoot": "D:\\Daniel\\REPS-backend\\wwwroot\\",
+      "BasePath": "_content/REPS-backend",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}
