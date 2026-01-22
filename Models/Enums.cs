@@ -1,4 +1,4 @@
-namespace REPS_backend.Models
+﻿namespace REPS_backend.Models
 {
     public enum PlanSuscripcion
     {
@@ -9,17 +9,24 @@ namespace REPS_backend.Models
     public enum TipoSerie
     {
         Normal = 0,
-        Calentamiento = 1, // Usa porcentaje
+        Calentamiento = 1, 
         Aproximacion = 2,
-        DropSet = 3,       // Usa porcentaje
+        DropSet = 3,       
         AlFallo = 4
     }
 
     public enum EstadoRutina
     {
-        Privada = 0,      // Solo la ve el dueño
-        EnRevision = 1,   // Esperando aprobación
-        Publicada = 2,    // Visible para todos
-        Rechazada = 3     // Denegada
+        Privada = 0,      
+        EnRevision = 1,   
+        Publicada = 2,    
+        Rechazada = 3     
+    }
+
+    public enum NivelDificultad
+    {
+        Principiante = 0, 
+        Intermedio = 1,
+        Avanzado = 2      
     }
 }

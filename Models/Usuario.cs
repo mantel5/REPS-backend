@@ -1,4 +1,4 @@
-namespace REPS_backend.Models
+﻿namespace REPS_backend.Models
 {
     public class Usuario
     {
@@ -10,16 +10,13 @@ namespace REPS_backend.Models
         public string AvatarId { get; set; } = CatalogoAvatars.Default;
         public string Rol { get; set; } = Models.Rol.User;
 
-        // --- SUSCRIPCIÓN ---
         public PlanSuscripcion PlanActual { get; set; } = PlanSuscripcion.Gratuito;
         public DateTime FechaFinSuscripcion { get; set; } 
 
-        // --- DASHBOARD ---
-        public int PuntosTotales { get; set; }
+        public int PuntosTotales { get; set; } 
         public int RachaDias { get; set; }
         public string RangoGeneral { get; set; } = "Bronce";
 
-        // --- MÉTODOS ---
         public void SetPassword(string password) => 
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
 

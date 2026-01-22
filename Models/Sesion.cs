@@ -1,4 +1,4 @@
-namespace REPS_backend.Models
+﻿namespace REPS_backend.Models
 {
     public class Sesion
     {
@@ -12,7 +12,6 @@ namespace REPS_backend.Models
         public int DuracionRealMinutos { get; set; }
         public int PuntosGanados { get; set; }
 
-        // Lista de checks ✅
         public List<SerieLog> SeriesRealizadas { get; set; } = new List<SerieLog>();
     }
 }

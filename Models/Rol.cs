@@ -1,4 +1,4 @@
-namespace REPS_backend.Models
+﻿namespace REPS_backend.Models
 {
     public static class Rol
     {
