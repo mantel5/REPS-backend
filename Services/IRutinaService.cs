@@ -1,15 +1,13 @@
-using REPS_backend.Models;
+using REPS_backend.DTOs.Rutinas;
 
-namespace REPS_backend.Repositories
+namespace REPS_backend.Services
 {
-    public interface IRutinaRepository
+    public interface IRutinaService
     {
-        Task<List<Rutina>> GetAllPublicasAsync(); 
+        Task<RutinaDetalleDto> CrearRutinaAsync(RutinaCreateDto dto, int usuarioId);
         
-        Task<Rutina?> GetByIdAsync(int id);
+        Task<List<RutinaItemDto>> ObtenerRutinasPublicasAsync();
         
-        Task AddAsync(Rutina rutina);
-        
-        // (Opcional por ahora: Update y Delete)
+        Task<RutinaDetalleDto> ObtenerDetalleRutinaAsync(int rutinaId);
     }
 }

@@ -6,7 +6,6 @@ namespace REPS_backend.Services
 {
     public class RutinaService : IRutinaService
     {
-        // En lugar de DbContext, inyectamos el REPOSITORIO (igual que CreatinaService)
         private readonly IRutinaRepository _repository;
 
         public RutinaService(IRutinaRepository repository)
@@ -111,7 +110,7 @@ namespace REPS_backend.Services
                 Estado = r.Estado.ToString(),
                 Ejercicios = r.Ejercicios?.Select(e => new RutinaEjercicioDto
                 {
-                    EjercicioId = 0, // Esto habría que mapearlo real si tuviéramos el ID
+                    EjercicioId = 0, 
                     Series = e.Series,
                     DescansoSegundos = e.DescansoSegundos,
                     Tipo = e.Tipo
