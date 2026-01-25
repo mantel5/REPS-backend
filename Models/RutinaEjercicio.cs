@@ -8,7 +8,7 @@
         public int Orden { get; set; } 
         
         public int Series { get; set; } 
-        public string Repeticiones { get; set; } = ""10-12"";
+        public string Repeticiones { get; set; } = "10-12";
         public int DescansoSegundos { get; set; } = 90;
 
         public TipoSerie Tipo { get; set; } = TipoSerie.Normal; 
