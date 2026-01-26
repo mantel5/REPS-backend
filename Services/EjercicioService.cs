@@ -15,12 +15,10 @@ namespace REPS_backend.Services
 
         public async Task<EjercicioItemDto> CrearEjercicioAsync(EjercicioCreateDto dto, int? usuarioId)
         {
-            // Convertimos el DTO (caja de entrada) a Entidad (Base de datos)
             var nuevoEjercicio = new Ejercicio
             {
                 Nombre = dto.Nombre,
                 GrupoMuscular = dto.GrupoMuscular,
-                // Usamos "??" para poner texto vacío si viene null
                 DescripcionTecnica = dto.DescripcionTecnica ?? "", 
                 ImagenMusculosUrl = dto.ImagenMusculosUrl ?? "",
                 UsuarioCreadorId = usuarioId
@@ -28,7 +26,6 @@ namespace REPS_backend.Services
 
             await _repository.AddAsync(nuevoEjercicio);
 
-            // Devolvemos el resultado en formato DTO
             return new EjercicioItemDto
             {
                 Id = nuevoEjercicio.Id,
@@ -42,7 +39,6 @@ namespace REPS_backend.Services
         {
             var ejercicios = await _repository.GetAllAsync();
 
-            // Convertimos la lista de Entidades a lista de DTOs
             return ejercicios.Select(e => new EjercicioItemDto
             {
                 Id = e.Id,
