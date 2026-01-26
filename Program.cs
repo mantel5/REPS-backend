@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using REPS_backend.Data;
 using REPS_backend.Repositories;
 using REPS_backend.Services;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +14,12 @@ builder.Services.AddScoped<IRutinaService, RutinaService>();
 builder.Services.AddScoped<IEjercicioRepository, EjercicioRepository>();
 builder.Services.AddScoped<IEjercicioService, EjercicioService>();
 
-builder.Services.AddControllers();
-
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+    
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

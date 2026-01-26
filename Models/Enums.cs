@@ -1,32 +1,15 @@
 ﻿namespace REPS_backend.Models
 {
-    public enum PlanSuscripcion
-    {
-        Gratuito = 0,
-        ProMensual = 1 
-    }
+    public enum PlanSuscripcion { Gratuito, ProMensual }
 
-    public enum TipoSerie
-    {
-        Normal = 0,
-        Calentamiento = 1, 
-        Aproximacion = 2,
-        DropSet = 3,       
-        AlFallo = 4
-    }
+    public enum TipoSerie { Normal, Calentamiento, Aproximacion, DropSet, AlFallo }
 
-    public enum EstadoRutina
-    {
-        Privada = 0,      
-        EnRevision = 1,   
-        Publicada = 2,    
-        Rechazada = 3     
-    }
+    public enum EstadoRutina { Privada, EnRevision, Publicada, Rechazada }
 
-    public enum NivelDificultad
+    public enum NivelDificultad { Principiante, Intermedio, Avanzado }
+
+    public enum GrupoMuscular 
     {
-        Principiante = 0, 
-        Intermedio = 1,
-        Avanzado = 2      
+        Pecho, Espalda, Pierna, Hombro, Biceps, Triceps, Abdomen, Cardio, FullBody, Otro
     }
 }
