@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using REPS_backend.Data;
 
@@ -11,9 +12,11 @@ using REPS_backend.Data;
 namespace REPS_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260126161839_AgregarEjercicios")]
+    partial class AgregarEjercicios
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,6 +49,8 @@ namespace REPS_backend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EjercicioId");
+
                     b.ToTable("DetallesMusculares");
                 });
 
@@ -61,8 +66,9 @@ namespace REPS_backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GrupoMuscular")
-                        .HasColumnType("int");
+                    b.Property<string>("GrupoMuscular")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImagenMusculosUrl")
                         .IsRequired()
@@ -314,6 +320,15 @@ namespace REPS_backend.Migrations
                     b.ToTable("Usuarios");
                 });
 
+            modelBuilder.Entity("REPS_backend.Models.DetalleMuscular", b =>
+                {
+                    b.HasOne("REPS_backend.Models.Ejercicio", null)
+                        .WithMany("MusculosInvolucrados")
+                        .HasForeignKey("EjercicioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("REPS_backend.Models.RutinaEjercicio", b =>
                 {
                     b.HasOne("REPS_backend.Models.Rutina", null)
@@ -330,6 +345,11 @@ namespace REPS_backend.Migrations
                         .HasForeignKey("SesionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("REPS_backend.Models.Ejercicio", b =>
+                {
+                    b.Navigation("MusculosInvolucrados");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.Rutina", b =>
