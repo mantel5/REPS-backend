@@ -1,4 +1,6 @@
-﻿namespace REPS_backend.Models
+﻿using REPS_backend.Models; // Asegúrate de que detecta tus Enums
+
+namespace REPS_backend.Models
 {
     public class Ejercicio
     {
@@ -7,9 +9,10 @@
 
         public string Nombre { get; set; } = ""; 
         
+        public GrupoMuscular GrupoMuscular { get; set; } 
+        
         public string DescripcionTecnica { get; set; } = ""; 
         
         public string ImagenMusculosUrl { get; set; } = ""; 
-        public List<DetalleMuscular> MusculosInvolucrados { get; set; } = new List<DetalleMuscular>();
     }
 }
