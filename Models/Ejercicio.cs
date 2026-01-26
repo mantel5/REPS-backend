@@ -6,6 +6,7 @@
         public int? UsuarioCreadorId { get; set; } 
 
         public string Nombre { get; set; } = ""; 
+        public string GrupoMuscular { get; set; } = "";
         
         public string DescripcionTecnica { get; set; } = ""; 
         

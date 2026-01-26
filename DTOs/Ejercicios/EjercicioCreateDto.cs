@@ -4,7 +4,7 @@ namespace REPS_backend.DTOs.Ejercicios
     {
         public string Nombre { get; set; }
         public string GrupoMuscular { get; set; }
-        public string? Descripcion { get; set; }
+        public string? DescripcionTecnica { get; set; }
         public string ImagenMusculosUrl { get; set; } 
     }
 }
