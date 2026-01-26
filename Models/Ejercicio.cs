@@ -11,6 +11,5 @@
         public string DescripcionTecnica { get; set; } = ""; 
         
         public string ImagenMusculosUrl { get; set; } = ""; 
-        public List<DetalleMuscular> MusculosInvolucrados { get; set; } = new List<DetalleMuscular>();
     }
 }
