@@ -1,1 +1,19 @@
-{"Version":1,"Hash":"TZkfrVjck3dcE8d4F52tHJpDXzKqeZkleO7armhlIxs=","Source":"REPS-backend","BasePath":"_content/REPS-backend","Mode":"Default","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[{"Name":"REPS-backend\\wwwroot","Source":"REPS-backend","ContentRoot":"C:\\CLASE\\REPS\\REPS-backend\\wwwroot\\","BasePath":"_content/REPS-backend","Pattern":"**"}],"Assets":[],"Endpoints":[]}
+{
+  "Version": 1,
+  "Hash": "vlDYscSwW42vN5BCVDJB7osjTJgqqFVbMyM5yS6dTkw=",
+  "Source": "REPS-backend",
+  "BasePath": "_content/REPS-backend",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "REPS-backend\\wwwroot",
+      "Source": "REPS-backend",
+      "ContentRoot": "D:\\marcos\\TFG\\REPS-backend\\wwwroot\\",
+      "BasePath": "_content/REPS-backend",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

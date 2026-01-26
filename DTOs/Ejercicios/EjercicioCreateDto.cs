@@ -1,0 +1,9 @@
+namespace REPS_backend.DTOs.Ejercicios
+{
+    public class EjercicioCreateDto
+    {
+        public string Nombre { get; set; }
+        public string GrupoMuscular { get; set; }
+        public string? Descripcion { get; set; }
+    }
+}
