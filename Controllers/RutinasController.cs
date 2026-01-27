@@ -40,6 +40,28 @@ namespace REPS_backend.Controllers
             }
         }
 
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "User, Admin")]
+        public async Task<IActionResult> DeleteRutina(int id)
+        {
+            try
+            {
+                var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                int usuarioId = int.Parse(userIdString);
+
+                var borrado = await _rutinaService.BorrarRutinaAsync(id, usuarioId);
+
+                if (!borrado) return NotFound();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet]
         [Authorize(Roles = "User, Admin")]
         public async Task<IActionResult> GetRutinasPublicas()
@@ -64,7 +86,7 @@ namespace REPS_backend.Controllers
             {
                 var rutina = await _rutinaService.ObtenerDetalleRutinaAsync(id);
 
-                if (rutina == null) return NotFound($"No se encontró ninguna rutina con el ID {id}");
+                if (rutina == null) return NotFound();
 
                 return Ok(rutina);
             }

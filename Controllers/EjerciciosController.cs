@@ -54,5 +54,24 @@ namespace REPS_backend.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteEjercicio(int id)
+        {
+            try
+            {
+                var borrado = await _ejercicioService.BorrarEjercicioAsync(id);
+                
+                if (!borrado) return NotFound();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
