@@ -1,4 +1,5 @@
 using REPS_backend.DTOs.Auth;
+using System.Security.Claims;
 
 namespace REPS_backend.Services
 {
@@ -7,5 +8,7 @@ namespace REPS_backend.Services
         Task<string> RegistrarUsuarioAsync(RegisterDto dto);
 
         Task<string?> LoginAsync(LoginDto dto);
+
+        bool HasAccessToResource(int requestedUserId, ClaimsPrincipal user);
     }
 }

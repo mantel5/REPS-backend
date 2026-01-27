@@ -1,42 +1,58 @@
 using Microsoft.AspNetCore.Mvc;
-using REPS_backend.DTOs.Ejercicios;
+using Microsoft.AspNetCore.Authorization;
 using REPS_backend.Services;
+using REPS_backend.DTOs.Ejercicios;
+using System.Security.Claims;
 
 namespace REPS_backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class EjerciciosController : ControllerBase
     {
         private readonly IEjercicioService _ejercicioService;
+        private readonly ILogger<EjerciciosController> _logger;
 
-        // Inyectamos el cerebro (Service)
-        public EjerciciosController(IEjercicioService ejercicioService)
+        public EjerciciosController(IEjercicioService ejercicioService, ILogger<EjerciciosController> logger)
         {
             _ejercicioService = ejercicioService;
+            _logger = logger;
         }
 
-        // GET: api/Ejercicios
-        // Para ver la lista de todos los ejercicios
         [HttpGet]
-        public async Task<ActionResult<List<EjercicioItemDto>>> ObtenerEjercicios()
+        [Authorize(Roles = "User, Admin")]
+        public async Task<IActionResult> ObtenerEjercicios()
         {
-            var ejercicios = await _ejercicioService.ObtenerTodosAsync();
-            return Ok(ejercicios);
+            try
+            {
+                var ejercicios = await _ejercicioService.ObtenerTodosAsync();
+                return Ok(ejercicios);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
-        // POST: api/Ejercicios
-        // Para crear uno nuevo (Press Banca, Sentadilla...)
         [HttpPost]
-        public async Task<ActionResult<EjercicioItemDto>> CrearEjercicio([FromBody] EjercicioCreateDto dto)
+        [Authorize(Roles = "User, Admin")]
+        public async Task<IActionResult> CrearEjercicio([FromBody] EjercicioCreateDto dto)
         {
-            // Simulamos que lo crea el usuario ID 1 (ya pondremos login real más tarde)
-            int usuarioId = 1;
+            try
+            {
+                var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                int usuarioId = int.Parse(userIdString);
 
-            var ejercicioCreado = await _ejercicioService.CrearEjercicioAsync(dto, usuarioId);
-            
-            // Devolvemos un código 200 OK con el ejercicio creado
-            return Ok(ejercicioCreado);
+                var ejercicioCreado = await _ejercicioService.CrearEjercicioAsync(dto, usuarioId);
+                return Ok(ejercicioCreado);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

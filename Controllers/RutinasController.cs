@@ -1,56 +1,78 @@
 using Microsoft.AspNetCore.Mvc;
-using REPS_backend.DTOs.Rutinas;
+using Microsoft.AspNetCore.Authorization;
 using REPS_backend.Services;
+using REPS_backend.DTOs.Rutinas;
+using System.Security.Claims;
 
 namespace REPS_backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class RutinasController : ControllerBase
     {
         private readonly IRutinaService _rutinaService;
+        private readonly ILogger<RutinasController> _logger;
 
-        // Inyectamos el SERVICIO, no el repositorio ni el DbContext
-        public RutinasController(IRutinaService rutinaService)
+        public RutinasController(IRutinaService rutinaService, ILogger<RutinasController> logger)
         {
             _rutinaService = rutinaService;
+            _logger = logger;
         }
 
-        // POST: api/rutinas
         [HttpPost]
-        public async Task<ActionResult<RutinaDetalleDto>> CrearRutina([FromBody] RutinaCreateDto dto)
+        [Authorize(Roles = "User, Admin")]
+        public async Task<IActionResult> CrearRutina([FromBody] RutinaCreateDto dto)
         {
-            // Simulamos un usuario ID 1 (Cuando tengas login real, esto vendrá del token)
-            int usuarioId = 1; 
-
-            var rutinaCreada = await _rutinaService.CrearRutinaAsync(dto, usuarioId);
-
-            // Devolvemos 201 Created y los datos de la rutina creada
-            return CreatedAtAction(nameof(GetRutinaById), new { id = rutinaCreada.Id }, rutinaCreada);
-        }
-
-        // GET: api/rutinas
-        // (Devuelve la lista ligera "Estilo Netflix Menú")
-        [HttpGet]
-        public async Task<ActionResult<List<RutinaItemDto>>> GetRutinasPublicas()
-        {
-            var rutinas = await _rutinaService.ObtenerRutinasPublicasAsync();
-            return Ok(rutinas);
-        }
-
-        // GET: api/rutinas/5
-        // (Devuelve el detalle completo "Estilo Netflix Película")
-        [HttpGet("{id}")]
-        public async Task<ActionResult<RutinaDetalleDto>> GetRutinaById(int id)
-        {
-            var rutina = await _rutinaService.ObtenerDetalleRutinaAsync(id);
-
-            if (rutina == null)
+            try
             {
-                return NotFound($"No se encontró ninguna rutina con el ID {id}");
-            }
+                var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                int usuarioId = int.Parse(userIdString);
 
-            return Ok(rutina);
+                var rutinaCreada = await _rutinaService.CrearRutinaAsync(dto, usuarioId);
+                
+                return CreatedAtAction(nameof(GetRutinaById), new { id = rutinaCreada.Id }, rutinaCreada);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "User, Admin")]
+        public async Task<IActionResult> GetRutinasPublicas()
+        {
+            try
+            {
+                var rutinas = await _rutinaService.ObtenerRutinasPublicasAsync();
+                return Ok(rutinas);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "User, Admin")]
+        public async Task<IActionResult> GetRutinaById(int id)
+        {
+            try
+            {
+                var rutina = await _rutinaService.ObtenerDetalleRutinaAsync(id);
+
+                if (rutina == null) return NotFound($"No se encontró ninguna rutina con el ID {id}");
+
+                return Ok(rutina);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -28,7 +28,7 @@ namespace REPS_backend.Services
             {
                 Nombre = dto.Nombre,
                 Email = dto.Email,
-                Rol = Rol.User, // Por defecto es usuario normal
+                Rol = Rol.User, 
                 PlanActual = PlanSuscripcion.Gratuito,
                 FechaFinSuscripcion = DateTime.UtcNow,
                 PuntosTotales = 0,
@@ -36,10 +36,9 @@ namespace REPS_backend.Services
             };
 
             nuevoUsuario.SetPassword(dto.Password);
-
             await _usuarioRepo.CrearUsuarioAsync(nuevoUsuario);
 
-            return GenerarTokenJwt(nuevoUsuario);
+            return GenerateToken(nuevoUsuario);
         }
 
         public async Task<string?> LoginAsync(LoginDto dto)
@@ -48,34 +47,58 @@ namespace REPS_backend.Services
 
             if (usuario == null || !usuario.VerifyPassword(dto.Password))
             {
-                return null; 
+                return null;
             }
 
-            return GenerarTokenJwt(usuario);
+            return GenerateToken(usuario);
         }
 
-        private string GenerarTokenJwt(Usuario usuario)
+        public bool HasAccessToResource(int requestedUserId, ClaimsPrincipal user)
         {
-            var claims = new List<Claim>
+            var userIdClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             {
-                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-                new Claim(ClaimTypes.Name, usuario.Nombre),
-                new Claim(ClaimTypes.Email, usuario.Email),
-                new Claim(ClaimTypes.Role, usuario.Rol)
+                return false; 
+            }
+
+            var isOwnResource = userId == requestedUserId;
+
+            var roleClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+            var isAdmin = roleClaim != null && roleClaim.Value == Rol.Admin; // Usamos tu constante de Rol
+
+            return isOwnResource || isAdmin;
+        }
+
+        private string GenerateToken(Usuario usuario)
+        {
+            var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]); 
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Issuer = _config["Jwt:Issuer"],
+                Audience = _config["Jwt:Audience"],
+                
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+                    new Claim(ClaimTypes.Name, usuario.Nombre),
+                    new Claim(ClaimTypes.Email, usuario.Email),
+                    new Claim(ClaimTypes.Role, usuario.Rol) 
+                }),
+                
+                Expires = DateTime.UtcNow.AddDays(7),
+                
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature
+                )
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddDays(7),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            
+            return tokenHandler.WriteToken(token);
         }
     }
 }
