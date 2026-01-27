@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using REPS_backend.Services;
 using REPS_backend.DTOs.Rutinas;
 using System.Security.Claims;
+
 namespace REPS_backend.Controllers
 {
     [ApiController]
@@ -12,11 +13,13 @@ namespace REPS_backend.Controllers
     {
         private readonly IRutinaService _rutinaService;
         private readonly ILogger<RutinasController> _logger;
+
         public RutinasController(IRutinaService rutinaService, ILogger<RutinasController> logger)
         {
             _rutinaService = rutinaService;
             _logger = logger;
         }
+
         [HttpPost]
         [Authorize(Roles = "User, Admin")]
         public async Task<IActionResult> CrearRutina([FromBody] RutinaCreateDto dto)
@@ -25,8 +28,11 @@ namespace REPS_backend.Controllers
             {
                 var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userIdString)) return Unauthorized();
+
                 int usuarioId = int.Parse(userIdString);
+
                 var rutinaCreada = await _rutinaService.CrearRutinaAsync(dto, usuarioId);
+                
                 return CreatedAtAction(nameof(GetRutinaById), new { id = rutinaCreada.Id }, rutinaCreada);
             }
             catch (Exception ex)
@@ -35,6 +41,7 @@ namespace REPS_backend.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "User, Admin")]
         public async Task<IActionResult> DeleteRutina(int id)
@@ -43,9 +50,13 @@ namespace REPS_backend.Controllers
             {
                 var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userIdString)) return Unauthorized();
+
                 int usuarioId = int.Parse(userIdString);
+
                 var borrado = await _rutinaService.BorrarRutinaAsync(id, usuarioId);
+
                 if (!borrado) return NotFound();
+
                 return NoContent();
             }
             catch (Exception ex)
@@ -54,6 +65,7 @@ namespace REPS_backend.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet]
         [Authorize(Roles = "User, Admin")]
         public async Task<IActionResult> GetRutinasPublicas()
@@ -69,6 +81,7 @@ namespace REPS_backend.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet("{id}")]
         [Authorize(Roles = "User, Admin")]
         public async Task<IActionResult> GetRutinaById(int id)
@@ -76,7 +89,9 @@ namespace REPS_backend.Controllers
             try
             {
                 var rutina = await _rutinaService.ObtenerDetalleRutinaAsync(id);
+
                 if (rutina == null) return NotFound();
+
                 return Ok(rutina);
             }
             catch (Exception ex)

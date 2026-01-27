@@ -31,9 +31,9 @@ namespace REPS_backend.Controllers
                 int usuarioId = int.Parse(userIdString);
 
                 var resultado = await _service.AgregarEjercicioARutinaAsync(dto, usuarioId);
-                if (!resultado) return BadRequest("No se pudo agregar el ejercicio o no tienes permiso.");
+                if (!resultado) return BadRequest("No se pudo agregar o no tienes permiso.");
 
-                return Ok("Ejercicio agregado correctamente");
+                return Ok("Ejercicio agregado correctamente a la rutina");
             }
             catch (Exception ex)
             {
