@@ -13,6 +13,7 @@ namespace REPS_backend.Services
             _rutinaRepository = rutinaRepository;
             _ejercicioRepository = ejercicioRepository;
         }
+
         public async Task<RutinaDetalleDto> CrearRutinaAsync(RutinaCreateDto dto, int usuarioId)
         {
             var nuevaRutina = new Rutina
@@ -46,6 +47,23 @@ namespace REPS_backend.Services
             await _rutinaRepository.AddAsync(nuevaRutina);
             return await ObtenerDetalleRutinaAsync(nuevaRutina.Id) ?? new RutinaDetalleDto();
         }
+
+        public async Task<bool> ActualizarRutinaAsync(int id, RutinaUpdateDto dto, int usuarioId)
+        {
+            var rutina = await _rutinaRepository.GetByIdSimpleAsync(id);
+            if (rutina == null) return false;
+            
+            // SEGURIDAD: Solo el dueño puede editar
+            if (rutina.UsuarioId != usuarioId) return false;
+
+            rutina.Nombre = dto.Nombre;
+            rutina.Descripcion = dto.Descripcion;
+            rutina.EsPublica = dto.EsPublica;
+
+            await _rutinaRepository.UpdateAsync(rutina);
+            return true;
+        }
+
         public async Task<List<RutinaItemDto>> ObtenerRutinasPublicasAsync()
         {
             var rutinas = await _rutinaRepository.GetAllPublicasAsync();
@@ -57,6 +75,7 @@ namespace REPS_backend.Services
                 TotalEjercicios = r.Ejercicios.Count
             }).ToList();
         }
+
         public async Task<RutinaDetalleDto?> ObtenerDetalleRutinaAsync(int id)
         {
             var r = await _rutinaRepository.GetByIdWithEjerciciosAsync(id);
@@ -75,9 +94,10 @@ namespace REPS_backend.Services
                 }).ToList()
             };
         }
+
         public async Task<bool> BorrarRutinaAsync(int id, int usuarioId)
         {
-            var rutina = await _rutinaRepository.GetByIdWithEjerciciosAsync(id);
+            var rutina = await _rutinaRepository.GetByIdSimpleAsync(id);
             if (rutina == null) return false;
             if (rutina.UsuarioId != usuarioId) return false;
             await _rutinaRepository.DeleteAsync(id);

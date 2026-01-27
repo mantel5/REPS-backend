@@ -5,7 +5,9 @@ namespace REPS_backend.Repositories
     {
         Task<List<Rutina>> GetAllPublicasAsync();
         Task<Rutina?> GetByIdWithEjerciciosAsync(int id);
+        Task<Rutina?> GetByIdSimpleAsync(int id); 
         Task AddAsync(Rutina rutina);
+        Task UpdateAsync(Rutina rutina); 
         Task DeleteAsync(int id);
     }
 }

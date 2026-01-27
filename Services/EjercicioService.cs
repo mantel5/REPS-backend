@@ -6,10 +6,7 @@ namespace REPS_backend.Services
     public class EjercicioService : IEjercicioService
     {
         private readonly IEjercicioRepository _repository;
-        public EjercicioService(IEjercicioRepository repository)
-        {
-            _repository = repository;
-        }
+        public EjercicioService(IEjercicioRepository repository) { _repository = repository; }
 
         public async Task<EjercicioItemDto> CrearEjercicioAsync(EjercicioCreateDto dto, int? usuarioId)
         {
@@ -19,7 +16,7 @@ namespace REPS_backend.Services
                 GrupoMuscular = dto.GrupoMuscular,
                 DescripcionTecnica = dto.DescripcionTecnica ?? "", 
                 ImagenMusculosUrl = dto.ImagenMusculosUrl ?? "",
-                UsuarioCreadorId = usuarioId // Aquí guardamos quién lo creó
+                UsuarioCreadorId = usuarioId
             };
             await _repository.AddAsync(nuevoEjercicio);
             return new EjercicioItemDto
@@ -31,11 +28,27 @@ namespace REPS_backend.Services
             };
         }
 
+        public async Task<bool> ActualizarEjercicioAsync(int id, EjercicioUpdateDto dto, int usuarioId)
+        {
+            var ejercicio = await _repository.GetByIdAsync(id);
+            if (ejercicio == null) return false;
+
+            // SEGURIDAD: Solo el dueño puede editar su ejercicio. 
+            // Los ejercicios del sistema (null) NO se pueden editar por usuarios normales.
+            if (ejercicio.UsuarioCreadorId != usuarioId) return false;
+
+            ejercicio.Nombre = dto.Nombre;
+            ejercicio.GrupoMuscular = dto.GrupoMuscular;
+            ejercicio.DescripcionTecnica = dto.DescripcionTecnica ?? "";
+            ejercicio.ImagenMusculosUrl = dto.ImagenMusculosUrl ?? "";
+
+            await _repository.UpdateAsync(ejercicio);
+            return true;
+        }
+
         public async Task<List<EjercicioItemDto>> ObtenerTodosParaUsuarioAsync(int userId)
         {
-            // Pasamos el ID al repositorio para que filtre
             var ejercicios = await _repository.GetAllPersonalizadosAsync(userId);
-
             return ejercicios.Select(e => new EjercicioItemDto
             {
                 Id = e.Id,
@@ -45,12 +58,14 @@ namespace REPS_backend.Services
             }).ToList();
         }
 
-        public async Task<bool> BorrarEjercicioAsync(int id)
+        public async Task<bool> BorrarEjercicioAsync(int id, int usuarioId)
         {
-            // AQUÍ PODRÍAS AÑADIR SEGURIDAD EXTRA:
-            // Verificar que el ejercicio pertenezca al usuario antes de borrar
             var ejercicio = await _repository.GetByIdAsync(id);
             if (ejercicio == null) return false;
+            
+            // SEGURIDAD: Solo borras lo tuyo
+            if (ejercicio.UsuarioCreadorId != usuarioId) return false;
+
             await _repository.DeleteAsync(id);
             return true;
         }
