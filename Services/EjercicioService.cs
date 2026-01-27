@@ -1,18 +1,15 @@
-using REPS_backend.DTOs.Ejercicios;
+﻿using REPS_backend.DTOs.Ejercicios;
 using REPS_backend.Models;
 using REPS_backend.Repositories;
-
 namespace REPS_backend.Services
 {
     public class EjercicioService : IEjercicioService
     {
         private readonly IEjercicioRepository _repository;
-
         public EjercicioService(IEjercicioRepository repository)
         {
             _repository = repository;
         }
-
         public async Task<EjercicioItemDto> CrearEjercicioAsync(EjercicioCreateDto dto, int? usuarioId)
         {
             var nuevoEjercicio = new Ejercicio
@@ -23,9 +20,7 @@ namespace REPS_backend.Services
                 ImagenMusculosUrl = dto.ImagenMusculosUrl ?? "",
                 UsuarioCreadorId = usuarioId
             };
-
             await _repository.AddAsync(nuevoEjercicio);
-
             return new EjercicioItemDto
             {
                 Id = nuevoEjercicio.Id,
@@ -34,11 +29,9 @@ namespace REPS_backend.Services
                 ImagenMusculosUrl = nuevoEjercicio.ImagenMusculosUrl
             };
         }
-
         public async Task<List<EjercicioItemDto>> ObtenerTodosAsync()
         {
             var ejercicios = await _repository.GetAllAsync();
-
             return ejercicios.Select(e => new EjercicioItemDto
             {
                 Id = e.Id,
@@ -46,6 +39,13 @@ namespace REPS_backend.Services
                 GrupoMuscular = e.GrupoMuscular,
                 ImagenMusculosUrl = e.ImagenMusculosUrl
             }).ToList();
+        }
+        public async Task<bool> BorrarEjercicioAsync(int id)
+        {
+            var ejercicio = await _repository.GetByIdAsync(id);
+            if (ejercicio == null) return false;
+            await _repository.DeleteAsync(id);
+            return true;
         }
     }
 }

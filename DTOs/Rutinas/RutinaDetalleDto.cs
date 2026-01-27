@@ -1,12 +1,17 @@
-namespace REPS_backend.DTOs.Rutinas
+﻿namespace REPS_backend.DTOs.Rutinas
 {
     public class RutinaDetalleDto
     {
         public int Id { get; set; }
-        public string Nombre { get; set; }
-        public string Nivel { get; set; }
-        public int DuracionMinutos { get; set; }
-        public string Estado { get; set; } // Aquí quizás interesa saber si está "EnRevision"
-        public List<RutinaEjercicioDto> Ejercicios { get; set; }
+        public string Nombre { get; set; } = string.Empty;
+        public string CreadorNombre { get; set; } = string.Empty;
+        public List<EjercicioEnRutinaDto> Ejercicios { get; set; } = new List<EjercicioEnRutinaDto>();
+    }
+    public class EjercicioEnRutinaDto
+    {
+        public int EjercicioId { get; set; }
+        public string Nombre { get; set; } = string.Empty;
+        public int Series { get; set; }
+        public string Repeticiones { get; set; } = string.Empty; 
     }
 }

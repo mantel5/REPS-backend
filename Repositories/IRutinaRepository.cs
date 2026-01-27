@@ -1,18 +1,11 @@
-using REPS_backend.Models;
-
+﻿using REPS_backend.Models;
 namespace REPS_backend.Repositories
 {
     public interface IRutinaRepository
     {
-        // Obtener todas (para el listado público)
-        Task<List<Rutina>> GetAllPublicasAsync(); 
-        
-        // Obtener una por ID (con sus ejercicios incluidos)
-        Task<Rutina?> GetByIdAsync(int id);
-        
-        // Crear
+        Task<List<Rutina>> GetAllPublicasAsync();
+        Task<Rutina?> GetByIdWithEjerciciosAsync(int id);
         Task AddAsync(Rutina rutina);
-        
-        // (Opcional por ahora: Update y Delete)
+        Task DeleteAsync(int id);
     }
 }
