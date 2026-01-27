@@ -10,8 +10,17 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// -----------------------------------------------------------------------------
+// 1. BASE DE DATOS (CORREGIDO: Ahora usa MySQL)
+// -----------------------------------------------------------------------------
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseMySql(connectionString, 
+        new MySqlServerVersion(new Version(8, 0, 45)), // Tu versión exacta
+        mySqlOptions => mySqlOptions.EnableRetryOnFailure()) // Evita fallos de conexión
+);
+// -----------------------------------------------------------------------------
 
 builder.Services.AddScoped<IRutinaRepository, RutinaRepository>();
 builder.Services.AddScoped<IRutinaService, RutinaService>();
@@ -43,10 +52,11 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
+        // AÑADIDO EL SIGNO "!" PARA EVITAR EL WARNING AMARILLO
+        ValidIssuer = builder.Configuration["Jwt:Issuer"]!,
+        ValidAudience = builder.Configuration["Jwt:Audience"]!,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)) 
     };
 });
 
@@ -66,7 +76,6 @@ builder.Services.AddSwaggerGen(c =>
 
     c.AddSecurityDefinition("Bearer", securityScheme);
 
-    // Requisito de seguridad
     var securityRequirement = new OpenApiSecurityRequirement
     {
         {
@@ -85,7 +94,6 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityRequirement(securityRequirement);
 });
 
-// 6. CORS (Necesario para tu futuro Frontend)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirTodo", policy =>
