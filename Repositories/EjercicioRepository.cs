@@ -10,10 +10,15 @@ namespace REPS_backend.Repositories
         {
             _context = context;
         }
-        public async Task<List<Ejercicio>> GetAllAsync()
+
+        // AQUÍ ESTÁ LA MAGIA DEL FILTRO
+        public async Task<List<Ejercicio>> GetAllPersonalizadosAsync(int userId)
         {
-            return await _context.Ejercicios.ToListAsync();
+            return await _context.Ejercicios
+                .Where(e => e.UsuarioCreadorId == null || e.UsuarioCreadorId == userId)
+                .ToListAsync();
         }
+
         public async Task<Ejercicio?> GetByIdAsync(int id)
         {
             return await _context.Ejercicios.FindAsync(id);

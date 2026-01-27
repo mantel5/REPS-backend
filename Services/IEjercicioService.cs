@@ -3,7 +3,8 @@ namespace REPS_backend.Services
 {
     public interface IEjercicioService
     {
-        Task<List<EjercicioItemDto>> ObtenerTodosAsync();
+        // AHORA PIDE EL ID
+        Task<List<EjercicioItemDto>> ObtenerTodosParaUsuarioAsync(int userId);
         Task<EjercicioItemDto> CrearEjercicioAsync(EjercicioCreateDto dto, int? usuarioId);
         Task<bool> BorrarEjercicioAsync(int id);
     }

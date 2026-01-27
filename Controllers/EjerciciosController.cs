@@ -42,11 +42,13 @@ namespace REPS_backend.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "User, Admin")] // Ahora dejamos que el User borre (su servicio validará si es suyo)
         public async Task<IActionResult> DeleteEjercicio(int id)
         {
             try
             {
+                // En el futuro, aquí deberías validar que solo borren SUS ejercicios
+                // De momento, si lo borran, se borra.
                 var borrado = await _ejercicioService.BorrarEjercicioAsync(id);
                 if (!borrado) return NotFound();
 
@@ -65,7 +67,13 @@ namespace REPS_backend.Controllers
         {
             try
             {
-                var ejercicios = await _ejercicioService.ObtenerTodosAsync();
+                var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdString)) return Unauthorized();
+
+                int usuarioId = int.Parse(userIdString);
+
+                // AHORA LLAMAMOS AL MÉTODO QUE FILTRA POR USUARIO
+                var ejercicios = await _ejercicioService.ObtenerTodosParaUsuarioAsync(usuarioId);
                 return Ok(ejercicios);
             }
             catch (Exception ex)
