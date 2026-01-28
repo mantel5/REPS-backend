@@ -28,6 +28,8 @@ namespace REPS_backend.Services
             {
                 Nombre = dto.Nombre,
                 Email = dto.Email,
+                CodigoAmigo = Guid.NewGuid().ToString().Substring(0, 6).ToUpper(),
+                FechaRegistro = DateTime.UtcNow,
                 Rol = Rol.User, 
                 PlanActual = PlanSuscripcion.Gratuito,
                 FechaFinSuscripcion = DateTime.UtcNow,

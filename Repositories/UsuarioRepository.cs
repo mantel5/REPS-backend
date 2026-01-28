@@ -18,6 +18,23 @@ namespace REPS_backend.Repositories
             return await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
         }
 
+        public async Task<Usuario?> GetByIdAsync(int id)
+        {
+            return await _context.Usuarios.FindAsync(id);
+        }
+
+        public async Task<Usuario?> GetByCodigoAmigoAsync(string codigo)
+        {
+            // Buscamos coincidencia exacta del código
+            return await _context.Usuarios.FirstOrDefaultAsync(u => u.CodigoAmigo == codigo);
+        }
+
+        public async Task UpdateUsuarioAsync(Usuario usuario)
+        {
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<bool> ExistsByEmailAsync(string email)
         {
             return await _context.Usuarios.AnyAsync(u => u.Email == email);

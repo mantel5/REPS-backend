@@ -6,6 +6,8 @@
         public string Nombre { get; set; } = "";
         public string Email { get; set; } = "";
         public string PasswordHash { get; set; } = "";
+        public string CodigoAmigo { get; set; } = string.Empty;
+        public DateTime FechaRegistro { get; set; } = DateTime.UtcNow; 
         
         public string AvatarId { get; set; } = CatalogoAvatars.Default;
         public string Rol { get; set; } = Models.Rol.User;
