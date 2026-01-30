@@ -25,8 +25,15 @@ namespace REPS_backend.Repositories
 
         public async Task<Usuario?> GetByCodigoAmigoAsync(string codigo)
         {
-            // Buscamos coincidencia exacta del código
-            return await _context.Usuarios.FirstOrDefaultAsync(u => u.CodigoAmigo == codigo);
+            return await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.CodigoAmigo == codigo 
+                                       && !u.EstaBorrado 
+                                       && u.EstaActivo);
+        }
+
+        public async Task<IEnumerable<Usuario>> GetAllAsync()
+        {
+            return await _context.Usuarios.ToListAsync();
         }
 
         public async Task UpdateUsuarioAsync(Usuario usuario)

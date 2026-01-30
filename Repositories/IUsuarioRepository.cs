@@ -8,6 +8,7 @@ namespace REPS_backend.Repositories
         Task<Usuario?> GetByIdAsync(int id); 
         Task<Usuario?> GetByCodigoAmigoAsync(string codigo); 
         Task<bool> ExistsByEmailAsync(string email);
+        Task<IEnumerable<Usuario>> GetAllAsync(); 
         Task CrearUsuarioAsync(Usuario usuario);
         Task UpdateUsuarioAsync(Usuario usuario);
     }

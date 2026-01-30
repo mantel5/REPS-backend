@@ -1,5 +1,6 @@
 using REPS_backend.DTOs.Usuarios;
 using REPS_backend.Repositories;
+using REPS_backend.Models;
 
 namespace REPS_backend.Services
 {
@@ -12,7 +13,7 @@ namespace REPS_backend.Services
             _repository = repository;
         }
 
-        // TU PERFIL (Ve todo: email, código, etc.)
+        // ... MÉTODOS EXISTENTES (MiPerfil, BuscarAmigo, Actualizar) ...
         public async Task<UsuarioPerfilDto?> ObtenerMiPerfilAsync(int id)
         {
             var user = await _repository.GetByIdAsync(id);
@@ -23,11 +24,9 @@ namespace REPS_backend.Services
                 Nombre = user.Nombre,
                 Email = user.Email,
                 AvatarId = user.AvatarId,
-                CodigoAmigo = user.CodigoAmigo, 
+                CodigoAmigo = user.CodigoAmigo,
                 FechaRegistro = user.FechaRegistro,
                 Rol = user.Rol,
-                
-                // Gamificación
                 PuntosTotales = user.PuntosTotales,
                 RachaDias = user.RachaDias,
                 RangoGeneral = user.RangoGeneral,
@@ -35,10 +34,9 @@ namespace REPS_backend.Services
             };
         }
 
-        // PERFIL DE AMIGO (Solo ve lo bonito)
         public async Task<UsuarioPublicoDto?> BuscarAmigoPorCodigoAsync(string codigo)
         {
-            var user = await _repository.GetByCodigoAmigoAsync(codigo.ToUpper()); 
+            var user = await _repository.GetByCodigoAmigoAsync(codigo.ToUpper());
             if (user == null) return null;
 
             return new UsuarioPublicoDto
@@ -46,8 +44,6 @@ namespace REPS_backend.Services
                 Nombre = user.Nombre,
                 AvatarId = user.AvatarId,
                 FechaRegistro = user.FechaRegistro,
-                
-                // Gamificación
                 PuntosTotales = user.PuntosTotales,
                 RachaDias = user.RachaDias,
                 RangoGeneral = user.RangoGeneral,
@@ -60,9 +56,38 @@ namespace REPS_backend.Services
             var user = await _repository.GetByIdAsync(id);
             if (user == null) return false;
 
-            // Solo actualizamos lo permitido
             if (!string.IsNullOrEmpty(dto.Nombre)) user.Nombre = dto.Nombre;
             if (!string.IsNullOrEmpty(dto.AvatarId)) user.AvatarId = dto.AvatarId;
+
+            await _repository.UpdateUsuarioAsync(user);
+            return true;
+        }
+
+        // LÓGICA DE ADMINISTRADOR
+
+        public async Task<IEnumerable<Usuario>> ObtenerTodosLosUsuariosAdminAsync()
+        {
+            return await _repository.GetAllAsync();
+        }
+
+        public async Task<bool> CambiarEstadoBloqueoAsync(int id, bool nuevoEstadoActivo)
+        {
+            var user = await _repository.GetByIdAsync(id);
+            if (user == null) return false;
+
+            user.EstaActivo = nuevoEstadoActivo;
+            
+            await _repository.UpdateUsuarioAsync(user);
+            return true;
+        }
+
+        public async Task<bool> EliminarUsuarioLogicoAsync(int id)
+        {
+            var user = await _repository.GetByIdAsync(id);
+            if (user == null) return false;
+
+            user.EstaBorrado = true;
+            user.EstaActivo = false; 
 
             await _repository.UpdateUsuarioAsync(user);
             return true;

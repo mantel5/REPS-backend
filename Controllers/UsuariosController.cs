@@ -2,13 +2,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using REPS_backend.DTOs.Usuarios;
 using REPS_backend.Services;
+using REPS_backend.Models; 
 using System.Security.Claims;
 
 namespace REPS_backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize] 
     public class UsuariosController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
@@ -18,7 +19,7 @@ namespace REPS_backend.Controllers
             _usuarioService = usuarioService;
         }
 
-        // 1. OBTENER MI PERFIL
+
         [HttpGet("perfil")]
         public async Task<IActionResult> GetMiPerfil()
         {
@@ -31,7 +32,6 @@ namespace REPS_backend.Controllers
             return Ok(perfil);
         }
 
-        // 2. ACTUALIZAR MI PERFIL
         [HttpPut("perfil")]
         public async Task<IActionResult> UpdateMiPerfil([FromBody] UsuarioUpdateDto dto)
         {
@@ -44,7 +44,6 @@ namespace REPS_backend.Controllers
             return Ok(new { mensaje = "Perfil actualizado correctamente" });
         }
 
-        // 3. BUSCAR AMIGO POR CÓDIGO (Ej: /api/usuarios/buscar/DANI92)
         [HttpGet("buscar/{codigoAmigo}")]
         public async Task<IActionResult> BuscarAmigo(string codigoAmigo)
         {
@@ -56,6 +55,33 @@ namespace REPS_backend.Controllers
                 return NotFound(new { mensaje = "No se encontró ningún atleta con ese código 😢" });
 
             return Ok(perfilAmigo);
+        }
+
+        [HttpGet("admin/todos")]
+        [Authorize(Roles = Rol.Admin)] 
+        public async Task<IActionResult> GetAllUsuarios()
+        {
+            var usuarios = await _usuarioService.ObtenerTodosLosUsuariosAdminAsync();
+            return Ok(usuarios);
+        }
+        [HttpPut("admin/estado/{id}")]
+        [Authorize(Roles = Rol.Admin)]
+        public async Task<IActionResult> CambiarEstadoUsuario(int id, [FromBody] bool nuevoEstado)
+        {
+            var exito = await _usuarioService.CambiarEstadoBloqueoAsync(id, nuevoEstado);
+            if (!exito) return NotFound("Usuario no encontrado");
+
+            return Ok(new { mensaje = $"Estado del usuario actualizado a: {(nuevoEstado ? "ACTIVO" : "BLOQUEADO")}" });
+        }
+
+        [HttpDelete("admin/eliminar/{id}")]
+        [Authorize(Roles = Rol.Admin)]
+        public async Task<IActionResult> EliminarUsuario(int id)
+        {
+            var exito = await _usuarioService.EliminarUsuarioLogicoAsync(id);
+            if (!exito) return NotFound("Usuario no encontrado");
+
+            return Ok(new { mensaje = "Usuario eliminado correctamente (Baja Lógica)." });
         }
     }
 }
