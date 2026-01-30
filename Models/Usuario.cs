@@ -14,6 +14,8 @@
 
         public PlanSuscripcion PlanActual { get; set; } = PlanSuscripcion.Gratuito;
         public DateTime FechaFinSuscripcion { get; set; } 
+        public bool EstaActivo { get; set; } = true;
+        public bool EstaBorrado { get; set; } = false;
 
         public int PuntosTotales { get; set; } 
         public int RachaDias { get; set; }
