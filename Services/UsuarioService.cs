@@ -119,5 +119,22 @@ namespace REPS_backend.Services
             await _repository.AgregarAmistadAsync(nuevaAmistad);
             return true;
         }
+
+        public async Task<List<UsuarioPublicoDto>> ObtenerMisAmigosAsync(int userId)
+        {
+            var amigos = await _repository.GetAmigosDeUsuarioAsync(userId);
+
+            // Mapeamos la lista de Usuarios a UsuariosDto
+            return amigos.Select(u => new UsuarioPublicoDto
+            {
+                Nombre = u.Nombre,
+                AvatarId = u.AvatarId,
+                FechaRegistro = u.FechaRegistro,
+                PuntosTotales = u.PuntosTotales,
+                RachaDias = u.RachaDias,
+                RangoGeneral = u.RangoGeneral,
+                EsPro = u.EsPro()
+            }).ToList();
+        }
     }
 }

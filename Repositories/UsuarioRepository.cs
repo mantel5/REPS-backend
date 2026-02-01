@@ -65,5 +65,17 @@ namespace REPS_backend.Repositories
             await _context.Amistades.AddAsync(amistad);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<Usuario>> GetAmigosDeUsuarioAsync(int usuarioId)
+        {
+            // 1. Busca filas donde seas el Solicitante O el Receptor.
+            // 2. Si eres el Solicitante, te devuelve al Receptor. Si eres Receptor, te devuelve al Solicitante.
+            // 3. Resultado: Una lista con tus amigos, sin importan quién agregó a quién.
+            
+            return await _context.Amistades
+                .Where(a => a.SolicitanteId == usuarioId || a.ReceptorId == usuarioId)
+                .Select(a => a.SolicitanteId == usuarioId ? a.Receptor : a.Solicitante)
+                .ToListAsync();
+        }
     }
 }

@@ -13,6 +13,7 @@ namespace REPS_backend.Repositories
         Task UpdateUsuarioAsync(Usuario usuario);
         Task<bool> SonAmigosAsync(int usuarioId1, int usuarioId2);
         Task AgregarAmistadAsync(Amistad amistad);
+        Task<IEnumerable<Usuario>> GetAmigosDeUsuarioAsync(int usuarioId);
         
     }
 }

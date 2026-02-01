@@ -106,5 +106,16 @@ namespace REPS_backend.Controllers
 
             return Ok(new { mensaje = "Usuario eliminado correctamente (Baja Lógica)." });
         }
+
+        [HttpGet("amigos")]
+        public async Task<IActionResult> GetMisAmigos()
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+
+            var listaAmigos = await _usuarioService.ObtenerMisAmigosAsync(userId);
+
+            return Ok(listaAmigos);
+        }
     }
 }

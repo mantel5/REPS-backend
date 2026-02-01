@@ -12,5 +12,6 @@ namespace REPS_backend.Services
         Task<bool> CambiarEstadoBloqueoAsync(int id, bool estaActivo); 
         Task<bool> EliminarUsuarioLogicoAsync(int id);
         Task<bool> AgregarAmigoAsync(int miId, string codigoAmigo);
+        Task<List<UsuarioPublicoDto>> ObtenerMisAmigosAsync(int userId);
     }
 }
