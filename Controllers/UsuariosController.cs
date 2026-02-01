@@ -77,7 +77,7 @@ namespace REPS_backend.Controllers
                 return BadRequest(new { mensaje = "No se pudo agregar. Verifica que el código existe, que no eres tú mismo y que no sois ya amigos." });
             }
 
-            return Ok(new { mensaje = "¡Amigo agregado correctamente! 🤝" });
+            return Ok(new { mensaje = "¡Solicitud enviada! Esperando a que te acepte. ⏳" });
         }
 
         [HttpGet("admin/todos")]
@@ -116,6 +116,33 @@ namespace REPS_backend.Controllers
             var listaAmigos = await _usuarioService.ObtenerMisAmigosAsync(userId);
 
             return Ok(listaAmigos);
+        }
+
+
+        [HttpGet("amigos/solicitudes")]
+        public async Task<IActionResult> GetSolicitudes()
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+
+            var solicitudes = await _usuarioService.ObtenerSolicitudesPendientesAsync(userId);
+            return Ok(solicitudes);
+        }
+
+        // 2. RESPONDER (Aceptar o Rechazar)
+        public class RespuestaSolicitudDto { public string CodigoAmigo { get; set; } public bool Aceptar { get; set; } }
+
+        [HttpPost("amigos/responder")]
+        public async Task<IActionResult> ResponderSolicitud([FromBody] RespuestaSolicitudDto dto)
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+
+            var exito = await _usuarioService.ResponderSolicitudAsync(userId, dto.CodigoAmigo, dto.Aceptar);
+
+            if (!exito) return BadRequest("No se encontró la solicitud.");
+
+            return Ok(new { mensaje = dto.Aceptar ? "¡Solicitud Aceptada! Ahora sois amigos." : "Solicitud rechazada." });
         }
     }
 }

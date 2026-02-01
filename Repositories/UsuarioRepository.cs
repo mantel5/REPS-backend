@@ -77,5 +77,34 @@ namespace REPS_backend.Repositories
                 .Select(a => a.SolicitanteId == usuarioId ? a.Receptor : a.Solicitante)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Usuario>> GetSolicitudesPendientesAsync(int userId)
+        {
+            return await _context.Amistades
+                .Where(a => a.ReceptorId == userId && !a.Aceptada) // Yo recibo Y no está aceptada
+                .Select(a => a.Solicitante) // Quiero ver los datos del que me lo pide
+                .ToListAsync();
+        }
+
+        public async Task<Amistad?> GetAmistadEntreUsuariosAsync(int id1, int id2)
+        {
+            return await _context.Amistades
+                .FirstOrDefaultAsync(a => (a.SolicitanteId == id1 && a.ReceptorId == id2) 
+                                    || (a.SolicitanteId == id2 && a.ReceptorId == id1));
+        }
+
+        public async Task EliminarAmistadAsync(Amistad amistad)
+        {
+            _context.Amistades.Remove(amistad);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAmistadAsync(Amistad amistad)
+        {
+            _context.Amistades.Update(amistad);
+            await _context.SaveChangesAsync();
+        }
+
+        
     }
 }

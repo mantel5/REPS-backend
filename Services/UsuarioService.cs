@@ -113,7 +113,7 @@ namespace REPS_backend.Services
                 SolicitanteId = miId,
                 ReceptorId = amigo.Id,
                 FechaAmistad = DateTime.UtcNow,
-                Aceptada = true // Directamente amigos (sin solicitud pendiente de momento)
+                Aceptada = false
             };
 
             await _repository.AgregarAmistadAsync(nuevaAmistad);
@@ -136,5 +136,48 @@ namespace REPS_backend.Services
                 EsPro = u.EsPro()
             }).ToList();
         }
+
+        public async Task<List<UsuarioPublicoDto>> ObtenerSolicitudesPendientesAsync(int userId)
+        {
+            var solicitantes = await _repository.GetSolicitudesPendientesAsync(userId);
+
+            // Convertimos a DTO para que se vea bonito (nombre, avatar...)
+            return solicitantes.Select(u => new UsuarioPublicoDto
+            {
+                Nombre = u.Nombre,
+                AvatarId = u.AvatarId,
+                FechaRegistro = u.FechaRegistro,
+                PuntosTotales = u.PuntosTotales,
+                RachaDias = u.RachaDias,
+                RangoGeneral = u.RangoGeneral,
+                EsPro = u.EsPro()
+            }).ToList();
+        }
+
+        public async Task<bool> ResponderSolicitudAsync(int miId, string codigoAmigoSolicitante, bool aceptar)
+        {
+            var solicitante = await _repository.GetByCodigoAmigoAsync(codigoAmigoSolicitante);
+            if (solicitante == null) return false;
+
+            // Buscamos la "hoja de papel" que une a los dos
+            var amistad = await _repository.GetAmistadEntreUsuariosAsync(solicitante.Id, miId);
+            if (amistad == null) return false;
+
+            if (aceptar)
+            {
+                // CASO ACEPTAR: Cambiamos el estado a TRUE
+                amistad.Aceptada = true;
+                await _repository.UpdateAmistadAsync(amistad); 
+            }
+            else
+            {
+                // CASO RECHAZAR: Rompemos la hoja (Borrar fila)
+                await _repository.EliminarAmistadAsync(amistad);
+            }
+
+            return true;
+        }
+
+        
     }
 }
