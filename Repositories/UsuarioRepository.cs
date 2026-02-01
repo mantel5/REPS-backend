@@ -52,5 +52,18 @@ namespace REPS_backend.Repositories
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> SonAmigosAsync(int usuarioId1, int usuarioId2)
+        {
+            return await _context.Amistades.AnyAsync(a =>
+                (a.SolicitanteId == usuarioId1 && a.ReceptorId == usuarioId2) ||
+                (a.SolicitanteId == usuarioId2 && a.ReceptorId == usuarioId1));
+        }
+
+        public async Task AgregarAmistadAsync(Amistad amistad)
+        {
+            await _context.Amistades.AddAsync(amistad);
+            await _context.SaveChangesAsync();
+        }
     }
 }

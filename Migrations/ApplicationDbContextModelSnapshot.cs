@@ -22,6 +22,27 @@ namespace REPSbackend.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("REPS_backend.Models.Amistad", b =>
+                {
+                    b.Property<int>("SolicitanteId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReceptorId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Aceptada")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime>("FechaAmistad")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("SolicitanteId", "ReceptorId");
+
+                    b.HasIndex("ReceptorId");
+
+                    b.ToTable("Amistades");
+                });
+
             modelBuilder.Entity("REPS_backend.Models.DetalleMuscular", b =>
                 {
                     b.Property<int>("Id")
@@ -161,16 +182,16 @@ namespace REPSbackend.Migrations
 
             modelBuilder.Entity("REPS_backend.Models.RutinaEjercicio", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("RutinaId")
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<int>("EjercicioId")
+                        .HasColumnType("int");
 
                     b.Property<int>("DescansoSegundos")
                         .HasColumnType("int");
 
-                    b.Property<int>("EjercicioId")
+                    b.Property<int>("Id")
                         .HasColumnType("int");
 
                     b.Property<int>("Orden")
@@ -186,20 +207,15 @@ namespace REPSbackend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("RutinaId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Series")
                         .HasColumnType("int");
 
                     b.Property<int>("Tipo")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("RutinaId", "EjercicioId");
 
                     b.HasIndex("EjercicioId");
-
-                    b.HasIndex("RutinaId");
 
                     b.ToTable("RutinaEjercicios");
                 });
@@ -329,6 +345,25 @@ namespace REPSbackend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("REPS_backend.Models.Amistad", b =>
+                {
+                    b.HasOne("REPS_backend.Models.Usuario", "Receptor")
+                        .WithMany()
+                        .HasForeignKey("ReceptorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("REPS_backend.Models.Usuario", "Solicitante")
+                        .WithMany()
+                        .HasForeignKey("SolicitanteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Receptor");
+
+                    b.Navigation("Solicitante");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.Rutina", b =>
