@@ -57,6 +57,29 @@ namespace REPS_backend.Controllers
             return Ok(perfilAmigo);
         }
 
+        // ... dentro de UsuariosController
+
+        // 4. AGREGAR AMIGO (POST)
+        [HttpPost("amigos/agregar/{codigoAmigo}")]
+        public async Task<IActionResult> AgregarAmigo(string codigoAmigo)
+        {
+            // 1. Sacamos mi ID del token
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+
+            if (string.IsNullOrEmpty(codigoAmigo)) return BadRequest("Falta el código.");
+
+            // 2. Llamamos al servicio
+            var exito = await _usuarioService.AgregarAmigoAsync(userId, codigoAmigo);
+
+            if (!exito)
+            {
+                return BadRequest(new { mensaje = "No se pudo agregar. Verifica que el código existe, que no eres tú mismo y que no sois ya amigos." });
+            }
+
+            return Ok(new { mensaje = "¡Amigo agregado correctamente! 🤝" });
+        }
+
         [HttpGet("admin/todos")]
         [Authorize(Roles = Rol.Admin)] 
         public async Task<IActionResult> GetAllUsuarios()
