@@ -92,5 +92,32 @@ namespace REPS_backend.Services
             await _repository.UpdateUsuarioAsync(user);
             return true;
         }
+
+        public async Task<bool> AgregarAmigoAsync(int miId, string codigoAmigo)
+        {
+            // 1. Buscamos al futuro amigo
+            var amigo = await _repository.GetByCodigoAmigoAsync(codigoAmigo.ToUpper());
+            
+            // VALIDACIONES:
+            // - Si no existe
+            // - O si soy yo mismo (mi ID es igual al del amigo)
+            if (amigo == null || amigo.Id == miId) return false;
+
+            // - Si ya somos amigos de antes
+            bool yaSonAmigos = await _repository.SonAmigosAsync(miId, amigo.Id);
+            if (yaSonAmigos) return false;
+
+            // 2. Si pasa las validaciones, creamos la relación
+            var nuevaAmistad = new Amistad
+            {
+                SolicitanteId = miId,
+                ReceptorId = amigo.Id,
+                FechaAmistad = DateTime.UtcNow,
+                Aceptada = true // Directamente amigos (sin solicitud pendiente de momento)
+            };
+
+            await _repository.AgregarAmistadAsync(nuevaAmistad);
+            return true;
+        }
     }
 }

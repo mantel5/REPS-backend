@@ -10,6 +10,7 @@ namespace REPS_backend.Services
         Task<bool> ActualizarPerfilAsync(int id, UsuarioUpdateDto dto);
         Task<IEnumerable<Usuario>> ObtenerTodosLosUsuariosAdminAsync();
         Task<bool> CambiarEstadoBloqueoAsync(int id, bool estaActivo); 
-        Task<bool> EliminarUsuarioLogicoAsync(int id); 
+        Task<bool> EliminarUsuarioLogicoAsync(int id);
+        Task<bool> AgregarAmigoAsync(int miId, string codigoAmigo);
     }
 }
