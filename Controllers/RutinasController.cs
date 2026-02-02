@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using REPS_backend.Services;
 using REPS_backend.DTOs.Rutinas;
+using REPS_backend.Models;
 using System.Security.Claims;
 
 namespace REPS_backend.Controllers
@@ -13,6 +14,7 @@ namespace REPS_backend.Controllers
     {
         private readonly IRutinaService _rutinaService;
         private readonly ILogger<RutinasController> _logger;
+
         public RutinasController(IRutinaService rutinaService, ILogger<RutinasController> logger)
         {
             _rutinaService = rutinaService;
@@ -28,6 +30,7 @@ namespace REPS_backend.Controllers
                 var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userIdString)) return Unauthorized();
                 int usuarioId = int.Parse(userIdString);
+                
                 var rutinaCreada = await _rutinaService.CrearRutinaAsync(dto, usuarioId);
                 return CreatedAtAction(nameof(GetRutinaById), new { id = rutinaCreada.Id }, rutinaCreada);
             }
@@ -69,8 +72,10 @@ namespace REPS_backend.Controllers
                 var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userIdString)) return Unauthorized();
                 int usuarioId = int.Parse(userIdString);
+                
                 var borrado = await _rutinaService.BorrarRutinaAsync(id, usuarioId);
                 if (!borrado) return NotFound();
+                
                 return NoContent();
             }
             catch (Exception ex)
@@ -96,6 +101,25 @@ namespace REPS_backend.Controllers
             }
         }
 
+        [HttpGet("mis-rutinas")]
+        [Authorize(Roles = "User, Admin")]
+        public async Task<IActionResult> GetMisRutinas()
+        {
+            try
+            {
+                var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!int.TryParse(userIdString, out int userId)) return Unauthorized();
+
+                var misRutinas = await _rutinaService.ObtenerRutinasDeUsuarioAsync(userId);
+                return Ok(misRutinas);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest("Error al obtener tus rutinas.");
+            }
+        }
+
         [HttpGet("{id}")]
         [Authorize(Roles = "User, Admin")]
         public async Task<IActionResult> GetRutinaById(int id)
@@ -111,6 +135,58 @@ namespace REPS_backend.Controllers
                 _logger.LogInformation(ex.Message);
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpPut("{id}/enviar-revision")]
+        [Authorize(Roles = "User, Admin")]
+        public async Task<IActionResult> EnviarRevision(int id)
+        {
+            try
+            {
+                var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!int.TryParse(userIdString, out int userId)) return Unauthorized();
+
+                var exito = await _rutinaService.EnviarARevisionAsync(id, userId);
+                
+                if (!exito) return BadRequest("No se pudo enviar. Verifica que la rutina es tuya, no está baneada y no está publicada ya.");
+
+                return Ok(new { mensaje = "Rutina enviada a revisión correctamente." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("admin/pendientes")]
+        [Authorize(Roles = Rol.Admin)]
+        public async Task<IActionResult> GetPendientes()
+        {
+            var pendientes = await _rutinaService.ObtenerRutinasPendientesAsync();
+            return Ok(pendientes);
+        }
+
+        public class ValidacionDto { public bool Aprobar { get; set; } }
+
+        [HttpPut("admin/validar/{id}")]
+        [Authorize(Roles = Rol.Admin)]
+        public async Task<IActionResult> ValidarRutina(int id, [FromBody] ValidacionDto dto)
+        {
+            var exito = await _rutinaService.ValidarRutinaAsync(id, dto.Aprobar);
+            if (!exito) return NotFound("Rutina no encontrada.");
+
+            string estado = dto.Aprobar ? "PUBLICADA" : "RECHAZADA";
+            return Ok(new { mensaje = $"La rutina ha sido {estado}." });
+        }
+
+        [HttpDelete("admin/banear/{id}")]
+        [Authorize(Roles = Rol.Admin)]
+        public async Task<IActionResult> BanearRutina(int id)
+        {
+            var exito = await _rutinaService.BanearRutinaAsync(id);
+            if (!exito) return NotFound("Rutina no encontrada.");
+
+            return Ok(new { mensaje = "Rutina baneada por infringir las normas." });
         }
     }
 }

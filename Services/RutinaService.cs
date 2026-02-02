@@ -2,12 +2,14 @@
 using REPS_backend.DTOs.Ejercicios;
 using REPS_backend.Models;
 using REPS_backend.Repositories;
+
 namespace REPS_backend.Services
 {
     public class RutinaService : IRutinaService
     {
         private readonly IRutinaRepository _rutinaRepository;
         private readonly IEjercicioRepository _ejercicioRepository;
+
         public RutinaService(IRutinaRepository rutinaRepository, IEjercicioRepository ejercicioRepository)
         {
             _rutinaRepository = rutinaRepository;
@@ -20,9 +22,11 @@ namespace REPS_backend.Services
             {
                 Nombre = dto.Nombre,
                 UsuarioId = usuarioId,
-                EsPublica = true,
+                EsPublica = false, 
+                Estado = EstadoRutina.Privada, 
                 Ejercicios = new List<RutinaEjercicio>()
             };
+
             if (dto.EjerciciosIds != null && dto.EjerciciosIds.Any())
             {
                 int orden = 1;
@@ -43,8 +47,11 @@ namespace REPS_backend.Services
                     }
                 }
             }
+
             nuevaRutina.CalcularDuracionEstimada();
+            
             await _rutinaRepository.AddAsync(nuevaRutina);
+            
             return await ObtenerDetalleRutinaAsync(nuevaRutina.Id) ?? new RutinaDetalleDto();
         }
 
@@ -53,12 +60,16 @@ namespace REPS_backend.Services
             var rutina = await _rutinaRepository.GetByIdSimpleAsync(id);
             if (rutina == null) return false;
             
-            // SEGURIDAD: Solo el dueño puede editar
             if (rutina.UsuarioId != usuarioId) return false;
+
+            if (rutina.Estado == EstadoRutina.Publicada || rutina.Estado == EstadoRutina.EnRevision)
+            {
+                rutina.Estado = EstadoRutina.Privada;
+                rutina.EsPublica = false;
+            }
 
             rutina.Nombre = dto.Nombre;
             rutina.Descripcion = dto.Descripcion;
-            rutina.EsPublica = dto.EsPublica;
 
             await _rutinaRepository.UpdateAsync(rutina);
             return true;
@@ -80,6 +91,7 @@ namespace REPS_backend.Services
         {
             var r = await _rutinaRepository.GetByIdWithEjerciciosAsync(id);
             if (r == null) return null;
+
             return new RutinaDetalleDto
             {
                 Id = r.Id,
@@ -99,9 +111,84 @@ namespace REPS_backend.Services
         {
             var rutina = await _rutinaRepository.GetByIdSimpleAsync(id);
             if (rutina == null) return false;
+            
             if (rutina.UsuarioId != usuarioId) return false;
+
             await _rutinaRepository.DeleteAsync(id);
             return true;
+        }
+
+        public async Task<bool> EnviarARevisionAsync(int rutinaId, int usuarioId)
+        {
+            var rutina = await _rutinaRepository.GetByIdSimpleAsync(rutinaId);
+            
+            if (rutina == null) return false;
+            if (rutina.UsuarioId != usuarioId) return false;
+
+            if (rutina.Estado == EstadoRutina.Baneada) return false;
+            
+            if (rutina.Estado == EstadoRutina.Publicada || rutina.Estado == EstadoRutina.EnRevision) return false;
+
+            rutina.Estado = EstadoRutina.EnRevision;
+            await _rutinaRepository.UpdateAsync(rutina);
+            return true;
+        }
+
+        public async Task<IEnumerable<Rutina>> ObtenerRutinasPendientesAsync()
+        {
+            var todas = await _rutinaRepository.GetAllAsync();
+            return todas.Where(r => r.Estado == EstadoRutina.EnRevision).ToList();
+        }
+
+        public async Task<bool> ValidarRutinaAsync(int rutinaId, bool aprobar)
+        {
+            var rutina = await _rutinaRepository.GetByIdSimpleAsync(rutinaId);
+            if (rutina == null) return false;
+
+            if (aprobar)
+            {
+                rutina.Estado = EstadoRutina.Publicada;
+                rutina.EsPublica = true; 
+            }
+            else
+            {
+                rutina.Estado = EstadoRutina.Rechazada;
+                rutina.EsPublica = false;
+            }
+
+            await _rutinaRepository.UpdateAsync(rutina);
+            return true;
+        }
+
+        public async Task<bool> BanearRutinaAsync(int rutinaId)
+        {
+            var rutina = await _rutinaRepository.GetByIdSimpleAsync(rutinaId);
+            if (rutina == null) return false;
+
+            rutina.Estado = EstadoRutina.Baneada;
+            rutina.EsPublica = false; 
+            
+            await _rutinaRepository.UpdateAsync(rutina);
+            return true;
+        }
+
+        public async Task<List<RutinaDetalleDto>> ObtenerRutinasDeUsuarioAsync(int usuarioId)
+        {
+            var rutinas = await _rutinaRepository.GetByUsuarioIdAsync(usuarioId);
+            
+            return rutinas.Select(r => new RutinaDetalleDto
+            {
+                Id = r.Id,
+                Nombre = r.Nombre,
+                CreadorNombre = "Tú",
+                Ejercicios = r.Ejercicios.Select(re => new EjercicioEnRutinaDto
+                {
+                    EjercicioId = re.EjercicioId,
+                    Nombre = re.Ejercicio?.Nombre ?? "Desconocido",
+                    Series = re.Series,
+                    Repeticiones = re.Repeticiones
+                }).ToList()
+            }).ToList();
         }
     }
 }

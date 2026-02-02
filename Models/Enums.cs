@@ -4,7 +4,7 @@
 
     public enum TipoSerie { Normal, Calentamiento, Aproximacion, DropSet, AlFallo }
 
-    public enum EstadoRutina { Privada, EnRevision, Publicada, Rechazada }
+    public enum EstadoRutina { Privada, EnRevision, Publicada, Rechazada, Baneada }
 
     public enum NivelDificultad { Principiante, Intermedio, Avanzado }
 

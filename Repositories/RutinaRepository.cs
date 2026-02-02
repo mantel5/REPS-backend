@@ -1,12 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using REPS_backend.Data;
 using REPS_backend.Models;
+
 namespace REPS_backend.Repositories
 {
     public class RutinaRepository : IRutinaRepository
     {
         private readonly ApplicationDbContext _context;
-        public RutinaRepository(ApplicationDbContext context) { _context = context; }
+
+        public RutinaRepository(ApplicationDbContext context) 
+        { 
+            _context = context; 
+        }
 
         public async Task AddAsync(Rutina rutina)
         {
@@ -20,14 +25,51 @@ namespace REPS_backend.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteAsync(int id)
+        {
+            var rutina = await _context.Rutinas.FindAsync(id);
+            if (rutina != null) 
+            { 
+                _context.Rutinas.Remove(rutina); 
+                await _context.SaveChangesAsync(); 
+            }
+        }
+
         public async Task<List<Rutina>> GetAllPublicasAsync()
         {
-            return await _context.Rutinas.Include(r => r.Usuario).Include(r => r.Ejercicios).Where(r => r.EsPublica).ToListAsync();
+            return await _context.Rutinas
+                .Include(r => r.Usuario)
+                .Include(r => r.Ejercicios)
+                .Where(r => r.EsPublica)
+                .ToListAsync();
+        }
+
+        public async Task<List<Rutina>> GetAllAsync()
+        {
+            return await _context.Rutinas
+                .Include(r => r.Usuario)
+                .Include(r => r.Ejercicios)
+                    .ThenInclude(re => re.Ejercicio)
+                .ToListAsync();
+        }
+
+        public async Task<List<Rutina>> GetByUsuarioIdAsync(int usuarioId)
+        {
+            return await _context.Rutinas
+                .Include(r => r.Ejercicios)
+                    .ThenInclude(re => re.Ejercicio)
+                .Where(r => r.UsuarioId == usuarioId)
+                .OrderByDescending(r => r.Id)
+                .ToListAsync();
         }
 
         public async Task<Rutina?> GetByIdWithEjerciciosAsync(int id)
         {
-            return await _context.Rutinas.Include(r => r.Usuario).Include(r => r.Ejercicios).ThenInclude(re => re.Ejercicio).FirstOrDefaultAsync(r => r.Id == id);
+            return await _context.Rutinas
+                .Include(r => r.Usuario)
+                .Include(r => r.Ejercicios)
+                .ThenInclude(re => re.Ejercicio)
+                .FirstOrDefaultAsync(r => r.Id == id);
         }
 
         public async Task<Rutina?> GetByIdSimpleAsync(int id)
@@ -35,10 +77,9 @@ namespace REPS_backend.Repositories
             return await _context.Rutinas.FindAsync(id);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<Rutina?> GetByIdAsync(int id)
         {
-            var rutina = await _context.Rutinas.FindAsync(id);
-            if (rutina != null) { _context.Rutinas.Remove(rutina); await _context.SaveChangesAsync(); }
+            return await _context.Rutinas.FindAsync(id);
         }
     }
 }
