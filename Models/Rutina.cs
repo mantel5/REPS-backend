@@ -16,7 +16,6 @@ namespace REPS_backend.Models
         public EstadoRutina Estado { get; set; } = EstadoRutina.Privada;
         public bool EsGeneradaPorIA { get; set; } 
         public int Likes { get; set; } 
-        public int Descargas { get; set; }
         public List<RutinaEjercicio> Ejercicios { get; set; } = new List<RutinaEjercicio>();
         public void CalcularDuracionEstimada()
         {
