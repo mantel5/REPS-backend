@@ -19,5 +19,7 @@ namespace REPS_backend.Services
         Task<bool> BanearRutinaAsync(int rutinaId);
 
         Task<List<RutinaDetalleDto>> ObtenerRutinasDeUsuarioAsync(int usuarioId);
+        Task<bool> ToggleLikeAsync(int rutinaId, int usuarioId);
+        
     }
 }

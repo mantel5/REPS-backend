@@ -5,6 +5,7 @@
         public int Id { get; set; }
         public string Nombre { get; set; } = string.Empty;
         public string CreadorNombre { get; set; } = string.Empty;
+        public int Likes { get; set; }
         public List<EjercicioEnRutinaDto> Ejercicios { get; set; } = new List<EjercicioEnRutinaDto>();
     }
     public class EjercicioEnRutinaDto

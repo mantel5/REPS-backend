@@ -3,8 +3,10 @@
     public class RutinaItemDto
     {
         public int Id { get; set; }
-        public string Nombre { get; set; } = string.Empty;
-        public string CreadorNombre { get; set; } = string.Empty;
+        public string Nombre { get; set; } = "";
+        public string CreadorNombre { get; set; } = "";
         public int TotalEjercicios { get; set; }
+        public string ImagenUrl { get; set; } = "";
+        public int Likes { get; set; } 
     }
 }

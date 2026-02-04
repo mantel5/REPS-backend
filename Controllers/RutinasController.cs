@@ -137,6 +137,36 @@ namespace REPS_backend.Controllers
             }
         }
 
+        //LIKES
+        [HttpPost("{id}/like")]
+        [Authorize(Roles = "User, Admin")]
+        public async Task<IActionResult> ToggleLike(int id)
+        {
+            try
+            {
+                var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!int.TryParse(userIdString, out int userId)) return Unauthorized();
+
+                bool esLike = await _rutinaService.ToggleLikeAsync(id, userId);
+
+                if (esLike)
+                {
+                    return Ok(new { liked = true, mensaje = "Like añadido" });
+                }
+                else
+                {
+                    return Ok(new { liked = false, mensaje = "Like quitado" });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Normalmente entra aquí si la rutina no existe (violación de FK)
+                return BadRequest("Error al procesar el like. ¿Existe la rutina?");
+            }
+        }
+
+
+        //Moderacion
         [HttpPut("{id}/enviar-revision")]
         [Authorize(Roles = "User, Admin")]
         public async Task<IActionResult> EnviarRevision(int id)

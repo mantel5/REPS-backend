@@ -190,5 +190,26 @@ namespace REPS_backend.Services
                 }).ToList()
             }).ToList();
         }
+        public async Task<bool> ToggleLikeAsync(int rutinaId, int usuarioId)
+        {
+            var existingLike = await _rutinaRepository.ObtenerLikeAsync(rutinaId, usuarioId);
+
+            if (existingLike != null)
+            {
+                await _rutinaRepository.RemoveLikeAsync(existingLike);
+                return false; 
+            }
+            else
+            {
+                var newLike = new Like
+                {
+                    RutinaId = rutinaId,
+                    UsuarioId = usuarioId,
+                    FechaLike = DateTime.UtcNow
+                };
+                await _rutinaRepository.AddLikeAsync(newLike);
+                return true; 
+            }
+        }
     }
 }
