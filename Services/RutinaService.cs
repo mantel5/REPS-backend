@@ -83,7 +83,8 @@ namespace REPS_backend.Services
                 Id = r.Id,
                 Nombre = r.Nombre,
                 CreadorNombre = r.Usuario != null ? r.Usuario.Nombre : "Desconocido",
-                TotalEjercicios = r.Ejercicios.Count
+                TotalEjercicios = r.Ejercicios.Count,
+                Likes = r.Likes
             }).ToList();
         }
 
@@ -97,6 +98,7 @@ namespace REPS_backend.Services
                 Id = r.Id,
                 Nombre = r.Nombre,
                 CreadorNombre = r.Usuario != null ? r.Usuario.Nombre : "Desconocido",
+                Likes = r.Likes,
                 Ejercicios = r.Ejercicios.Select(re => new EjercicioEnRutinaDto
                 {
                     EjercicioId = re.EjercicioId,

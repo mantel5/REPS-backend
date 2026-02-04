@@ -9,13 +9,13 @@ namespace REPS_backend.Models
         public Usuario? Usuario { get; set; }
         public string Nombre { get; set; } = "";
         public string Descripcion { get; set; } = "";
-        public string ImagenUrl { get; set; } = ""; 
-        public NivelDificultad Nivel { get; set; } = NivelDificultad.Intermedio; 
-        public int DuracionMinutos { get; set; } 
-        public bool EsPublica { get; set; } 
+        public string ImagenUrl { get; set; } = "";
+        public NivelDificultad Nivel { get; set; } = NivelDificultad.Intermedio;
+        public int DuracionMinutos { get; set; }
+        public bool EsPublica { get; set; }
         public EstadoRutina Estado { get; set; } = EstadoRutina.Privada;
-        public bool EsGeneradaPorIA { get; set; } 
-        public int Likes { get; set; } 
+        public bool EsGeneradaPorIA { get; set; }
+        public int Likes { get; set; }
         public List<RutinaEjercicio> Ejercicios { get; set; } = new List<RutinaEjercicio>();
         public void CalcularDuracionEstimada()
         {
@@ -23,7 +23,7 @@ namespace REPS_backend.Models
             double segundosTotales = 0;
             foreach (var ejer in Ejercicios)
             {
-                int tiempoPorSerie = ejer.DescansoSegundos + 60; 
+                int tiempoPorSerie = ejer.DescansoSegundos + 60;
                 segundosTotales += (ejer.Series * tiempoPorSerie);
             }
             DuracionMinutos = (int)Math.Ceiling(segundosTotales / 60);

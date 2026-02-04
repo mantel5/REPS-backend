@@ -30,14 +30,15 @@ namespace REPS_backend.Controllers
                 var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userIdString)) return Unauthorized();
                 int usuarioId = int.Parse(userIdString);
-                
+
                 var rutinaCreada = await _rutinaService.CrearRutinaAsync(dto, usuarioId);
                 return CreatedAtAction(nameof(GetRutinaById), new { id = rutinaCreada.Id }, rutinaCreada);
             }
             catch (Exception ex)
             {
                 _logger.LogInformation(ex.Message);
-                return BadRequest(ex.Message);
+                var mensajeError = ex.InnerException != null ? $"{ex.Message} -> {ex.InnerException.Message}" : ex.Message;
+                return BadRequest(mensajeError);
             }
         }
 
@@ -72,10 +73,10 @@ namespace REPS_backend.Controllers
                 var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userIdString)) return Unauthorized();
                 int usuarioId = int.Parse(userIdString);
-                
+
                 var borrado = await _rutinaService.BorrarRutinaAsync(id, usuarioId);
                 if (!borrado) return NotFound();
-                
+
                 return NoContent();
             }
             catch (Exception ex)
@@ -160,8 +161,9 @@ namespace REPS_backend.Controllers
             }
             catch (Exception ex)
             {
-                // Normalmente entra aquí si la rutina no existe (violación de FK)
-                return BadRequest("Error al procesar el like. ¿Existe la rutina?");
+                _logger.LogInformation(ex.ToString());
+                var mensajeError = ex.InnerException != null ? $"{ex.Message} -> {ex.InnerException.Message}" : ex.Message;
+                return BadRequest($"Error likes: {mensajeError}");
             }
         }
 
@@ -177,7 +179,7 @@ namespace REPS_backend.Controllers
                 if (!int.TryParse(userIdString, out int userId)) return Unauthorized();
 
                 var exito = await _rutinaService.EnviarARevisionAsync(id, userId);
-                
+
                 if (!exito) return BadRequest("No se pudo enviar. Verifica que la rutina es tuya, no está baneada y no está publicada ya.");
 
                 return Ok(new { mensaje = "Rutina enviada a revisión correctamente." });
