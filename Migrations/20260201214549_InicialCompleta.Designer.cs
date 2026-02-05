@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using REPS_backend.Data;
 
@@ -11,13 +12,15 @@ using REPS_backend.Data;
 namespace REPSbackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260201214549_InicialCompleta")]
+    partial class InicialCompleta
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -101,33 +104,6 @@ namespace REPSbackend.Migrations
                     b.ToTable("Ejercicios");
                 });
 
-            modelBuilder.Entity("REPS_backend.Models.Like", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("FechaLike")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("RutinaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RutinaId");
-
-                    b.HasIndex("UsuarioId", "RutinaId")
-                        .IsUnique();
-
-                    b.ToTable("Likes");
-                });
-
             modelBuilder.Entity("REPS_backend.Models.RecordPersonal", b =>
                 {
                     b.Property<int>("Id")
@@ -163,6 +139,9 @@ namespace REPSbackend.Migrations
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Descargas")
+                        .HasColumnType("int");
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
@@ -388,25 +367,6 @@ namespace REPSbackend.Migrations
                     b.Navigation("Receptor");
 
                     b.Navigation("Solicitante");
-                });
-
-            modelBuilder.Entity("REPS_backend.Models.Like", b =>
-                {
-                    b.HasOne("REPS_backend.Models.Rutina", "Rutina")
-                        .WithMany()
-                        .HasForeignKey("RutinaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("REPS_backend.Models.Usuario", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Rutina");
-
-                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.Rutina", b =>

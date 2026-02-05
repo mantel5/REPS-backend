@@ -1,4 +1,6 @@
-﻿namespace REPS_backend.Models
+﻿using System.ComponentModel.DataAnnotations.Schema; 
+
+namespace REPS_backend.Models
 {
     public class Usuario
     {
@@ -6,16 +8,21 @@
         public string Nombre { get; set; } = "";
         public string Email { get; set; } = "";
         public string PasswordHash { get; set; } = "";
+        public string CodigoAmigo { get; set; } = string.Empty;
+        public DateTime FechaRegistro { get; set; } = DateTime.UtcNow; 
         
-        public string AvatarId { get; set; } = CatalogoAvatars.Default;
-        public string Rol { get; set; } = Models.Rol.User;
+        public string AvatarId { get; set; } = "default"; // He puesto un string simple por si no tienes la clase CatalogoAvatars a mano
+        public string Rol { get; set; } = "User"; // Igual, simplificado por seguridad
 
         public PlanSuscripcion PlanActual { get; set; } = PlanSuscripcion.Gratuito;
         public DateTime FechaFinSuscripcion { get; set; } 
+        public bool EstaActivo { get; set; } = true;
+        public bool EstaBorrado { get; set; } = false;
 
         public int PuntosTotales { get; set; } 
         public int RachaDias { get; set; }
         public string RangoGeneral { get; set; } = "Bronce";
+
 
         public void SetPassword(string password) => 
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);

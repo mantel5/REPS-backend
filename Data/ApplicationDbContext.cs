@@ -10,20 +10,45 @@ namespace REPS_backend.Data
         }
 
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Amistad> Amistades { get; set; }
         public DbSet<Ejercicio> Ejercicios { get; set; }
         public DbSet<DetalleMuscular> DetallesMusculares { get; set; }
         public DbSet<Rutina> Rutinas { get; set; }
         public DbSet<RutinaEjercicio> RutinaEjercicios { get; set; }
         public DbSet<Sesion> Sesiones { get; set; }
         public DbSet<RecordPersonal> RecordsPersonales { get; set; }
+        
+        public DbSet<Like> Likes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Amistad>()
+                .HasKey(a => new { a.SolicitanteId, a.ReceptorId });
+
+            modelBuilder.Entity<Amistad>()
+                .HasOne(a => a.Solicitante)
+                .WithMany()
+                .HasForeignKey(a => a.SolicitanteId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+            modelBuilder.Entity<Amistad>()
+                .HasOne(a => a.Receptor)
+                .WithMany()
+                .HasForeignKey(a => a.ReceptorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // 2. CONFIGURACIÓN DE RUTINA-EJERCICIO
+            modelBuilder.Entity<RutinaEjercicio>()
+                .HasKey(re => new { re.RutinaId, re.EjercicioId });
+
+            // 3. CONFIGURACIÓN DE LIKES (NUEVO) ❤️
+            // Regla de Oro: La pareja (Usuario + Rutina) debe ser ÚNICA.
+            // Esto impide duplicados en la base de datos.
+            modelBuilder.Entity<Like>()
+                .HasIndex(l => new { l.UsuarioId, l.RutinaId })
+                .IsUnique();
         }
     }
 }
-
-// Explicación:
-// ApplicationDbContext es la clase que representa la base de datos en EF Core.
-// Cada DbSet<> es una tabla en la base de datos.
