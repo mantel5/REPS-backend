@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using REPS_backend.Data; 
+using REPS_backend.Data;
 using REPS_backend.Repositories;
 using REPS_backend.Services;
 using System.Text;
@@ -16,8 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(connectionString, 
-        new MySqlServerVersion(new Version(8, 0, 45)), 
+    options.UseMySql(connectionString,
+        new MySqlServerVersion(new Version(8, 0, 45)),
         mySqlOptions => mySqlOptions.EnableRetryOnFailure())
 );
 
@@ -42,6 +42,10 @@ builder.Services.AddScoped<IRutinaService, RutinaService>();
 builder.Services.AddScoped<IRutinaEjercicioRepository, RutinaEjercicioRepository>();
 builder.Services.AddScoped<IRutinaEjercicioService, RutinaEjercicioService>();
 
+// Logros
+builder.Services.AddScoped<ILogroRepository, LogroRepository>();
+builder.Services.AddScoped<ILogroService, LogroService>();
+
 
 
 builder.Services.AddControllers()
@@ -61,18 +65,18 @@ builder.Services.AddAuthentication(options =>
 .AddJwtBearer(options =>
 {
     options.SaveToken = true;
-    options.RequireHttpsMetadata = false; 
+    options.RequireHttpsMetadata = false;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        
+
         ValidIssuer = builder.Configuration["Jwt:Issuer"]!,
         ValidAudience = builder.Configuration["Jwt:Audience"]!,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)) 
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
 });
 
@@ -84,7 +88,7 @@ builder.Services.AddSwaggerGen(c =>
     var securityScheme = new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.Http, 
+        Type = SecuritySchemeType.Http,
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
@@ -154,10 +158,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 // 3. Seguridad y Controladores
-app.UseCors("PermitirTodo"); 
+app.UseCors("PermitirTodo");
 
-app.UseAuthentication(); 
-app.UseAuthorization();  
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

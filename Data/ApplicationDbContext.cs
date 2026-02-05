@@ -17,7 +17,7 @@ namespace REPS_backend.Data
         public DbSet<RutinaEjercicio> RutinaEjercicios { get; set; }
         public DbSet<Sesion> Sesiones { get; set; }
         public DbSet<RecordPersonal> RecordsPersonales { get; set; }
-        
+
         public DbSet<Like> Likes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,7 +31,7 @@ namespace REPS_backend.Data
                 .HasOne(a => a.Solicitante)
                 .WithMany()
                 .HasForeignKey(a => a.SolicitanteId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Amistad>()
                 .HasOne(a => a.Receptor)
@@ -39,16 +39,23 @@ namespace REPS_backend.Data
                 .HasForeignKey(a => a.ReceptorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // 2. CONFIGURACIÓN DE RUTINA-EJERCICIO
+            // CONFIGURACIÓN DE RUTINA-EJERCICIO
             modelBuilder.Entity<RutinaEjercicio>()
                 .HasKey(re => new { re.RutinaId, re.EjercicioId });
 
-            // 3. CONFIGURACIÓN DE LIKES (NUEVO) ❤️
-            // Regla de Oro: La pareja (Usuario + Rutina) debe ser ÚNICA.
+            //CONFIGURACIÓN DE LIKES
             // Esto impide duplicados en la base de datos.
             modelBuilder.Entity<Like>()
                 .HasIndex(l => new { l.UsuarioId, l.RutinaId })
                 .IsUnique();
+
+            // CONFIGURACIÓN DE LOGROS
+            modelBuilder.Entity<UsuarioLogro>()
+                .HasIndex(ul => new { ul.UsuarioId, ul.LogroId })
+                .IsUnique();
         }
+
+        public DbSet<Logro> Logros { get; set; }
+        public DbSet<UsuarioLogro> UsuarioLogros { get; set; }
     }
 }
