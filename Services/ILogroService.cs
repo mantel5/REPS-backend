@@ -8,6 +8,7 @@ namespace REPS_backend.Services
     {
         Task<List<LogroDTO>> GetLogrosForUserAsync(int userId);
         Task<LogroDTO> CreateLogroAsync(CreateLogroDTO dto);
+        Task<bool> UnlockLogroAsync(int userId, int logroId);
         Task<List<LogroDTO>> GetAllAsync();
     }
 }

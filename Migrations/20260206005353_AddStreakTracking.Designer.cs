@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using REPS_backend.Data;
 
@@ -11,9 +12,11 @@ using REPS_backend.Data;
 namespace REPSbackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260206005353_AddStreakTracking")]
+    partial class AddStreakTracking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -99,34 +102,6 @@ namespace REPSbackend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Ejercicios");
-                });
-
-            modelBuilder.Entity("REPS_backend.Models.Entrenamiento", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DuracionMinutos")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UsuarioId");
-
-                    b.ToTable("Entrenamientos");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.Like", b =>
@@ -487,17 +462,6 @@ namespace REPSbackend.Migrations
                     b.Navigation("Receptor");
 
                     b.Navigation("Solicitante");
-                });
-
-            modelBuilder.Entity("REPS_backend.Models.Entrenamiento", b =>
-                {
-                    b.HasOne("REPS_backend.Models.Usuario", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.Like", b =>

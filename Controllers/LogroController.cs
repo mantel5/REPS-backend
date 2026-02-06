@@ -37,6 +37,20 @@ namespace REPS_backend.Controllers
             return Ok(recent);
         }
 
+        [HttpPost("{logroId}/unlock")]
+        public async Task<IActionResult> UnlockLogro(int logroId)
+        {
+            var userId = GetCurrentUserId(); // Metodo helper
+            if (userId == 0) return Unauthorized();
+
+            var result = await _logroService.UnlockLogroAsync(userId, logroId);
+            if (result)
+            {
+                return Ok(new { Message = "¡Logro desbloqueado!", LogroId = logroId });
+            }
+            return Ok(new { Message = "El usuario ya tenía este logro." });
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateLogro([FromBody] CreateLogroDTO dto)

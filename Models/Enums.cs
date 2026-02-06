@@ -12,4 +12,9 @@
     {
         Pecho, Espalda, Pierna, Hombro, Biceps, Triceps, Abdomen, Cardio, FullBody, Otro
     }
+
+    public enum Rango
+    {
+        SinRango, Bronce, Plata, Oro, Diamante, Elite
+    }
 }

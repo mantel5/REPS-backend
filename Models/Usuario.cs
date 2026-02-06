@@ -19,9 +19,15 @@ namespace REPS_backend.Models
         public bool EstaActivo { get; set; } = true;
         public bool EstaBorrado { get; set; } = false;
 
+        public int PuntosLogros { get; set; }
+        public int PuntosRecords { get; set; }
+        
+        // PuntosTotales es la suma de todo (se puede calcular o persistir, aquí persistimos para facilitar queries)
         public int PuntosTotales { get; set; } 
+
         public int RachaDias { get; set; }
-        public string RangoGeneral { get; set; } = "Bronce";
+        public DateTime? FechaUltimaActividad { get; set; }
+        public Rango RangoGeneral { get; set; } = Rango.Bronce;
 
 
         public void SetPassword(string password) => 

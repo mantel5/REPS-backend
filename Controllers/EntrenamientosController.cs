@@ -1,0 +1,41 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using REPS_backend.DTOs.Entrenamientos;
+using REPS_backend.Services;
+using System.Security.Claims;
+
+namespace REPS_backend.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class EntrenamientosController : ControllerBase
+    {
+        private readonly IEntrenamientoService _entrenamientoService;
+
+        public EntrenamientosController(IEntrenamientoService entrenamientoService)
+        {
+            _entrenamientoService = entrenamientoService;
+        }
+
+        [HttpPost("finalizar")]
+        public async Task<IActionResult> FinalizarEntrenamiento([FromBody] FinalizarEntrenamientoDto dto)
+        {
+            var userId = GetCurrentUserId();
+            if (userId == 0) return Unauthorized();
+
+            await _entrenamientoService.FinalizarEntrenamientoAsync(userId, dto);
+            return Ok(new { Message = "Entrenamiento guardado y records actualizados." });
+        }
+
+        private int GetCurrentUserId()
+        {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (idClaim != null && int.TryParse(idClaim.Value, out int userId))
+            {
+                return userId;
+            }
+            return 0;
+        }
+    }
+}

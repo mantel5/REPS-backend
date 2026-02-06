@@ -57,5 +57,6 @@ namespace REPS_backend.Data
 
         public DbSet<Logro> Logros { get; set; }
         public DbSet<UsuarioLogro> UsuarioLogros { get; set; }
+        public DbSet<Entrenamiento> Entrenamientos { get; set; }
     }
 }

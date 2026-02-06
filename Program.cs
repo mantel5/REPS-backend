@@ -37,10 +37,19 @@ builder.Services.AddScoped<IEjercicioService, EjercicioService>();
 // Rutinas
 builder.Services.AddScoped<IRutinaRepository, RutinaRepository>();
 builder.Services.AddScoped<IRutinaService, RutinaService>();
+builder.Services.AddScoped<IRecordPersonalRepository, RecordPersonalRepository>();
+builder.Services.AddScoped<IRecordPersonalService, RecordPersonalService>();
+builder.Services.AddScoped<IRankingService, RankingService>();
+builder.Services.AddScoped<ILogroRepository, LogroRepository>();
+builder.Services.AddScoped<ILogroService, LogroService>();
 
 // Rutina-Ejercicios (FALTABAN ESTOS, necesarios para RutinaEjerciciosController)
 builder.Services.AddScoped<IRutinaEjercicioRepository, RutinaEjercicioRepository>();
 builder.Services.AddScoped<IRutinaEjercicioService, RutinaEjercicioService>();
+
+// Entrenamientos
+builder.Services.AddScoped<IEntrenamientoRepository, EntrenamientoRepository>();
+builder.Services.AddScoped<IEntrenamientoService, EntrenamientoService>();
 
 // Logros
 builder.Services.AddScoped<ILogroRepository, LogroRepository>();

@@ -40,5 +40,11 @@ namespace REPS_backend.Repositories
                 .Where(ul => ul.UsuarioId == userId)
                 .ToListAsync();
         }
+
+        public async Task AddUsuarioLogroAsync(UsuarioLogro usuarioLogro)
+        {
+            await _context.UsuarioLogros.AddAsync(usuarioLogro);
+            await _context.SaveChangesAsync();
+        }
     }
 }

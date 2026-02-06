@@ -29,7 +29,7 @@ namespace REPS_backend.Services
                 Rol = user.Rol,
                 PuntosTotales = user.PuntosTotales,
                 RachaDias = user.RachaDias,
-                RangoGeneral = user.RangoGeneral,
+                RangoGeneral = user.RangoGeneral.ToString(),
                 EsPro = user.EsPro()
             };
         }
@@ -46,7 +46,7 @@ namespace REPS_backend.Services
                 FechaRegistro = user.FechaRegistro,
                 PuntosTotales = user.PuntosTotales,
                 RachaDias = user.RachaDias,
-                RangoGeneral = user.RangoGeneral,
+                RangoGeneral = user.RangoGeneral.ToString(),
                 EsPro = user.EsPro()
             };
         }
@@ -132,7 +132,7 @@ namespace REPS_backend.Services
                 FechaRegistro = u.FechaRegistro,
                 PuntosTotales = u.PuntosTotales,
                 RachaDias = u.RachaDias,
-                RangoGeneral = u.RangoGeneral,
+                RangoGeneral = u.RangoGeneral.ToString(),
                 EsPro = u.EsPro()
             }).ToList();
         }
@@ -149,7 +149,7 @@ namespace REPS_backend.Services
                 FechaRegistro = u.FechaRegistro,
                 PuntosTotales = u.PuntosTotales,
                 RachaDias = u.RachaDias,
-                RangoGeneral = u.RangoGeneral,
+                RangoGeneral = u.RangoGeneral.ToString(),
                 EsPro = u.EsPro()
             }).ToList();
         }
