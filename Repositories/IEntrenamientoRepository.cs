@@ -6,6 +6,8 @@ namespace REPS_backend.Repositories
     {
         Task AddAsync(Entrenamiento entrenamiento);
         Task<int> CountByUsuarioIdAsync(int usuarioId);
-        // Add more methods as needed (GetHistory, etc.)
+        Task<List<Entrenamiento>> GetByUsuarioIdWithSeriesAsync(int usuarioId);
+        Task<List<Entrenamiento>> GetByUsuarioIdAsync(int usuarioId);
+        Task<Dictionary<int, DateTime>> ObtenerUltimasFechasRutinasAsync(int usuarioId, List<int> rutinaIds);
     }
 }

@@ -55,6 +55,10 @@ builder.Services.AddScoped<IEntrenamientoService, EntrenamientoService>();
 builder.Services.AddScoped<ILogroRepository, LogroRepository>();
 builder.Services.AddScoped<ILogroService, LogroService>();
 
+// Dashboard
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IProgresoService, ProgresoService>();
+
 
 
 builder.Services.AddControllers()

@@ -15,7 +15,7 @@ namespace REPS_backend.Data
         public DbSet<DetalleMuscular> DetallesMusculares { get; set; }
         public DbSet<Rutina> Rutinas { get; set; }
         public DbSet<RutinaEjercicio> RutinaEjercicios { get; set; }
-        public DbSet<Sesion> Sesiones { get; set; }
+        public DbSet<SerieLog> SerieLogs { get; set; }
         public DbSet<RecordPersonal> RecordsPersonales { get; set; }
 
         public DbSet<Like> Likes { get; set; }

@@ -102,7 +102,7 @@ namespace REPS_backend.Services
 
             // 2. Si existe el registro pero no desbloqueado, actualizarlo?
             // Por simplicidad, asumimos que si no lo tiene desbloqueado, lo creamos o actualizamos
-            
+
             var existing = userLogros.FirstOrDefault(ul => ul.LogroId == logroId);
             if (existing != null)
             {
@@ -127,12 +127,45 @@ namespace REPS_backend.Services
                 };
                 await _logroRepository.AddUsuarioLogroAsync(nuevoLogro);
             }
-            
-            // 3. Trigger Ranking Upadate
+
             await _rankingService.UpdateUserRankAsync(userId);
             await _rankingService.UpdateStreakAsync(userId);
 
             return true;
+        }
+
+        public async Task<List<LogroDTO>> GetUltimosLogrosDesbloqueadosAsync(int userId, int count)
+        {
+            var userLogros = await _logroRepository.GetUserLogrosAsync(userId);
+            var desbloqueados = userLogros
+                .Where(ul => ul.Desbloqueado)
+                .OrderByDescending(ul => ul.FechaObtencion)
+                .Take(count)
+                .ToList();
+
+            if (!desbloqueados.Any()) return new List<LogroDTO>();
+
+            // Cargar info del logro
+            var result = new List<LogroDTO>();
+            foreach (var ul in desbloqueados)
+            {
+                var logro = await _logroRepository.GetByIdAsync(ul.LogroId);
+                if (logro != null)
+                {
+                    result.Add(new LogroDTO
+                    {
+                        Id = logro.Id,
+                        Titulo = logro.Titulo,
+                        Descripcion = logro.Descripcion,
+                        Puntos = logro.Puntos,
+                        IconoUrl = logro.IconoUrl,
+                        Progreso = 100,
+                        Desbloqueado = true,
+                        FechaObtencion = ul.FechaObtencion
+                    });
+                }
+            }
+            return result;
         }
     }
 }

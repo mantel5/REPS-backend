@@ -28,6 +28,16 @@ namespace REPS_backend.Controllers
             return Ok(new { Message = "Entrenamiento guardado y records actualizados." });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetHistorial()
+        {
+            var userId = GetCurrentUserId();
+            if (userId == 0) return Unauthorized();
+
+            var historial = await _entrenamientoService.ObtenerHistorialUsuarioAsync(userId);
+            return Ok(historial);
+        }
+
         private int GetCurrentUserId()
         {
             var idClaim = User.FindFirst(ClaimTypes.NameIdentifier);

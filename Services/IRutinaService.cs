@@ -8,7 +8,7 @@ namespace REPS_backend.Services
     public interface IRutinaService
     {
         Task<RutinaDetalleDto> CrearRutinaAsync(RutinaCreateDto dto, int usuarioId);
-        Task<bool> ActualizarRutinaAsync(int id, RutinaUpdateDto dto, int usuarioId); 
+        Task<bool> ActualizarRutinaAsync(int id, RutinaUpdateDto dto, int usuarioId);
         Task<List<RutinaItemDto>> ObtenerRutinasPublicasAsync();
         Task<RutinaDetalleDto?> ObtenerDetalleRutinaAsync(int id);
         Task<bool> BorrarRutinaAsync(int id, int usuarioId);
@@ -17,9 +17,8 @@ namespace REPS_backend.Services
         Task<IEnumerable<Rutina>> ObtenerRutinasPendientesAsync();
         Task<bool> ValidarRutinaAsync(int rutinaId, bool aprobar);
         Task<bool> BanearRutinaAsync(int rutinaId);
-
-        Task<List<RutinaDetalleDto>> ObtenerRutinasDeUsuarioAsync(int usuarioId);
+        Task<List<RutinaItemDto>> ObtenerRutinasDeUsuarioAsync(int usuarioId, NivelDificultad? nivel = null, GrupoMuscular? musculo = null);
         Task<bool> ToggleLikeAsync(int rutinaId, int usuarioId);
-        
+
     }
 }

@@ -1,5 +1,6 @@
 using REPS_backend.Models;
 using REPS_backend.Repositories;
+using REPS_backend.DTOs.Records;
 using System.Threading.Tasks;
 
 namespace REPS_backend.Services
@@ -17,7 +18,7 @@ namespace REPS_backend.Services
             _rankingService = rankingService;
         }
 
-        public async Task<bool> RegistrarNuevoLevantamientoAsync(int userId, int ejercicioId, double peso)
+        public async Task<bool> RegistrarNuevoLevantamientoAsync(int userId, int ejercicioId, decimal peso)
         {
             // 1. Obtener el record actual
             var currentRecord = await _recordRepository.GetBestByExerciseAsync(userId, ejercicioId);
@@ -25,7 +26,7 @@ namespace REPS_backend.Services
             bool esNuevoRecord = false;
             int puntosAOtorgar = 0;
             // TODO: Definir puntos por record en config. Por ahora hardcoded 100.
-            int PUNTOS_POR_RECORD = 100; 
+            int PUNTOS_POR_RECORD = 100;
 
             if (currentRecord == null)
             {
@@ -34,7 +35,7 @@ namespace REPS_backend.Services
                 {
                     UsuarioId = userId,
                     EjercicioId = ejercicioId,
-                    PesoMaximo = (decimal)peso,
+                    PesoMaximo = peso,
                     FechaRecord = DateTime.UtcNow,
                     PesoAnterior = 0
                 };
@@ -44,11 +45,11 @@ namespace REPS_backend.Services
             }
             else
             {
-                if ((double)currentRecord.PesoMaximo < peso)
+                if (currentRecord.PesoMaximo < peso)
                 {
                     // Rompió el record
                     currentRecord.PesoAnterior = currentRecord.PesoMaximo;
-                    currentRecord.PesoMaximo = (decimal)peso;
+                    currentRecord.PesoMaximo = peso;
                     currentRecord.FechaRecord = DateTime.UtcNow;
                     await _recordRepository.UpdateAsync(currentRecord);
                     esNuevoRecord = true;
@@ -67,6 +68,31 @@ namespace REPS_backend.Services
             await _rankingService.UpdateStreakAsync(userId);
 
             return esNuevoRecord;
+        }
+
+        public async Task<List<RecordPersonalDto>> ObtenerRecordsUsuarioAsync(int usuarioId)
+        {
+            var records = await _recordRepository.GetByUserIdAsync(usuarioId);
+
+            return records.Select(r => new RecordPersonalDto
+            {
+                EjercicioId = r.EjercicioId,
+                EjercicioNombre = r.Ejercicio?.Nombre ?? "Ejercicio Desconocido",
+                PesoMaximo = r.PesoMaximo,
+                Mejora = r.PesoMaximo - r.PesoAnterior,
+                Fecha = r.FechaRecord,
+                TiempoAtras = CalcularTiempoAtras(r.FechaRecord)
+            }).OrderByDescending(r => r.Fecha).ToList();
+        }
+
+        private string CalcularTiempoAtras(DateTime fecha)
+        {
+            var diff = DateTime.UtcNow - fecha;
+            if (diff.TotalDays < 1) return "Hoy";
+            if (diff.TotalDays < 2) return "Ayer";
+            if (diff.TotalDays < 7) return $"Hace {Math.Floor(diff.TotalDays)} días";
+            if (diff.TotalDays < 30) return $"Hace {Math.Floor(diff.TotalDays / 7)} semanas";
+            return $"Hace {Math.Floor(diff.TotalDays / 30)} meses";
         }
     }
 }

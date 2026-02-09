@@ -7,6 +7,7 @@
         public string CreadorNombre { get; set; } = "";
         public int TotalEjercicios { get; set; }
         public string ImagenUrl { get; set; } = "";
-        public int Likes { get; set; } 
+        public int Likes { get; set; }
+        public DateTime? UltimaVezRealizada { get; set; } // Null si nunca
     }
 }

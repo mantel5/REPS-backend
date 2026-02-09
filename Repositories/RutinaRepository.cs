@@ -8,9 +8,9 @@ namespace REPS_backend.Repositories
     {
         private readonly ApplicationDbContext _context;
 
-        public RutinaRepository(ApplicationDbContext context) 
-        { 
-            _context = context; 
+        public RutinaRepository(ApplicationDbContext context)
+        {
+            _context = context;
         }
 
         public async Task AddAsync(Rutina rutina)
@@ -28,10 +28,10 @@ namespace REPS_backend.Repositories
         public async Task DeleteAsync(int id)
         {
             var rutina = await _context.Rutinas.FindAsync(id);
-            if (rutina != null) 
-            { 
-                _context.Rutinas.Remove(rutina); 
-                await _context.SaveChangesAsync(); 
+            if (rutina != null)
+            {
+                _context.Rutinas.Remove(rutina);
+                await _context.SaveChangesAsync();
             }
         }
 
@@ -53,12 +53,25 @@ namespace REPS_backend.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<Rutina>> GetByUsuarioIdAsync(int usuarioId)
+        public async Task<List<Rutina>> GetByUsuarioIdAsync(int usuarioId, NivelDificultad? nivel = null, GrupoMuscular? musculo = null)
         {
-            return await _context.Rutinas
+            var query = _context.Rutinas
                 .Include(r => r.Ejercicios)
                     .ThenInclude(re => re.Ejercicio)
-                .Where(r => r.UsuarioId == usuarioId)
+                .Where(r => r.UsuarioId == usuarioId);
+
+            if (nivel.HasValue)
+            {
+                query = query.Where(r => r.Nivel == nivel.Value);
+            }
+
+            // Nota: Para filtrar por grupo muscular, buscamos si AL MENOS UN ejercicio de la rutina es de ese grupo.
+            if (musculo.HasValue)
+            {
+                query = query.Where(r => r.Ejercicios.Any(re => re.Ejercicio!.GrupoMuscular == musculo.Value));
+            }
+
+            return await query
                 .OrderByDescending(r => r.Id)
                 .ToListAsync();
         }
@@ -91,7 +104,7 @@ namespace REPS_backend.Repositories
         public async Task AddLikeAsync(Like like)
         {
             await _context.Likes.AddAsync(like);
-            
+
             var rutina = await _context.Rutinas.FindAsync(like.RutinaId);
             if (rutina != null)
             {
@@ -104,7 +117,7 @@ namespace REPS_backend.Repositories
         public async Task RemoveLikeAsync(Like like)
         {
             _context.Likes.Remove(like);
-            
+
             var rutina = await _context.Rutinas.FindAsync(like.RutinaId);
             if (rutina != null)
             {

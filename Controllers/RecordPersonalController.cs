@@ -24,27 +24,34 @@ namespace REPS_backend.Controllers
             var userId = GetCurrentUserId();
             if (userId == 0) return Unauthorized("Usuario no identificado");
 
-            var esRecord = await _recordService.RegistrarNuevoLevantamientoAsync(userId, ejercicioId, peso);
+            var esRecord = await _recordService.RegistrarNuevoLevantamientoAsync(userId, ejercicioId, (decimal)peso);
 
             if (esRecord)
             {
                 return Ok(new { Message = "¡Nuevo Record Personal! Puntos añadidos.", EsRecord = true });
             }
-            
+
             return Ok(new { Message = "Levantamiento registrado.", EsRecord = false });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMisRecords()
+        {
+            var userId = GetCurrentUserId();
+            if (userId == 0) return Unauthorized("Usuario no identificado");
+
+            var records = await _recordService.ObtenerRecordsUsuarioAsync(userId);
+            return Ok(records);
         }
 
         private int GetCurrentUserId()
         {
-            // TODO: Implementar lógica real de Claims cuando haya Auth
-            // Por ahora, para pruebas, retornamos 1 o buscamos el claim
             var idClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (idClaim != null && int.TryParse(idClaim.Value, out int userId))
             {
                 return userId;
             }
-            // Fallback para desarrollo/pruebas si no hay token
-            return 1; 
+            return 0; // Cambiado para no devolver 1 por defecto en prod
         }
     }
 }

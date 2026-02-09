@@ -104,14 +104,14 @@ namespace REPS_backend.Controllers
 
         [HttpGet("mis-rutinas")]
         [Authorize(Roles = "User, Admin")]
-        public async Task<IActionResult> GetMisRutinas()
+        public async Task<IActionResult> GetMisRutinas([FromQuery] NivelDificultad? nivel = null, [FromQuery] GrupoMuscular? musculo = null)
         {
             try
             {
                 var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (!int.TryParse(userIdString, out int userId)) return Unauthorized();
 
-                var misRutinas = await _rutinaService.ObtenerRutinasDeUsuarioAsync(userId);
+                var misRutinas = await _rutinaService.ObtenerRutinasDeUsuarioAsync(userId, nivel, musculo);
                 return Ok(misRutinas);
             }
             catch (Exception ex)

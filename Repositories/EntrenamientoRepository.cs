@@ -23,5 +23,34 @@ namespace REPS_backend.Repositories
         {
             return await _context.Entrenamientos.CountAsync(e => e.UsuarioId == usuarioId);
         }
+
+        public async Task<List<Entrenamiento>> GetByUsuarioIdWithSeriesAsync(int usuarioId)
+        {
+            return await _context.Entrenamientos
+                .Include(e => e.SeriesRealizadas)
+                    .ThenInclude(s => s.Ejercicio)
+                .Where(e => e.UsuarioId == usuarioId)
+                .OrderByDescending(e => e.Fecha)
+                .ToListAsync();
+        }
+
+        public async Task<List<Entrenamiento>> GetByUsuarioIdAsync(int usuarioId)
+        {
+            return await _context.Entrenamientos
+                .Where(e => e.UsuarioId == usuarioId)
+                .OrderByDescending(e => e.Fecha)
+                .ToListAsync();
+        }
+
+        public async Task<Dictionary<int, DateTime>> ObtenerUltimasFechasRutinasAsync(int usuarioId, List<int> rutinaIds)
+        {
+            var fechas = await _context.Entrenamientos
+                .Where(e => e.UsuarioId == usuarioId && e.RutinaId.HasValue && rutinaIds.Contains(e.RutinaId.Value))
+                .GroupBy(e => e.RutinaId!.Value)
+                .Select(g => new { RutinaId = g.Key, UltimaFecha = g.Max(e => e.Fecha) })
+                .ToListAsync();
+
+            return fechas.ToDictionary(x => x.RutinaId, x => x.UltimaFecha);
+        }
     }
 }

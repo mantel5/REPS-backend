@@ -9,12 +9,14 @@ namespace REPS_backend.Models
         public int UsuarioId { get; set; }
         public Usuario? Usuario { get; set; }
 
+        public int? RutinaId { get; set; }
+        [ForeignKey("RutinaId")]
+        public Rutina? Rutina { get; set; }
+
         public string Nombre { get; set; } = string.Empty; // Ej. "Rutina de Pecho"
         public DateTime Fecha { get; set; } = DateTime.UtcNow;
         public int DuracionMinutos { get; set; }
-        
-        // Podríamos guardar un JSON con el detalle o una tabla relacionada EntrenamientoEjercicios
-        // Por ahora, para el MVP y el ranking, nos basta saber que existió.
-        // Pero el servicio recibirá el detalle para procesar records.
+
+        public List<SerieLog> SeriesRealizadas { get; set; } = new();
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using REPS_backend.Data;
 
@@ -11,9 +12,11 @@ using REPS_backend.Data;
 namespace REPSbackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260209170519_AddEjerciciosToSeries")]
+    partial class AddEjerciciosToSeries
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -119,15 +122,10 @@ namespace REPSbackend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("RutinaId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RutinaId");
 
                     b.HasIndex("UsuarioId");
 
@@ -466,17 +464,11 @@ namespace REPSbackend.Migrations
 
             modelBuilder.Entity("REPS_backend.Models.Entrenamiento", b =>
                 {
-                    b.HasOne("REPS_backend.Models.Rutina", "Rutina")
-                        .WithMany()
-                        .HasForeignKey("RutinaId");
-
                     b.HasOne("REPS_backend.Models.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Rutina");
 
                     b.Navigation("Usuario");
                 });

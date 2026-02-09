@@ -9,11 +9,16 @@ namespace REPS_backend.Services
     {
         private readonly IRutinaRepository _rutinaRepository;
         private readonly IEjercicioRepository _ejercicioRepository;
+        private readonly IEntrenamientoRepository _entrenamientoRepository;
 
-        public RutinaService(IRutinaRepository rutinaRepository, IEjercicioRepository ejercicioRepository)
+        public RutinaService(
+            IRutinaRepository rutinaRepository,
+            IEjercicioRepository ejercicioRepository,
+            IEntrenamientoRepository entrenamientoRepository)
         {
             _rutinaRepository = rutinaRepository;
             _ejercicioRepository = ejercicioRepository;
+            _entrenamientoRepository = entrenamientoRepository;
         }
 
         public async Task<RutinaDetalleDto> CrearRutinaAsync(RutinaCreateDto dto, int usuarioId)
@@ -22,8 +27,8 @@ namespace REPS_backend.Services
             {
                 Nombre = dto.Nombre,
                 UsuarioId = usuarioId,
-                EsPublica = false, 
-                Estado = EstadoRutina.Privada, 
+                EsPublica = false,
+                Estado = EstadoRutina.Privada,
                 Ejercicios = new List<RutinaEjercicio>()
             };
 
@@ -35,11 +40,11 @@ namespace REPS_backend.Services
                     var ejercicio = await _ejercicioRepository.GetByIdAsync(ejercicioId);
                     if (ejercicio != null)
                     {
-                        nuevaRutina.Ejercicios.Add(new RutinaEjercicio 
-                        { 
-                            EjercicioId = ejercicioId, 
+                        nuevaRutina.Ejercicios.Add(new RutinaEjercicio
+                        {
+                            EjercicioId = ejercicioId,
                             Orden = orden++,
-                            Series = 3, 
+                            Series = 3,
                             Repeticiones = "10-12",
                             DescansoSegundos = 60,
                             Tipo = TipoSerie.Normal
@@ -49,9 +54,9 @@ namespace REPS_backend.Services
             }
 
             nuevaRutina.CalcularDuracionEstimada();
-            
+
             await _rutinaRepository.AddAsync(nuevaRutina);
-            
+
             return await ObtenerDetalleRutinaAsync(nuevaRutina.Id) ?? new RutinaDetalleDto();
         }
 
@@ -59,7 +64,7 @@ namespace REPS_backend.Services
         {
             var rutina = await _rutinaRepository.GetByIdSimpleAsync(id);
             if (rutina == null) return false;
-            
+
             if (rutina.UsuarioId != usuarioId) return false;
 
             if (rutina.Estado == EstadoRutina.Publicada || rutina.Estado == EstadoRutina.EnRevision)
@@ -113,7 +118,7 @@ namespace REPS_backend.Services
         {
             var rutina = await _rutinaRepository.GetByIdSimpleAsync(id);
             if (rutina == null) return false;
-            
+
             if (rutina.UsuarioId != usuarioId) return false;
 
             await _rutinaRepository.DeleteAsync(id);
@@ -123,12 +128,12 @@ namespace REPS_backend.Services
         public async Task<bool> EnviarARevisionAsync(int rutinaId, int usuarioId)
         {
             var rutina = await _rutinaRepository.GetByIdSimpleAsync(rutinaId);
-            
+
             if (rutina == null) return false;
             if (rutina.UsuarioId != usuarioId) return false;
 
             if (rutina.Estado == EstadoRutina.Baneada) return false;
-            
+
             if (rutina.Estado == EstadoRutina.Publicada || rutina.Estado == EstadoRutina.EnRevision) return false;
 
             rutina.Estado = EstadoRutina.EnRevision;
@@ -150,7 +155,7 @@ namespace REPS_backend.Services
             if (aprobar)
             {
                 rutina.Estado = EstadoRutina.Publicada;
-                rutina.EsPublica = true; 
+                rutina.EsPublica = true;
             }
             else
             {
@@ -168,28 +173,29 @@ namespace REPS_backend.Services
             if (rutina == null) return false;
 
             rutina.Estado = EstadoRutina.Baneada;
-            rutina.EsPublica = false; 
-            
+            rutina.EsPublica = false;
+
             await _rutinaRepository.UpdateAsync(rutina);
             return true;
         }
 
-        public async Task<List<RutinaDetalleDto>> ObtenerRutinasDeUsuarioAsync(int usuarioId)
+        public async Task<List<RutinaItemDto>> ObtenerRutinasDeUsuarioAsync(int usuarioId, NivelDificultad? nivel = null, GrupoMuscular? musculo = null)
         {
-            var rutinas = await _rutinaRepository.GetByUsuarioIdAsync(usuarioId);
-            
-            return rutinas.Select(r => new RutinaDetalleDto
+            var rutinas = await _rutinaRepository.GetByUsuarioIdAsync(usuarioId, nivel, musculo);
+
+            if (!rutinas.Any()) return new List<RutinaItemDto>();
+
+            var rutinaIds = rutinas.Select(r => r.Id).ToList();
+            var ultimasFechas = await _entrenamientoRepository.ObtenerUltimasFechasRutinasAsync(usuarioId, rutinaIds);
+
+            return rutinas.Select(r => new RutinaItemDto
             {
                 Id = r.Id,
                 Nombre = r.Nombre,
                 CreadorNombre = "Tú",
-                Ejercicios = r.Ejercicios.Select(re => new EjercicioEnRutinaDto
-                {
-                    EjercicioId = re.EjercicioId,
-                    Nombre = re.Ejercicio?.Nombre ?? "Desconocido",
-                    Series = re.Series,
-                    Repeticiones = re.Repeticiones
-                }).ToList()
+                Likes = r.Likes,
+                TotalEjercicios = r.Ejercicios?.Count ?? 0,
+                UltimaVezRealizada = ultimasFechas.ContainsKey(r.Id) ? ultimasFechas[r.Id] : null
             }).ToList();
         }
         public async Task<bool> ToggleLikeAsync(int rutinaId, int usuarioId)
@@ -199,7 +205,7 @@ namespace REPS_backend.Services
             if (existingLike != null)
             {
                 await _rutinaRepository.RemoveLikeAsync(existingLike);
-                return false; 
+                return false;
             }
             else
             {
@@ -210,7 +216,7 @@ namespace REPS_backend.Services
                     FechaLike = DateTime.UtcNow
                 };
                 await _rutinaRepository.AddLikeAsync(newLike);
-                return true; 
+                return true;
             }
         }
     }
