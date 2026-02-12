@@ -8,16 +8,19 @@ namespace REPS_backend.Services
     {
         private readonly IEntrenamientoRepository _entrenamientoRepository;
         private readonly IRecordPersonalService _recordService;
+        private readonly REPS_backend.Services.AI.IAIService _aiService;
 
         public EntrenamientoService(
             IEntrenamientoRepository entrenamientoRepository,
-            IRecordPersonalService recordService)
+            IRecordPersonalService recordService,
+            REPS_backend.Services.AI.IAIService aiService)
         {
             _entrenamientoRepository = entrenamientoRepository;
             _recordService = recordService;
+            _aiService = aiService;
         }
 
-        public async Task FinalizarEntrenamientoAsync(int usuarioId, FinalizarEntrenamientoDto dto)
+        public async Task<EntrenamientoResultadoDto> FinalizarEntrenamientoAsync(int usuarioId, FinalizarEntrenamientoDto dto)
         {
             // 1. Crear el entrenamiento
             var entrenamiento = new Entrenamiento
@@ -69,6 +72,25 @@ namespace REPS_backend.Services
 
             // 4. Guardar todo (Entrenamiento + Series en cascada)
             await _entrenamientoRepository.AddAsync(entrenamiento);
+
+            // 5. Generar consejo IA
+            // Mapeamos el entrenamiento a Sesion para el servicio de IA (o usamos Entrenamiento directamente si cambiamos la interfaz)
+            // Como Sesion es el modelo base que usa IAIService, lo mapeamos.
+            var sesionParaIA = new Sesion 
+            { 
+               NombreRutinaSnapshot = entrenamiento.Nombre,
+               DuracionRealMinutos = entrenamiento.DuracionMinutos,
+               SeriesRealizadas = entrenamiento.SeriesRealizadas
+            };
+
+            var consejo = await _aiService.AnalyzeWorkoutAsync(sesionParaIA);
+
+            return new EntrenamientoResultadoDto
+            {
+                EntrenamientoId = entrenamiento.Id,
+                Mensaje = "Entrenamiento completado con éxito.",
+                ConsejoIA = consejo
+            };
         }
         public async Task<List<EntrenamientoHistorialDto>> ObtenerHistorialUsuarioAsync(int usuarioId)
         {

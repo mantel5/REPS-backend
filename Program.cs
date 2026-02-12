@@ -7,6 +7,7 @@ using REPS_backend.Repositories;
 using REPS_backend.Services;
 using System.Text;
 using System.Text.Json.Serialization;
+using REPS_backend.Services.AI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +59,9 @@ builder.Services.AddScoped<ILogroService, LogroService>();
 // Dashboard
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IProgresoService, ProgresoService>();
+
+// AI Services
+builder.Services.AddScoped<IAIService, GeminiService>();
 
 
 

@@ -4,6 +4,7 @@ using REPS_backend.Services;
 using REPS_backend.DTOs.Rutinas;
 using REPS_backend.Models;
 using System.Security.Claims;
+using REPS_backend.DTOs.AI;
 
 namespace REPS_backend.Controllers
 {
@@ -14,11 +15,13 @@ namespace REPS_backend.Controllers
     {
         private readonly IRutinaService _rutinaService;
         private readonly ILogger<RutinasController> _logger;
+        private readonly REPS_backend.Services.AI.IAIService _aiService;
 
-        public RutinasController(IRutinaService rutinaService, ILogger<RutinasController> logger)
+        public RutinasController(IRutinaService rutinaService, ILogger<RutinasController> logger, REPS_backend.Services.AI.IAIService aiService)
         {
             _rutinaService = rutinaService;
             _logger = logger;
+            _aiService = aiService;
         }
 
         [HttpPost]
@@ -39,6 +42,22 @@ namespace REPS_backend.Controllers
                 _logger.LogInformation(ex.Message);
                 var mensajeError = ex.InnerException != null ? $"{ex.Message} -> {ex.InnerException.Message}" : ex.Message;
                 return BadRequest(mensajeError);
+            }
+        }
+
+        // POST: api/rutinas/generar-ia
+        [HttpPost("generar-ia")]
+        [Authorize(Roles = "User, Admin")]
+        public async Task<ActionResult<RutinaDetalleDto>> GenerarRutinaIA([FromBody] RutinaGeneracionDto dto)
+        {
+            try
+            {
+                var rutinaGenerada = await _aiService.GenerateRoutineAsync(dto);
+                return Ok(rutinaGenerada);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error generando rutina: " + ex.Message);
             }
         }
 

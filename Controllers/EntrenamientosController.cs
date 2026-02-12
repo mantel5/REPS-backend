@@ -19,13 +19,13 @@ namespace REPS_backend.Controllers
         }
 
         [HttpPost("finalizar")]
-        public async Task<IActionResult> FinalizarEntrenamiento([FromBody] FinalizarEntrenamientoDto dto)
+        public async Task<ActionResult<EntrenamientoResultadoDto>> FinalizarEntrenamiento([FromBody] FinalizarEntrenamientoDto dto)
         {
             var userId = GetCurrentUserId();
             if (userId == 0) return Unauthorized();
 
-            await _entrenamientoService.FinalizarEntrenamientoAsync(userId, dto);
-            return Ok(new { Message = "Entrenamiento guardado y records actualizados." });
+            var resultado = await _entrenamientoService.FinalizarEntrenamientoAsync(userId, dto);
+            return Ok(resultado);
         }
 
         [HttpGet]
