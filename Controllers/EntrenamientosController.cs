@@ -27,6 +27,13 @@ namespace REPS_backend.Controllers
             var resultado = await _entrenamientoService.FinalizarEntrenamientoAsync(userId, dto);
             return Ok(resultado);
         }
+        [HttpGet("iniciar/{rutinaId}")]
+        public async Task<ActionResult<EntrenamientoInitDto>> IniciarEntrenamiento(int rutinaId)
+        {
+            var initDto = await _entrenamientoService.IniciarEntrenamientoAsync(rutinaId);
+            if (initDto == null) return NotFound("Rutina no encontrada");
+            return Ok(initDto);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetHistorial()

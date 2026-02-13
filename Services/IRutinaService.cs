@@ -19,6 +19,8 @@ namespace REPS_backend.Services
         Task<bool> BanearRutinaAsync(int rutinaId);
         Task<List<RutinaItemDto>> ObtenerRutinasDeUsuarioAsync(int usuarioId, NivelDificultad? nivel = null, GrupoMuscular? musculo = null);
         Task<bool> ToggleLikeAsync(int rutinaId, int usuarioId);
-
+        Task<List<RutinaItemDto>> ObtenerRutinasIAAsync(int solicitarUserId);
+        Task<List<RutinaItemDto>> ObtenerRutinasGuardadasAsync(int usuarioId);
+        Task<RutinaDetalleDto?> ImportarRutinaAsync(int rutinaId, int usuarioId);
     }
 }

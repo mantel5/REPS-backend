@@ -1,4 +1,5 @@
 using REPS_backend.DTOs.Entrenamientos;
+using REPS_backend.DTOs.Rutinas;
 using REPS_backend.Models;
 using REPS_backend.Repositories;
 
@@ -9,15 +10,18 @@ namespace REPS_backend.Services
         private readonly IEntrenamientoRepository _entrenamientoRepository;
         private readonly IRecordPersonalService _recordService;
         private readonly REPS_backend.Services.AI.IAIService _aiService;
+        private readonly IRutinaRepository _rutinaRepository;
 
         public EntrenamientoService(
             IEntrenamientoRepository entrenamientoRepository,
             IRecordPersonalService recordService,
-            REPS_backend.Services.AI.IAIService aiService)
+            REPS_backend.Services.AI.IAIService aiService,
+            IRutinaRepository rutinaRepository)
         {
             _entrenamientoRepository = entrenamientoRepository;
             _recordService = recordService;
             _aiService = aiService;
+            _rutinaRepository = rutinaRepository;
         }
 
         public async Task<EntrenamientoResultadoDto> FinalizarEntrenamientoAsync(int usuarioId, FinalizarEntrenamientoDto dto)
@@ -117,6 +121,30 @@ namespace REPS_backend.Services
                         }).ToList()
                     }).ToList()
             }).ToList();
+        }
+
+        public async Task<EntrenamientoInitDto?> IniciarEntrenamientoAsync(int rutinaId)
+        {
+            var rutina = await _rutinaRepository.GetByIdWithEjerciciosAsync(rutinaId);
+            if (rutina == null) return null;
+
+            return new EntrenamientoInitDto
+            {
+                RutinaId = rutina.Id,
+                Nombre = rutina.Nombre,
+                DuracionEstimadaMinutos = rutina.DuracionMinutos,
+                Ejercicios = rutina.Ejercicios.Select(re => new EntrenamientoEjercicioInitDto
+                {
+                    EjercicioId = re.EjercicioId,
+                    NombreEjercicio = re.Ejercicio?.Nombre ?? "Ejercicio",
+                    ImagenMusculosUrl = re.Ejercicio?.ImagenMusculosUrl ?? "",
+                    SeriesObjetivo = re.Series,
+                    RepeticionesObjetivo = re.Repeticiones,
+                    DescansoSegundos = re.DescansoSegundos,
+                    PesoSugerido = re.PesoSugerido,
+                    Tipo = re.Tipo
+                }).ToList()
+            };
         }
     }
 }

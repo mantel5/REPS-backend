@@ -6,5 +6,6 @@ namespace REPS_backend.Services
     {
         Task<EntrenamientoResultadoDto> FinalizarEntrenamientoAsync(int usuarioId, FinalizarEntrenamientoDto dto);
         Task<List<EntrenamientoHistorialDto>> ObtenerHistorialUsuarioAsync(int usuarioId);
+        Task<EntrenamientoInitDto?> IniciarEntrenamientoAsync(int rutinaId);
     }
 }

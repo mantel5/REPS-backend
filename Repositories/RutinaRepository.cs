@@ -126,6 +126,18 @@ namespace REPS_backend.Repositories
                 _context.Entry(rutina).State = EntityState.Modified;
             }
             await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Rutina>> GetLikedByUserIdAsync(int usuarioId)
+        {
+            return await _context.Likes
+                .Where(l => l.UsuarioId == usuarioId && l.Rutina != null)
+                .Select(l => l.Rutina!)
+                .Include(r => r.Usuario)
+                .Include(r => r.Ejercicios!)
+                    .ThenInclude(re => re.Ejercicio)
+                .ToListAsync();
         }
     }
 }

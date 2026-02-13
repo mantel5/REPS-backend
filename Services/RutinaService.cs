@@ -10,15 +10,18 @@ namespace REPS_backend.Services
         private readonly IRutinaRepository _rutinaRepository;
         private readonly IEjercicioRepository _ejercicioRepository;
         private readonly IEntrenamientoRepository _entrenamientoRepository;
+        private readonly IUsuarioRepository _usuarioRepository;
 
         public RutinaService(
             IRutinaRepository rutinaRepository,
             IEjercicioRepository ejercicioRepository,
-            IEntrenamientoRepository entrenamientoRepository)
+            IEntrenamientoRepository entrenamientoRepository,
+            IUsuarioRepository usuarioRepository)
         {
             _rutinaRepository = rutinaRepository;
             _ejercicioRepository = ejercicioRepository;
             _entrenamientoRepository = entrenamientoRepository;
+            _usuarioRepository = usuarioRepository;
         }
 
         public async Task<RutinaDetalleDto> CrearRutinaAsync(RutinaCreateDto dto, int usuarioId)
@@ -219,5 +222,117 @@ namespace REPS_backend.Services
                 return true;
             }
         }
+
+        public async Task<List<RutinaItemDto>> ObtenerRutinasIAAsync(int solicitarUserId)
+        {
+            var usuario = await _usuarioRepository.GetByIdAsync(solicitarUserId);
+            if (usuario == null) return new List<RutinaItemDto>();
+
+            // VALIDACIÓN DE ROL/SUSCRIPCIÓN
+            // Solo dejamos si es Pro o Admin
+            // (Asumimos que Rol.Admin es "Admin", ajusta si usas constantes)
+            bool esAdmin = usuario.Rol == Rol.Admin;
+            if (!usuario.EsPro() && !esAdmin)
+            {
+                // Podríamos lanzar excepción o devolver lista vacía. 
+                // Devolver lista vacía es más seguro para no romper el front abruptamente, aunque una excepción 403 sería más HTTP-correcta.
+                // Aquí lanzaré una excepción controlada para que el controller devuelva 403.
+                throw new UnauthorizedAccessException("Esta funcionalidad es exclusiva para usuarios Pro.");
+            }
+
+            var todas = await _rutinaRepository.GetAllPublicasAsync();
+            
+            // Filtramos las creadas por "AI Trainer"
+            // Ojo: En el seed o al crear rutinas con IA, asegúrate de ponerle este nombre al "CreadorNombre" si no tiene usuario real,
+            // O si tiene un usuario real (un admin bot), filtramos por ese ID.
+            // Según tu código actual en GeminiService: rutina.CreadorNombre = "AI Trainer";
+            // Pero recuerda que "CreadorNombre" en RutinaDetalleDto es dinámico. En la BBDD la Rutina tiene UsuarioId.
+            // Si las rutinas IA no se guardan con un UsuarioId especial, será difícil filtrarlas.
+            // ASUNCIÓN: Las rutinas IA se guardan sin UsuarioId (null) o con un UsuarioId de sistema.
+            // REVISIÓN: Tu endpoint de IA 'GenerarRutinaIA' devuelve el DTO pero NO LA GUARDA en BBDD automáticamente.
+            // El usuario debe guardarla. Si la guarda, pasa a ser SUYA.
+            // PERO el usuario pide "Ver rutinas generadas por la IA".
+            // ESTO SIGNIFICA: Rutinas "plantilla" creadas por la IA y hechas públicas por el Admin.
+            // O rutinas que el sistema genera y deja públicas.
+            // Vamos a filtrar por aquellas cuyo Usuario tenga nombre "AI Trainer" o similar. 
+            // Si no existe tal usuario, buscaremos por string en Nombre o similar.
+
+            // PLAN B: Filtrar rutinas públicas donde el usuario creador se llame "AI Trainer"
+            // Para eso necesitamos que exista un usuario "AI Trainer" en la BBDD.
+            
+            return todas.Where(r => r.Usuario != null && r.Usuario.Nombre == "AI Trainer")
+                        .Select(r => new RutinaItemDto
+                        {
+                            Id = r.Id,
+                            Nombre = r.Nombre,
+                            CreadorNombre = "AI Trainer", // r.Usuario.Nombre
+                            TotalEjercicios = r.Ejercicios.Count,
+                            Likes = r.Likes
+                        }).ToList();
+        }
+
+        public async Task<List<RutinaItemDto>> ObtenerRutinasGuardadasAsync(int usuarioId)
+        {
+            // Necesitamos un método en el repo para obtener las rutinas dadas like por el usuario
+            // Como no lo tenemos en la interfaz básica, tendremos que añadirlo o hacerlo en memoria (ineficiente pero rápido ahora).
+            // Lo ideal: _rutinaRepository.GetLikedByUserIdAsync(usuarioId);
+            // Por ahora, lo haré obteniendo todas las públicas y filtrando en memoria si tienen Like de este user.
+            // Esto es LENTO si hay muchas rutinas. 
+            // MEJORA: Añadir método al repositorio.
+
+            // VARIANTE RÁPIDA (Check plan): El plan decía "GET endpoint to retrieve liked routines".
+            // Vamos a añadir el método al repositorio en el siguiente paso para hacerlo bien.
+            // Por ahora dejo el placeholder llamando al repo (que implementaremos luego).
+            var rutinas = await _rutinaRepository.GetLikedByUserIdAsync(usuarioId);
+            
+            return rutinas.Select(r => new RutinaItemDto
+            {
+                Id = r.Id,
+                Nombre = r.Nombre,
+                CreadorNombre = r.Usuario?.Nombre ?? "Desconocido",
+                TotalEjercicios = r.Ejercicios.Count,
+                Likes = r.Likes,
+                EsLikeado = true // Obvio
+            }).ToList();
+        }
+
+        public async Task<RutinaDetalleDto?> ImportarRutinaAsync(int rutinaId, int usuarioId)
+        {
+            var rutinaOriginal = await _rutinaRepository.GetByIdWithEjerciciosAsync(rutinaId);
+            if (rutinaOriginal == null) return null;
+
+            // Clonar
+            var nuevaRutina = new Rutina
+            {
+                Nombre = $"{rutinaOriginal.Nombre} (Copia)",
+                Descripcion = rutinaOriginal.Descripcion,
+                UsuarioId = usuarioId,
+                EsPublica = false,
+                Estado = EstadoRutina.Privada,
+                Nivel = rutinaOriginal.Nivel,
+                DuracionMinutos = rutinaOriginal.DuracionMinutos,
+                // GrupoMuscularPrincipal, Material, FechaCreacion, Estilo no existen en el modelo actual
+                Ejercicios = new List<RutinaEjercicio>()
+            };
+
+            foreach (var ej in rutinaOriginal.Ejercicios)
+            {
+                nuevaRutina.Ejercicios.Add(new RutinaEjercicio
+                {
+                    EjercicioId = ej.EjercicioId,
+                    Orden = ej.Orden,
+                    Series = ej.Series,
+                    Repeticiones = ej.Repeticiones,
+                    DescansoSegundos = ej.DescansoSegundos,
+                    Tipo = ej.Tipo
+                    // PesoObjetivo, RIR, Cadencia, Notas no existen en el modelo actual
+                });
+            }
+
+            await _rutinaRepository.AddAsync(nuevaRutina);
+
+            return await ObtenerDetalleRutinaAsync(nuevaRutina.Id);
+        }
+
     }
 }

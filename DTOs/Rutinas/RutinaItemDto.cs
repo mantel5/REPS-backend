@@ -9,5 +9,6 @@
         public string ImagenUrl { get; set; } = "";
         public int Likes { get; set; }
         public DateTime? UltimaVezRealizada { get; set; } // Null si nunca
+        public bool EsLikeado { get; set; }
     }
 }

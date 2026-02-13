@@ -140,6 +140,70 @@ namespace REPS_backend.Controllers
             }
         }
 
+        [HttpGet("ia")]
+        [Authorize(Roles = "User, Admin")]
+        public async Task<IActionResult> GetRutinasIA()
+        {
+            try
+            {
+                var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!int.TryParse(userIdString, out int userId)) return Unauthorized();
+
+                var rutinas = await _rutinaService.ObtenerRutinasIAAsync(userId);
+                return Ok(rutinas);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                // Manejo específico para el error de Pro lanzado en el servicio
+                return StatusCode(403, new { mensaje = ex.Message, requierePro = true });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest("Error al obtener rutinas de IA.");
+            }
+        }
+
+        [HttpGet("guardadas")]
+        [Authorize(Roles = "User, Admin")]
+        public async Task<IActionResult> GetRutinasGuardadas()
+        {
+            try
+            {
+                var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!int.TryParse(userIdString, out int userId)) return Unauthorized();
+
+                var rutinas = await _rutinaService.ObtenerRutinasGuardadasAsync(userId);
+                return Ok(rutinas);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest("Error al obtener rutinas guardadas.");
+            }
+        }
+
+        [HttpPost("{id}/importar")]
+        [Authorize(Roles = "User, Admin")]
+        public async Task<IActionResult> ImportarRutina(int id)
+        {
+            try
+            {
+                var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!int.TryParse(userIdString, out int userId)) return Unauthorized();
+
+                var rutinaImportada = await _rutinaService.ImportarRutinaAsync(id, userId);
+                if (rutinaImportada == null) return NotFound("Rutina original no encontrada.");
+
+                return CreatedAtAction(nameof(GetRutinaById), new { id = rutinaImportada.Id }, rutinaImportada);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest("Error al importar la rutina.");
+            }
+        }
+
         [HttpGet("{id}")]
         [Authorize(Roles = "User, Admin")]
         public async Task<IActionResult> GetRutinaById(int id)

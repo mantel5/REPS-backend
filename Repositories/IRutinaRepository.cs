@@ -16,5 +16,6 @@ namespace REPS_backend.Repositories
         Task<Like?> ObtenerLikeAsync(int rutinaId, int usuarioId);
         Task AddLikeAsync(Like like);
         Task RemoveLikeAsync(Like like);
+        Task<List<Rutina>> GetLikedByUserIdAsync(int usuarioId);
     }
 }
