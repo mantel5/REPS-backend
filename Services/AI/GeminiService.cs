@@ -19,13 +19,13 @@ namespace REPS_backend.Services.AI
         public GeminiService(IConfiguration configuration, ApplicationDbContext context)
         {
             _apiKey = configuration["Gemini:ApiKey"];
-            _httpClient = new HttpClient();
+            _httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(5) };
             _context = context;
         }
 
         public async Task<string> AnalyzeWorkoutAsync(REPS_backend.Models.Sesion sesion)
         {
-            var prompt = $"Act as an expert fitness coach. Analyze the following workout session and provide a summary and constructive advice (max 3 sentences). " +
+            var prompt = $"Actúa como un entrenador experto. Analiza la siguiente sesión y dame un resumen y consejos en ESPAÑOL (máximo 3 frases). " +
                          $"Highlight any achievements or suggest improvements based on volume/intensity if possible.\n\n" +
                          $"Workout: {sesion.NombreRutinaSnapshot}\n" +
                          $"Duration: {sesion.DuracionRealMinutos} mins\n" +
@@ -98,9 +98,9 @@ Do NOT wrap the JSON in markdown code blocks. Just return the raw JSON string.
             };
 
             var json = JsonSerializer.Serialize(requestBody);
-            
+
             // Increased to cover 30s+ wait
-            int maxRetries = 5; 
+            int maxRetries = 5;
             int delay = 5000; // Start with 5 seconds to be safe
 
             for (int i = 0; i <= maxRetries; i++)
@@ -112,12 +112,12 @@ Do NOT wrap the JSON in markdown code blocks. Just return the raw JSON string.
                 {
                     var responseString = await response.Content.ReadAsStringAsync();
                     using var doc = JsonDocument.Parse(responseString);
-                    
+
                     if (doc.RootElement.TryGetProperty("candidates", out var candidates) && candidates.GetArrayLength() > 0)
                     {
                         var firstCandidate = candidates[0];
-                        if (firstCandidate.TryGetProperty("content", out var contentElem) && 
-                            contentElem.TryGetProperty("parts", out var parts) && 
+                        if (firstCandidate.TryGetProperty("content", out var contentElem) &&
+                            contentElem.TryGetProperty("parts", out var parts) &&
                             parts.GetArrayLength() > 0)
                         {
                             return parts[0].GetProperty("text").GetString() ?? "";
@@ -126,19 +126,19 @@ Do NOT wrap the JSON in markdown code blocks. Just return the raw JSON string.
                     return "";
                 }
 
-                if ((int)response.StatusCode == 429)
+                if ((int)response.StatusCode == 429 || (int)response.StatusCode == 503)
                 {
-                    if (i == maxRetries) 
+                    if (i == maxRetries)
                     {
                         var errorMsg = await response.Content.ReadAsStringAsync();
-                        throw new Exception($"Gemini API Error (Rate Limit Exceeded after retries): {errorMsg}");
+                        throw new Exception($"Gemini API Error (Rate Limit/Unavailable after retries): {errorMsg}");
                     }
-                    
+
                     // Wait and retry. 
                     // Strategy: 5s, 10s, 20s, 40s, 80s. Total wait covers even 60s limits.
-                    Console.WriteLine($"Rate limit hit. Retrying in {delay}ms...");
+                    Console.WriteLine($"Gemini API Status {(int)response.StatusCode}. Retrying in {delay}ms...");
                     await Task.Delay(delay);
-                    delay *= 2; 
+                    delay *= 2;
                     continue;
                 }
 

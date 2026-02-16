@@ -37,6 +37,10 @@ namespace REPS_backend.Services
                 SeriesRealizadas = new List<SerieLog>()
             };
 
+            decimal totalVolumen = 0;
+            int totalReps = 0;
+            int totalSeries = 0;
+
             // 2. Procesar ejercicios y series
             if (dto.Ejercicios != null)
             {
@@ -57,6 +61,11 @@ namespace REPS_backend.Services
                                 Completada = serieDto.Completada
                             };
                             entrenamiento.SeriesRealizadas.Add(serieLog);
+
+                            // Cálculos
+                            totalSeries++;
+                            totalReps += serieDto.Reps;
+                            totalVolumen += (serieDto.Peso * serieDto.Reps);
 
                             // Actualizar máximo local
                             if (serieDto.Peso > pesoMaximoEjercicio)
@@ -80,11 +89,11 @@ namespace REPS_backend.Services
             // 5. Generar consejo IA
             // Mapeamos el entrenamiento a Sesion para el servicio de IA (o usamos Entrenamiento directamente si cambiamos la interfaz)
             // Como Sesion es el modelo base que usa IAIService, lo mapeamos.
-            var sesionParaIA = new Sesion 
-            { 
-               NombreRutinaSnapshot = entrenamiento.Nombre,
-               DuracionRealMinutos = entrenamiento.DuracionMinutos,
-               SeriesRealizadas = entrenamiento.SeriesRealizadas
+            var sesionParaIA = new Sesion
+            {
+                NombreRutinaSnapshot = entrenamiento.Nombre,
+                DuracionRealMinutos = entrenamiento.DuracionMinutos,
+                SeriesRealizadas = entrenamiento.SeriesRealizadas
             };
 
             var consejo = await _aiService.AnalyzeWorkoutAsync(sesionParaIA);
@@ -93,7 +102,10 @@ namespace REPS_backend.Services
             {
                 EntrenamientoId = entrenamiento.Id,
                 Mensaje = "Entrenamiento completado con éxito.",
-                ConsejoIA = consejo
+                ConsejoIA = consejo,
+                SeriesTotales = totalSeries,
+                RepsTotales = totalReps,
+                VolumenTotal = totalVolumen
             };
         }
         public async Task<List<EntrenamientoHistorialDto>> ObtenerHistorialUsuarioAsync(int usuarioId)

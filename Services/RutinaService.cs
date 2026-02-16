@@ -35,7 +35,27 @@ namespace REPS_backend.Services
                 Ejercicios = new List<RutinaEjercicio>()
             };
 
-            if (dto.EjerciciosIds != null && dto.EjerciciosIds.Any())
+            if (dto.Ejercicios != null && dto.Ejercicios.Any())
+            {
+                int orden = 1;
+                foreach (var ejDto in dto.Ejercicios)
+                {
+                    var ejercicio = await _ejercicioRepository.GetByIdAsync(ejDto.EjercicioId);
+                    if (ejercicio != null)
+                    {
+                        nuevaRutina.Ejercicios.Add(new RutinaEjercicio
+                        {
+                            EjercicioId = ejDto.EjercicioId,
+                            Orden = orden++,
+                            Series = ejDto.Series > 0 ? ejDto.Series : 3,
+                            Repeticiones = !string.IsNullOrEmpty(ejDto.Repeticiones) ? ejDto.Repeticiones : "10-12",
+                            DescansoSegundos = 60,
+                            Tipo = TipoSerie.Normal
+                        });
+                    }
+                }
+            }
+            else if (dto.EjerciciosIds != null && dto.EjerciciosIds.Any())
             {
                 int orden = 1;
                 foreach (var ejercicioId in dto.EjerciciosIds)
@@ -241,7 +261,7 @@ namespace REPS_backend.Services
             }
 
             var todas = await _rutinaRepository.GetAllPublicasAsync();
-            
+
             // Filtramos las creadas por "AI Trainer"
             // Ojo: En el seed o al crear rutinas con IA, asegúrate de ponerle este nombre al "CreadorNombre" si no tiene usuario real,
             // O si tiene un usuario real (un admin bot), filtramos por ese ID.
@@ -259,7 +279,7 @@ namespace REPS_backend.Services
 
             // PLAN B: Filtrar rutinas públicas donde el usuario creador se llame "AI Trainer"
             // Para eso necesitamos que exista un usuario "AI Trainer" en la BBDD.
-            
+
             return todas.Where(r => r.Usuario != null && r.Usuario.Nombre == "AI Trainer")
                         .Select(r => new RutinaItemDto
                         {
@@ -284,7 +304,7 @@ namespace REPS_backend.Services
             // Vamos a añadir el método al repositorio en el siguiente paso para hacerlo bien.
             // Por ahora dejo el placeholder llamando al repo (que implementaremos luego).
             var rutinas = await _rutinaRepository.GetLikedByUserIdAsync(usuarioId);
-            
+
             return rutinas.Select(r => new RutinaItemDto
             {
                 Id = r.Id,
