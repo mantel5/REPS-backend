@@ -11,6 +11,13 @@ namespace REPSbackend.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("UPDATE Usuarios SET RangoGeneral = '0' WHERE RangoGeneral = 'SinRango';");
+            migrationBuilder.Sql("UPDATE Usuarios SET RangoGeneral = '1' WHERE RangoGeneral = 'Bronce';");
+            migrationBuilder.Sql("UPDATE Usuarios SET RangoGeneral = '2' WHERE RangoGeneral = 'Plata';");
+            migrationBuilder.Sql("UPDATE Usuarios SET RangoGeneral = '3' WHERE RangoGeneral = 'Oro';");
+            migrationBuilder.Sql("UPDATE Usuarios SET RangoGeneral = '4' WHERE RangoGeneral = 'Diamante';");
+            migrationBuilder.Sql("UPDATE Usuarios SET RangoGeneral = '5' WHERE RangoGeneral = 'Elite';");
+
             migrationBuilder.AlterColumn<int>(
                 name: "RangoGeneral",
                 table: "Usuarios",

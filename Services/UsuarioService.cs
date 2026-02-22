@@ -30,7 +30,8 @@ namespace REPS_backend.Services
                 PuntosTotales = user.PuntosTotales,
                 RachaDias = user.RachaDias,
                 RangoGeneral = user.RangoGeneral.ToString(),
-                EsPro = user.EsPro()
+                EsPro = user.EsPro(),
+                UnidadPreferida = user.UnidadPreferida.ToString()
             };
         }
 
@@ -76,7 +77,7 @@ namespace REPS_backend.Services
             if (user == null) return false;
 
             user.EstaActivo = nuevoEstadoActivo;
-            
+
             await _repository.UpdateUsuarioAsync(user);
             return true;
         }
@@ -87,7 +88,7 @@ namespace REPS_backend.Services
             if (user == null) return false;
 
             user.EstaBorrado = true;
-            user.EstaActivo = false; 
+            user.EstaActivo = false;
 
             await _repository.UpdateUsuarioAsync(user);
             return true;
@@ -97,7 +98,7 @@ namespace REPS_backend.Services
         {
             // 1. Buscamos al futuro amigo
             var amigo = await _repository.GetByCodigoAmigoAsync(codigoAmigo.ToUpper());
-            
+
             // VALIDACIONES:
             // - Si no existe
             // - O si soy yo mismo (mi ID es igual al del amigo)
@@ -167,7 +168,7 @@ namespace REPS_backend.Services
             {
                 // CASO ACEPTAR: Cambiamos el estado a TRUE
                 amistad.Aceptada = true;
-                await _repository.UpdateAmistadAsync(amistad); 
+                await _repository.UpdateAmistadAsync(amistad);
             }
             else
             {
@@ -178,6 +179,6 @@ namespace REPS_backend.Services
             return true;
         }
 
-        
+
     }
 }

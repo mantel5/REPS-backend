@@ -16,5 +16,12 @@
         public int RepsRealizadas { get; set; }
 
         public bool Completada { get; set; } = true;
+
+        // Campos para Cardio (valores reales realizados en esta serie/intervalo)
+        public decimal? VelocidadReal { get; set; }
+        public int? TiempoSegundosReal { get; set; }
+        public decimal? InclinacionReal { get; set; }
+        public int? CaloriasQuemadasReales { get; set; }
+        public decimal? DistanciaReal { get; set; }
     }
 }

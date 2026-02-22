@@ -12,5 +12,10 @@ namespace REPS_backend.DTOs.Entrenamientos
         public int DescansoSegundos { get; set; }
         public double PesoSugerido { get; set; }
         public TipoSerie Tipo { get; set; }
+
+        public bool EsCardio { get; set; }
+        public decimal? VelocidadSugerida { get; set; }
+        public int? TiempoSegundosSugerido { get; set; }
+        public decimal? InclinacionSugerida { get; set; }
     }
 }

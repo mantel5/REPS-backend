@@ -58,7 +58,12 @@ namespace REPS_backend.Services
                                 NumeroSerie = serieDto.NumeroSerie,
                                 PesoUsado = serieDto.Peso,
                                 RepsRealizadas = serieDto.Reps,
-                                Completada = serieDto.Completada
+                                Completada = serieDto.Completada,
+                                VelocidadReal = serieDto.VelocidadReal,
+                                TiempoSegundosReal = serieDto.TiempoSegundosReal,
+                                InclinacionReal = serieDto.InclinacionReal,
+                                CaloriasQuemadasReales = serieDto.CaloriasQuemadasReales,
+                                DistanciaReal = serieDto.DistanciaReal
                             };
                             entrenamiento.SeriesRealizadas.Add(serieLog);
 
@@ -129,7 +134,12 @@ namespace REPS_backend.Services
                             NumeroSerie = s.NumeroSerie,
                             Peso = s.PesoUsado,
                             Reps = s.RepsRealizadas,
-                            Completada = s.Completada
+                            Completada = s.Completada,
+                            VelocidadReal = s.VelocidadReal,
+                            TiempoSegundosReal = s.TiempoSegundosReal,
+                            InclinacionReal = s.InclinacionReal,
+                            CaloriasQuemadasReales = s.CaloriasQuemadasReales,
+                            DistanciaReal = s.DistanciaReal
                         }).ToList()
                     }).ToList()
             }).ToList();
@@ -154,7 +164,11 @@ namespace REPS_backend.Services
                     RepeticionesObjetivo = re.Repeticiones,
                     DescansoSegundos = re.DescansoSegundos,
                     PesoSugerido = re.PesoSugerido,
-                    Tipo = re.Tipo
+                    Tipo = re.Tipo,
+                    EsCardio = re.Ejercicio?.EsCardio ?? false,
+                    VelocidadSugerida = re.VelocidadSugerida,
+                    TiempoSegundosSugerido = re.TiempoSegundosSugerido,
+                    InclinacionSugerida = re.InclinacionSugerida
                 }).ToList()
             };
         }
