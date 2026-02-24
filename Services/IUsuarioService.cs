@@ -8,6 +8,7 @@ namespace REPS_backend.Services
         Task<UsuarioPerfilDto?> ObtenerMiPerfilAsync(int id); 
         Task<UsuarioPublicoDto?> BuscarAmigoPorCodigoAsync(string codigo); 
         Task<bool> ActualizarPerfilAsync(int id, UsuarioUpdateDto dto);
+        Task<string?> ActualizarAvatarAsync(int id, IFormFile imagen);
         Task<IEnumerable<Usuario>> ObtenerTodosLosUsuariosAdminAsync();
         Task<bool> CambiarEstadoBloqueoAsync(int id, bool estaActivo); 
         Task<bool> EliminarUsuarioLogicoAsync(int id);

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using REPS_backend.DTOs.Usuarios;
 using REPS_backend.Services;
 using REPS_backend.Models; 
+using REPS_backend.Utils;
 using System.Security.Claims;
 
 namespace REPS_backend.Controllers
@@ -42,6 +43,32 @@ namespace REPS_backend.Controllers
             if (!actualizado) return BadRequest("No se pudo actualizar el perfil.");
 
             return Ok(new { mensaje = "Perfil actualizado correctamente" });
+        }
+
+        [HttpPost("avatar")]
+        public async Task<IActionResult> UploadAvatar(IFormFile imagen)
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+
+            if (imagen == null || imagen.Length == 0)
+                return BadRequest(new { mensaje = "No se ha enviado ninguna imagen." });
+
+            try
+            {
+                var url = await _usuarioService.ActualizarAvatarAsync(userId, imagen);
+                if (url == null) return BadRequest(new { mensaje = "Error al subir la imagen a Cloudinary." });
+
+                return Ok(new { avatarUrl = url, mensaje = "Avatar subido y actualizado correctamente." });
+            }
+            catch (InvalidFileException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error interno: " + ex.Message });
+            }
         }
 
         [HttpGet("buscar/{codigoAmigo}")]

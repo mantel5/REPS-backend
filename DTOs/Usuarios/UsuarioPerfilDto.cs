@@ -5,6 +5,7 @@ namespace REPS_backend.DTOs.Usuarios
         public string Nombre { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string AvatarId { get; set; } = string.Empty;
+        public string? AvatarUrl { get; set; } 
         public string CodigoAmigo { get; set; } = string.Empty;
         public DateTime FechaRegistro { get; set; }
         public string Rol { get; set; } = string.Empty;

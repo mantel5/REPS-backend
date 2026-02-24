@@ -12,6 +12,7 @@ namespace REPS_backend.Models
         public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;
 
         public string AvatarId { get; set; } = "default"; // He puesto un string simple por si no tienes la clase CatalogoAvatars a mano
+        public string? AvatarUrl { get; set; } // Propiedad para la imagen subida a Cloudinary
         public string Rol { get; set; } = "User"; // Igual, simplificado por seguridad
 
         public PlanSuscripcion PlanActual { get; set; } = PlanSuscripcion.Gratuito;
