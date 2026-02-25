@@ -13,24 +13,47 @@ namespace REPS_backend.Data
             // 2. Si ya hay ejercicios, no hacemos nada
 
 
-            // 2. Si hay ejercicios, metemos los básicos (pero solo si está vacía)
+            // 2. Definimos los ejercicios básicos
+            var ejerciciosDefault = new Ejercicio[]
+            {
+               new Ejercicio { Nombre = "Press de Banca", GrupoMuscular = GrupoMuscular.Pecho, DescripcionTecnica = "Barra al pecho.", ImagenMusculosUrl = "https://res.cloudinary.com/dgtahwqpj/video/upload/v1772039401/Video_Generado_Sin_Fuego_l8s9iz.mp4", UsuarioCreadorId = null },
+               new Ejercicio { Nombre = "Sentadilla", GrupoMuscular = GrupoMuscular.Pierna, DescripcionTecnica = "Rompe el paralelo.", ImagenMusculosUrl = "https://res.cloudinary.com/dgtahwqpj/image/upload/v1772038108/descarga_w22ggj.jpg", UsuarioCreadorId = null },
+               new Ejercicio { Nombre = "Peso Muerto", GrupoMuscular = GrupoMuscular.Pierna, DescripcionTecnica = "Espalda neutra.", ImagenMusculosUrl = "https://res.cloudinary.com/dgtahwqpj/image/upload/v1772038108/descarga_w22ggj.jpg", UsuarioCreadorId = null },
+               new Ejercicio { Nombre = "Dominadas", GrupoMuscular = GrupoMuscular.Espalda, DescripcionTecnica = "Barbilla arriba.", ImagenMusculosUrl = "https://res.cloudinary.com/dgtahwqpj/image/upload/v1772038108/descarga_w22ggj.jpg", UsuarioCreadorId = null },
+               new Ejercicio { Nombre = "Remo Barra", GrupoMuscular = GrupoMuscular.Espalda, DescripcionTecnica = "Tirón a cadera.", ImagenMusculosUrl = "https://res.cloudinary.com/dgtahwqpj/image/upload/v1772038108/descarga_w22ggj.jpg", UsuarioCreadorId = null },
+               new Ejercicio { Nombre = "Press Militar", GrupoMuscular = GrupoMuscular.Hombro, DescripcionTecnica = "Barra sobre cabeza.", ImagenMusculosUrl = "https://res.cloudinary.com/dgtahwqpj/image/upload/v1772038108/descarga_w22ggj.jpg", UsuarioCreadorId = null },
+               new Ejercicio { Nombre = "Curl Bíceps", GrupoMuscular = GrupoMuscular.Biceps, DescripcionTecnica = "Codos pegados.", ImagenMusculosUrl = "https://res.cloudinary.com/dgtahwqpj/image/upload/v1772038108/descarga_w22ggj.jpg", UsuarioCreadorId = null },
+               new Ejercicio { Nombre = "Fondos Tríceps", GrupoMuscular = GrupoMuscular.Triceps, DescripcionTecnica = "Baja controlado.", ImagenMusculosUrl = "https://res.cloudinary.com/dgtahwqpj/image/upload/v1772038108/descarga_w22ggj.jpg", UsuarioCreadorId = null },
+               new Ejercicio { Nombre = "Zancadas", GrupoMuscular = GrupoMuscular.Pierna, DescripcionTecnica = "Rodilla al suelo.", ImagenMusculosUrl = "https://res.cloudinary.com/dgtahwqpj/image/upload/v1772038108/descarga_w22ggj.jpg", UsuarioCreadorId = null },
+               new Ejercicio { Nombre = "Plancha", GrupoMuscular = GrupoMuscular.Abdomen, DescripcionTecnica = "Isometría.", ImagenMusculosUrl = "https://res.cloudinary.com/dgtahwqpj/image/upload/v1772038108/descarga_w22ggj.jpg", UsuarioCreadorId = null },
+            };
+
+            // 3. Si no hay ejercicios, los metemos todos
             if (!context.Ejercicios.Any())
             {
-                var ejercicios = new Ejercicio[]
-                {
-                   new Ejercicio { Nombre = "Press de Banca", GrupoMuscular = GrupoMuscular.Pecho, DescripcionTecnica = "Barra al pecho.", ImagenMusculosUrl = "url", UsuarioCreadorId = null },
-                   new Ejercicio { Nombre = "Sentadilla", GrupoMuscular = GrupoMuscular.Pierna, DescripcionTecnica = "Rompe el paralelo.", ImagenMusculosUrl = "url", UsuarioCreadorId = null },
-                   new Ejercicio { Nombre = "Peso Muerto", GrupoMuscular = GrupoMuscular.Pierna, DescripcionTecnica = "Espalda neutra.", ImagenMusculosUrl = "url", UsuarioCreadorId = null },
-                   new Ejercicio { Nombre = "Dominadas", GrupoMuscular = GrupoMuscular.Espalda, DescripcionTecnica = "Barbilla arriba.", ImagenMusculosUrl = "url", UsuarioCreadorId = null },
-                   new Ejercicio { Nombre = "Remo Barra", GrupoMuscular = GrupoMuscular.Espalda, DescripcionTecnica = "Tirón a cadera.", ImagenMusculosUrl = "url", UsuarioCreadorId = null },
-                   new Ejercicio { Nombre = "Press Militar", GrupoMuscular = GrupoMuscular.Hombro, DescripcionTecnica = "Barra sobre cabeza.", ImagenMusculosUrl = "url", UsuarioCreadorId = null },
-                   new Ejercicio { Nombre = "Curl Bíceps", GrupoMuscular = GrupoMuscular.Biceps, DescripcionTecnica = "Codos pegados.", ImagenMusculosUrl = "url", UsuarioCreadorId = null },
-                   new Ejercicio { Nombre = "Fondos Tríceps", GrupoMuscular = GrupoMuscular.Triceps, DescripcionTecnica = "Baja controlado.", ImagenMusculosUrl = "url", UsuarioCreadorId = null },
-                   new Ejercicio { Nombre = "Zancadas", GrupoMuscular = GrupoMuscular.Pierna, DescripcionTecnica = "Rodilla al suelo.", ImagenMusculosUrl = "url", UsuarioCreadorId = null },
-                   new Ejercicio { Nombre = "Plancha", GrupoMuscular = GrupoMuscular.Abdomen, DescripcionTecnica = "Isometría.", ImagenMusculosUrl = "url", UsuarioCreadorId = null },
-                };
-                context.Ejercicios.AddRange(ejercicios);
+                context.Ejercicios.AddRange(ejerciciosDefault);
                 context.SaveChanges();
+            }
+            else
+            {
+                // Actualizar las URLs de los ejercicios por defecto existentes sincronizándolas con la lista actual
+                var ejerciciosExistentes = context.Ejercicios.Where(e => e.UsuarioCreadorId == null).ToList();
+                bool actualizados = false;
+
+                foreach (var ejDef in ejerciciosDefault)
+                {
+                    var ejExistente = ejerciciosExistentes.FirstOrDefault(e => e.Nombre == ejDef.Nombre);
+                    if (ejExistente != null && ejExistente.ImagenMusculosUrl != ejDef.ImagenMusculosUrl)
+                    {
+                        ejExistente.ImagenMusculosUrl = ejDef.ImagenMusculosUrl;
+                        actualizados = true;
+                    }
+                }
+
+                if (actualizados)
+                {
+                    context.SaveChanges();
+                }
             }
 
 
