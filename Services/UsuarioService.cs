@@ -1,16 +1,19 @@
 using REPS_backend.DTOs.Usuarios;
 using REPS_backend.Repositories;
 using REPS_backend.Models;
+using REPS_backend.Services.UploadDocs;
 
 namespace REPS_backend.Services
 {
     public class UsuarioService : IUsuarioService
     {
         private readonly IUsuarioRepository _repository;
+        private readonly IUploadDocService _uploadDocService;
 
-        public UsuarioService(IUsuarioRepository repository)
+        public UsuarioService(IUsuarioRepository repository, IUploadDocService uploadDocService)
         {
             _repository = repository;
+            _uploadDocService = uploadDocService;
         }
 
         // ... MÉTODOS EXISTENTES (MiPerfil, BuscarAmigo, Actualizar) ...
@@ -24,6 +27,7 @@ namespace REPS_backend.Services
                 Nombre = user.Nombre,
                 Email = user.Email,
                 AvatarId = user.AvatarId,
+                AvatarUrl = user.AvatarUrl,
                 CodigoAmigo = user.CodigoAmigo,
                 FechaRegistro = user.FechaRegistro,
                 Rol = user.Rol,
@@ -44,6 +48,7 @@ namespace REPS_backend.Services
             {
                 Nombre = user.Nombre,
                 AvatarId = user.AvatarId,
+                AvatarUrl = user.AvatarUrl,
                 FechaRegistro = user.FechaRegistro,
                 PuntosTotales = user.PuntosTotales,
                 RachaDias = user.RachaDias,
@@ -62,6 +67,22 @@ namespace REPS_backend.Services
 
             await _repository.UpdateUsuarioAsync(user);
             return true;
+        }
+
+        public async Task<string?> ActualizarAvatarAsync(int id, string avatarId)
+        {
+            var user = await _repository.GetByIdAsync(id);
+            if (user == null) return null;
+
+            var avatar = CatalogoAvatars.Obtener(avatarId);
+            if (avatar == null) return null;
+
+            user.AvatarId = avatar.Id;
+            user.AvatarUrl = avatar.Url;
+
+            await _repository.UpdateUsuarioAsync(user);
+
+            return avatar.Url;
         }
 
         // LÓGICA DE ADMINISTRADOR
@@ -130,6 +151,7 @@ namespace REPS_backend.Services
             {
                 Nombre = u.Nombre,
                 AvatarId = u.AvatarId,
+                AvatarUrl = u.AvatarUrl,
                 FechaRegistro = u.FechaRegistro,
                 PuntosTotales = u.PuntosTotales,
                 RachaDias = u.RachaDias,
@@ -147,6 +169,7 @@ namespace REPS_backend.Services
             {
                 Nombre = u.Nombre,
                 AvatarId = u.AvatarId,
+                AvatarUrl = u.AvatarUrl,
                 FechaRegistro = u.FechaRegistro,
                 PuntosTotales = u.PuntosTotales,
                 RachaDias = u.RachaDias,

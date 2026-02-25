@@ -8,6 +8,8 @@ using REPS_backend.Services;
 using System.Text;
 using System.Text.Json.Serialization;
 using REPS_backend.Services.AI;
+using REPS_backend.Services.UploadDocs;
+using REPS_backend.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +64,10 @@ builder.Services.AddScoped<IProgresoService, ProgresoService>();
 
 // AI Services
 builder.Services.AddScoped<IAIService, GeminiService>();
+
+// Cloudinary
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddScoped<IUploadDocService, CloudinaryUploadDocService>();
 
 
 
