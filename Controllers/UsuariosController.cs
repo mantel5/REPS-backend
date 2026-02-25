@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using REPS_backend.DTOs.Usuarios;
 using REPS_backend.Services;
-using REPS_backend.Models; 
+using REPS_backend.Models;
 using REPS_backend.Utils;
 using System.Security.Claims;
 
@@ -10,7 +10,7 @@ namespace REPS_backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] 
+    [Authorize]
     public class UsuariosController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
@@ -45,30 +45,35 @@ namespace REPS_backend.Controllers
             return Ok(new { mensaje = "Perfil actualizado correctamente" });
         }
 
-        [HttpPost("avatar")]
-        public async Task<IActionResult> UploadAvatar(IFormFile imagen)
+        public class UpdateAvatarDto { public string AvatarId { get; set; } = string.Empty; }
+
+        [HttpPut("avatar")]
+        public async Task<IActionResult> UpdateAvatar([FromBody] UpdateAvatarDto dto)
         {
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
 
-            if (imagen == null || imagen.Length == 0)
-                return BadRequest(new { mensaje = "No se ha enviado ninguna imagen." });
+            if (string.IsNullOrEmpty(dto.AvatarId))
+                return BadRequest(new { mensaje = "No se ha enviado el ID del avatar." });
 
             try
             {
-                var url = await _usuarioService.ActualizarAvatarAsync(userId, imagen);
-                if (url == null) return BadRequest(new { mensaje = "Error al subir la imagen a Cloudinary." });
+                var url = await _usuarioService.ActualizarAvatarAsync(userId, dto.AvatarId);
+                if (url == null) return BadRequest(new { mensaje = "Avatar no válido o no encontrado." });
 
-                return Ok(new { avatarUrl = url, mensaje = "Avatar subido y actualizado correctamente." });
-            }
-            catch (InvalidFileException ex)
-            {
-                return BadRequest(new { mensaje = ex.Message });
+                return Ok(new { avatarUrl = url, mensaje = "Avatar actualizado correctamente." });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { mensaje = "Error interno: " + ex.Message });
             }
+        }
+
+        [HttpGet("avatars/disponibles")]
+        [AllowAnonymous]
+        public IActionResult GetAvatarsDisponibles()
+        {
+            return Ok(CatalogoAvatars.Opciones);
         }
 
         [HttpGet("buscar/{codigoAmigo}")]
@@ -77,8 +82,8 @@ namespace REPS_backend.Controllers
             if (string.IsNullOrEmpty(codigoAmigo)) return BadRequest("Debes enviar un código.");
 
             var perfilAmigo = await _usuarioService.BuscarAmigoPorCodigoAsync(codigoAmigo);
-            
-            if (perfilAmigo == null) 
+
+            if (perfilAmigo == null)
                 return NotFound(new { mensaje = "No se encontró ningún atleta con ese código 😢" });
 
             return Ok(perfilAmigo);
@@ -108,7 +113,7 @@ namespace REPS_backend.Controllers
         }
 
         [HttpGet("admin/todos")]
-        [Authorize(Roles = Rol.Admin)] 
+        [Authorize(Roles = Rol.Admin)]
         public async Task<IActionResult> GetAllUsuarios()
         {
             var usuarios = await _usuarioService.ObtenerTodosLosUsuariosAdminAsync();

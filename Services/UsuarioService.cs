@@ -69,19 +69,20 @@ namespace REPS_backend.Services
             return true;
         }
 
-        public async Task<string?> ActualizarAvatarAsync(int id, IFormFile imagen)
+        public async Task<string?> ActualizarAvatarAsync(int id, string avatarId)
         {
             var user = await _repository.GetByIdAsync(id);
             if (user == null) return null;
 
-            // Subimos la imagen a Cloudinary
-            var url = await _uploadDocService.UploadImageAsync(imagen);
-            if (url == null) return null;
+            var avatar = CatalogoAvatars.Obtener(avatarId);
+            if (avatar == null) return null;
 
-            user.AvatarUrl = url;
+            user.AvatarId = avatar.Id;
+            user.AvatarUrl = avatar.Url;
+
             await _repository.UpdateUsuarioAsync(user);
 
-            return url;
+            return avatar.Url;
         }
 
         // LÓGICA DE ADMINISTRADOR
