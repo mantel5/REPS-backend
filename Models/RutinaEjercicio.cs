@@ -1,27 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-namespace REPS_backend.Models
+﻿namespace REPS_backend.Models
 {
     public class RutinaEjercicio
     {
         public int Id { get; set; }
         public int RutinaId { get; set; }
-
+        public virtual Rutina Rutina { get; set; } = null!;
         public int EjercicioId { get; set; }
-        [ForeignKey("EjercicioId")]
-        public Ejercicio? Ejercicio { get; set; }
-
-        public int Orden { get; set; }
-        public int Series { get; set; }
+        public virtual Ejercicio Ejercicio { get; set; } = null!;
+        public int Orden { get; set; } 
+        
+        public int Series { get; set; } 
         public string Repeticiones { get; set; } = "10-12";
-
         public int DescansoSegundos { get; set; } = 90;
-        public TipoSerie Tipo { get; set; } = TipoSerie.Normal;
-        public decimal PorcentajeDelPeso { get; set; } = 1.0m;
-        public double PesoSugerido { get; set; }
 
-        // Campos para Cardio
-        public decimal? VelocidadSugerida { get; set; }
-        public int? TiempoSegundosSugerido { get; set; }
-        public decimal? InclinacionSugerida { get; set; }
+        public TipoSerie Tipo { get; set; } = TipoSerie.Normal; 
+        public decimal PorcentajeDelPeso { get; set; } = 1.0m; 
+        
+        public double PesoSugerido { get; set; } 
     }
 }

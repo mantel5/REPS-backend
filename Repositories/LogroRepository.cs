@@ -46,5 +46,11 @@ namespace REPS_backend.Repositories
             await _context.UsuarioLogros.AddAsync(usuarioLogro);
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateUsuarioLogroAsync(UsuarioLogro usuarioLogro)
+        {
+            _context.UsuarioLogros.Update(usuarioLogro);
+            await _context.SaveChangesAsync();
+        }
     }
 }

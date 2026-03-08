@@ -8,5 +8,7 @@ namespace REPS_backend.DTOs.Ejercicios
         public string Nombre { get; set; }
         public GrupoMuscular GrupoMuscular { get; set; }
         public string ImagenMusculosUrl { get; set; }
+        /// <summary>true si fue creado por el usuario actual (puede borrarlo)</summary>
+        public bool EsMio { get; set; } = false;
     }
 }

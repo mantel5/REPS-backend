@@ -52,81 +52,81 @@ namespace REPS_backend.Services
             var usuario = await _usuarioRepository.GetByIdAsync(userId);
             if (usuario == null) return;
 
+            // Skip recalculation for test user hola
+            if (usuario.Email == "hola@gmail.com") return;
+
             // 1. Puntos de Logros
             var logros = await _logroRepository.GetUserLogrosAsync(userId);
             int puntosLogros = logros.Where(ul => ul.Desbloqueado).Sum(ul => ul.Logro.Puntos);
             usuario.PuntosLogros = puntosLogros;
 
-            // 2. Calcular Rango Global basado en Grupos Musculares
+            // 2. Calcular Puntos por Músculo
             var records = await _recordRepository.GetByUserIdAsync(userId);
+            var entrenamientos = await _entrenamientoRepository.GetByUsuarioIdWithSeriesAsync(userId);
             
-            // Agrupar records por Grupo Muscular y tomar el mejor levantamiento
-            var bestLiftsByMuscle = records
-                .GroupBy(r => r.Ejercicio.GrupoMuscular)
-                .Select(g => new 
-                { 
-                    Grupo = g.Key, 
-                    MaxPeso = g.Max(r => (double)r.PesoMaximo) 
-                })
-                .ToList();
+            var seriesCompletadas = entrenamientos?
+                .SelectMany(e => e.SeriesRealizadas ?? new List<SerieLog>())
+                .Where(s => s.Completada && s.Ejercicio != null)
+                .ToList() ?? new List<SerieLog>();
 
-            // Calcular rango para cada grupo muscular presente
-            double sumRangoValues = 0;
-            int totalGrupos = 10; // Hay 10 grupos en el Enum, o usamos Enum.GetValues(typeof(GrupoMuscular)).Length
-
-            foreach (var lift in bestLiftsByMuscle)
+            var puntosPorMusculo = new Dictionary<GrupoMuscular, int>();
+            
+            foreach (var s in seriesCompletadas)
             {
-                var rangoMuscular = CalculateMuscleRank(lift.Grupo, lift.MaxPeso);
-                sumRangoValues += (int)rangoMuscular;
+                var grupo = s.Ejercicio!.GrupoMuscular;
+                if (!puntosPorMusculo.ContainsKey(grupo)) puntosPorMusculo[grupo] = 0;
+                puntosPorMusculo[grupo] += 10;
             }
 
-            // El promedio determina el rango global
-            // Nota: Si no ha entrenado un músculo, es "SinRango" (0), lo que baja el promedio (es justo).
-            double avgRango = sumRangoValues / totalGrupos;
-            usuario.RangoGeneral = (Rango)Math.Round(avgRango);
+            foreach(var r in records.Where(r => r.Ejercicio != null))
+            {
+                var grupo = r.Ejercicio!.GrupoMuscular;
+                if (!puntosPorMusculo.ContainsKey(grupo)) puntosPorMusculo[grupo] = 0;
+                puntosPorMusculo[grupo] += 100;
+            }
 
-            // 3. Actualizar Total
-            // PuntosTotales = Logros + Records + (Bonus por Rango Global)
-            // Bonus: Bronce=1000, Plata=2000...
-            int bonusRango = (int)usuario.RangoGeneral * 1000; 
-            usuario.PuntosTotales = usuario.PuntosLogros + usuario.PuntosRecords + bonusRango;
+            var gruposValidos = Enum.GetValues(typeof(GrupoMuscular)).Cast<GrupoMuscular>()
+                   .Where(g => g != GrupoMuscular.Otro && g != GrupoMuscular.FullBody && g != GrupoMuscular.Cardio).ToList();
+            
+            double sumPuntosMusculos = 0;
+            foreach(var grupo in gruposValidos)
+            {
+               if(puntosPorMusculo.ContainsKey(grupo))
+                  sumPuntosMusculos += puntosPorMusculo[grupo];
+            }
+
+            // 3. Actualizar Total: Puntos del Rango General (Suma Muscular) + Puntos de Logros
+            int puntosRangoGeneral = (int)Math.Round(sumPuntosMusculos);
+            int currentPuntosRango = usuario.PuntosTotales - usuario.PuntosLogros;
+
+            if (puntosRangoGeneral > currentPuntosRango)
+            {
+                usuario.PuntosTotales = puntosRangoGeneral + usuario.PuntosLogros;
+            }
+
+            // Determinar enum RangoGeneral based on the higher of calculated or current
+            int effectivePuntosRango = Math.Max(puntosRangoGeneral, currentPuntosRango);
+            usuario.RangoGeneral = ConvertPuntosARango(effectivePuntosRango);
 
             await _usuarioRepository.UpdateUsuarioAsync(usuario);
+
+            // Check for achievements after updating rank
+            // await _logroService.CheckAndUnlockAchievementsAsync(userId);
         }
 
-        private Rango CalculateMuscleRank(GrupoMuscular grupo, double peso)
+        private Rango ConvertPuntosARango(int puntos)
         {
-            // Lógica simplificada de umbrales.
-            // En el futuro esto debería venir de una tabla en DB o config más compleja.
-            
-            // Umbrales base (ejemplo para ejercicios compuestos grandes)
-            double baseBronce = 40;
-            double basePlata = 80;
-            double baseOro = 110;
-            double baseDiamante = 140;
-            double baseElite = 180;
-
-            // Ajustes según grupo muscular (multiplicadores aproximados)
-            double multiplier = 1.0;
-            switch (grupo)
-            {
-                case GrupoMuscular.Pierna: multiplier = 1.5; break; // Sentadilla mueve más
-                case GrupoMuscular.Espalda: multiplier = 1.2; break; // Peso muerto
-                case GrupoMuscular.Pecho: multiplier = 1.0; break; // Bench press referencia
-                case GrupoMuscular.Hombro: multiplier = 0.6; break;
-                case GrupoMuscular.Biceps: 
-                case GrupoMuscular.Triceps: multiplier = 0.4; break;
-                case GrupoMuscular.Abdomen: multiplier = 0.0; break; // Difícil medir por peso
-                default: multiplier = 0.5; break;
-            }
-
-            if (peso >= baseElite * multiplier) return Rango.Elite;
-            if (peso >= baseDiamante * multiplier) return Rango.Diamante;
-            if (peso >= baseOro * multiplier) return Rango.Oro;
-            if (peso >= basePlata * multiplier) return Rango.Plata;
-            if (peso >= baseBronce * multiplier) return Rango.Bronce;
-            
-            return Rango.SinRango;
+            if (puntos < 2000) return Rango.Bronce;
+            if (puntos < 3000) return Rango.Plata;
+            if (puntos < 4000) return Rango.Oro;
+            if (puntos < 5000) return Rango.Platino;
+            if (puntos < 6000) return Rango.Diamante;
+            if (puntos < 7000) return Rango.Leyenda;
+            if (puntos < 8000) return Rango.Maestro;
+            if (puntos < 9000) return Rango.GranMaestro;
+            if (puntos < 10000) return Rango.Challenger;
+            if (puntos < 11000) return Rango.Mitico;
+            return Rango.Legendario;
         }
 
         public async Task<List<REPS_backend.DTOs.Ranking.LeaderboardItemDto>> GetLeaderboardAsync()
@@ -152,6 +152,7 @@ namespace REPS_backend.Services
                     Nombre = u.Nombre,
                     AvatarId = u.AvatarId,
                     PuntosTotales = u.PuntosTotales,
+                    PuntosRangoGeneral = u.PuntosTotales - u.PuntosLogros, // Reversing the sum or calculating it
                     EntrenamientosTotal = totalWorkouts,
                     RangoGeneral = u.RangoGeneral.ToString()
                 });
@@ -168,92 +169,93 @@ namespace REPS_backend.Services
             var response = new REPS_backend.DTOs.Ranking.UserProgressResponseDto
             {
                 PuntosTotales = user.PuntosTotales,
+                PuntosRangoGeneral = user.PuntosTotales - user.PuntosLogros,
                 RachaDias = user.RachaDias,
                 RangoGeneral = user.RangoGeneral.ToString(),
                 RangosMusculares = new List<REPS_backend.DTOs.Ranking.MuscleProgressDto>()
             };
 
             var records = await _recordRepository.GetByUserIdAsync(userId);
+            var entrenamientos = await _entrenamientoRepository.GetByUsuarioIdWithSeriesAsync(userId);
+            var seriesCompletadas = entrenamientos?
+                .SelectMany(e => e.SeriesRealizadas ?? new List<SerieLog>())
+                .Where(s => s.Completada && s.Ejercicio != null)
+                .ToList() ?? new List<SerieLog>();
             
+            var puntosPorMusculo = new Dictionary<GrupoMuscular, int>();
+            foreach (var s in seriesCompletadas)
+            {
+                var grupo = s.Ejercicio!.GrupoMuscular;
+                if (!puntosPorMusculo.ContainsKey(grupo)) puntosPorMusculo[grupo] = 0;
+                puntosPorMusculo[grupo] += 10;
+            }
+
+            foreach(var r in records.Where(r => r.Ejercicio != null))
+            {
+                var grupo = r.Ejercicio!.GrupoMuscular;
+                if (!puntosPorMusculo.ContainsKey(grupo)) puntosPorMusculo[grupo] = 0;
+                puntosPorMusculo[grupo] += 100;
+            }
+
             foreach (GrupoMuscular grupo in Enum.GetValues(typeof(GrupoMuscular)))
             {
                 if (grupo == GrupoMuscular.Otro || grupo == GrupoMuscular.FullBody || grupo == GrupoMuscular.Cardio) continue;
 
-                var bestLift = records
-                    .Where(r => r.Ejercicio != null && r.Ejercicio.GrupoMuscular == grupo)
-                    .OrderByDescending(r => r.PesoMaximo)
-                    .FirstOrDefault();
-
-                double currentWeight = bestLift != null ? (double)bestLift.PesoMaximo : 0;
-                
-                var progressDto = CalculateMuscleProgress(grupo, currentWeight);
+                int puntos = puntosPorMusculo.ContainsKey(grupo) ? puntosPorMusculo[grupo] : 0;
+                var progressDto = CalculateMuscleProgressFromPoints(grupo, puntos);
                 response.RangosMusculares.Add(progressDto);
             }
 
             return response;
         }
 
-        private REPS_backend.DTOs.Ranking.MuscleProgressDto CalculateMuscleProgress(GrupoMuscular grupo, double peso)
+        private REPS_backend.DTOs.Ranking.MuscleProgressDto CalculateMuscleProgressFromPoints(GrupoMuscular grupo, int puntos)
         {
-            double baseBronce = 40;
-            double basePlata = 80;
-            double baseOro = 110;
-            double baseDiamante = 140;
-            double baseElite = 180;
+            double baseBronce = 500;
+            double basePlata = 2000;
+            double baseOro = 3000;
+            double basePlatino = 4000;
+            double baseDiamante = 5000;
+            double baseLeyenda = 6000;
+            double baseMaestro = 7000;
+            double baseGranMaestro = 8000;
+            double baseChallenger = 9000;
+            double baseMitico = 10000;
+            double baseLegendario = 11000;
 
-            double multiplier = 1.0;
-            switch (grupo)
-            {
-                case GrupoMuscular.Pierna: multiplier = 1.5; break;
-                case GrupoMuscular.Espalda: multiplier = 1.2; break;
-                case GrupoMuscular.Pecho: multiplier = 1.0; break;
-                case GrupoMuscular.Hombro: multiplier = 0.6; break;
-                case GrupoMuscular.Biceps: 
-                case GrupoMuscular.Triceps: multiplier = 0.4; break;
-                case GrupoMuscular.Abdomen: multiplier = 0.0; break; 
-                default: multiplier = 0.5; break;
-            }
-
-            double umbralBronce = baseBronce * multiplier;
-            double umbralPlata = basePlata * multiplier;
-            double umbralOro = baseOro * multiplier;
-            double umbralDiamante = baseDiamante * multiplier;
-            double umbralElite = baseElite * multiplier;
-
-            string rangoActual = "Sin Rango";
-            string nextRank = "Bronce";
-            double nextThreshold = umbralBronce;
+            string rangoActual = "Bronce";
+            string nextRank = "Plata";
+            double nextThreshold = baseBronce;
             double prevThreshold = 0;
 
-            if (peso >= umbralElite) { rangoActual = "Elite"; nextRank = "Max"; nextThreshold = peso; prevThreshold = umbralElite; }
-            else if (peso >= umbralDiamante) { rangoActual = "Diamante"; nextRank = "Elite"; nextThreshold = umbralElite; prevThreshold = umbralDiamante; }
-            else if (peso >= umbralOro) { rangoActual = "Oro"; nextRank = "Diamante"; nextThreshold = umbralDiamante; prevThreshold = umbralOro; }
-            else if (peso >= umbralPlata) { rangoActual = "Plata"; nextRank = "Oro"; nextThreshold = umbralOro; prevThreshold = umbralPlata; }
-            else if (peso >= umbralBronce) { rangoActual = "Bronce"; nextRank = "Plata"; nextThreshold = umbralPlata; prevThreshold = umbralBronce; }
+            if (puntos >= baseLegendario) { rangoActual = "Legendario"; nextRank = "Max"; nextThreshold = puntos; prevThreshold = baseLegendario; }
+            else if (puntos >= baseMitico) { rangoActual = "Mítico"; nextRank = "Legendario"; nextThreshold = baseLegendario; prevThreshold = baseMitico; }
+            else if (puntos >= baseChallenger) { rangoActual = "Challenger"; nextRank = "Mítico"; nextThreshold = baseMitico; prevThreshold = baseChallenger; }
+            else if (puntos >= baseGranMaestro) { rangoActual = "Gran Maestro"; nextRank = "Challenger"; nextThreshold = baseChallenger; prevThreshold = baseGranMaestro; }
+            else if (puntos >= baseMaestro) { rangoActual = "Maestro"; nextRank = "Gran Maestro"; nextThreshold = baseGranMaestro; prevThreshold = baseMaestro; }
+            else if (puntos >= baseLeyenda) { rangoActual = "Leyenda"; nextRank = "Maestro"; nextThreshold = baseMaestro; prevThreshold = baseLeyenda; }
+            else if (puntos >= baseDiamante) { rangoActual = "Diamante"; nextRank = "Leyenda"; nextThreshold = baseLeyenda; prevThreshold = baseDiamante; }
+            else if (puntos >= basePlatino) { rangoActual = "Platino"; nextRank = "Diamante"; nextThreshold = baseDiamante; prevThreshold = basePlatino; }
+            else if (puntos >= baseOro) { rangoActual = "Oro"; nextRank = "Platino"; nextThreshold = basePlatino; prevThreshold = baseOro; }
+            else if (puntos >= basePlata) { rangoActual = "Plata"; nextRank = "Oro"; nextThreshold = baseOro; prevThreshold = basePlata; }
+            else if (puntos >= baseBronce) { rangoActual = "Bronce"; nextRank = "Plata"; nextThreshold = basePlata; prevThreshold = baseBronce; }
+            else { rangoActual = "Sin Rango"; nextRank = "Bronce"; nextThreshold = baseBronce; prevThreshold = 0; }
 
             double progressPct = 0;
-            if (nextRank != "Max")
+            if (nextRank != "Max" && nextThreshold > prevThreshold)
             {
-                if (nextThreshold > prevThreshold)
-                {
-                    progressPct = (peso - prevThreshold) / (nextThreshold - prevThreshold) * 100;
-                }
+                progressPct = (double)(puntos - prevThreshold) / (nextThreshold - prevThreshold) * 100.0;
             }
-            else
-            {
-                progressPct = 100;
-            }
-            
-            progressPct = Math.Max(0, Math.Min(100, progressPct));
+            else if (nextRank == "Max") progressPct = 100;
 
             return new REPS_backend.DTOs.Ranking.MuscleProgressDto
             {
                 GrupoMuscular = grupo.ToString(),
                 RangoActual = rangoActual,
-                CurrentPoints = peso, 
+                CurrentPoints = puntos, 
                 NextRankThreshold = nextThreshold,
                 NextRank = nextRank,
-                ProgressPercentage = Math.Round(progressPct, 1)
+                ProgressPercentage = Math.Round(Math.Max(0, Math.Min(100, progressPct)), 1)
             };
         }
 
@@ -284,6 +286,9 @@ namespace REPS_backend.Services
 
             user.FechaUltimaActividad = DateTime.UtcNow;
             await _usuarioRepository.UpdateUsuarioAsync(user);
+
+            // Check for achievements after updating streak
+            // await _logroService.CheckAndUnlockAchievementsAsync(userId);
         }
     }
 }

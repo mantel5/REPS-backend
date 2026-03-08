@@ -4,34 +4,15 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace REPSbackend.Migrations
+namespace REPS_backend.Migrations
 {
     /// <inheritdoc />
-    public partial class InicialCompleta : Migration
+    public partial class InitialMySql : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "DetallesMusculares",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    EjercicioId = table.Column<int>(type: "int", nullable: false),
-                    NombreMusculo = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    DescripcionImpacto = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    EsPrincipal = table.Column<bool>(type: "tinyint(1)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DetallesMusculares", x => x.Id);
-                })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -43,11 +24,11 @@ namespace REPSbackend.Migrations
                     UsuarioCreadorId = table.Column<int>(type: "int", nullable: true),
                     Nombre = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    GrupoMuscular = table.Column<int>(type: "int", nullable: false),
                     DescripcionTecnica = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ImagenMusculosUrl = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    GrupoMuscular = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -56,20 +37,22 @@ namespace REPSbackend.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "RecordsPersonales",
+                name: "Logros",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    UsuarioId = table.Column<int>(type: "int", nullable: false),
-                    EjercicioId = table.Column<int>(type: "int", nullable: false),
-                    PesoMaximo = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    FechaRecord = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    PesoAnterior = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
+                    Titulo = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Descripcion = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Puntos = table.Column<int>(type: "int", nullable: false),
+                    IconoUrl = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RecordsPersonales", x => x.Id);
+                    table.PrimaryKey("PK_Logros", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -105,21 +88,23 @@ namespace REPSbackend.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     PasswordHash = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CodigoAmigo = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    FechaRegistro = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     AvatarId = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Rol = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     PlanActual = table.Column<int>(type: "int", nullable: false),
                     FechaFinSuscripcion = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    EstaActivo = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    EstaBorrado = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     PuntosTotales = table.Column<int>(type: "int", nullable: false),
+                    PuntosLogros = table.Column<int>(type: "int", nullable: false),
+                    PuntosRecords = table.Column<int>(type: "int", nullable: false),
                     RachaDias = table.Column<int>(type: "int", nullable: false),
-                    RangoGeneral = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                    FechaUltimaActividad = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    RangoGeneral = table.Column<int>(type: "int", nullable: false),
+                    CodigoAmigo = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    FechaRegistro = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    EstaActivo = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    EstaBorrado = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -128,25 +113,73 @@ namespace REPSbackend.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "SerieLog",
+                name: "DetallesMusculares",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    SesionId = table.Column<int>(type: "int", nullable: false),
                     EjercicioId = table.Column<int>(type: "int", nullable: false),
-                    NumeroSerie = table.Column<int>(type: "int", nullable: false),
-                    PesoUsado = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    RepsRealizadas = table.Column<int>(type: "int", nullable: false),
-                    Completada = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    NombreMusculo = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DescripcionImpacto = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    EsPrincipal = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SerieLog", x => x.Id);
+                    table.PrimaryKey("PK_DetallesMusculares", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SerieLog_Sesiones_SesionId",
-                        column: x => x.SesionId,
-                        principalTable: "Sesiones",
+                        name: "FK_DetallesMusculares_Ejercicios_EjercicioId",
+                        column: x => x.EjercicioId,
+                        principalTable: "Ejercicios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "RecordsPersonales",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UsuarioId = table.Column<int>(type: "int", nullable: false),
+                    EjercicioId = table.Column<int>(type: "int", nullable: false),
+                    PesoMaximo = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    FechaRecord = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    PesoAnterior = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RecordsPersonales", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RecordsPersonales_Ejercicios_EjercicioId",
+                        column: x => x.EjercicioId,
+                        principalTable: "Ejercicios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "UsuarioLogros",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UsuarioId = table.Column<int>(type: "int", nullable: false),
+                    LogroId = table.Column<int>(type: "int", nullable: false),
+                    Progreso = table.Column<double>(type: "double", nullable: false),
+                    Desbloqueado = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    FechaObtencion = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UsuarioLogros", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UsuarioLogros_Logros_LogroId",
+                        column: x => x.LogroId,
+                        principalTable: "Logros",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -156,6 +189,8 @@ namespace REPSbackend.Migrations
                 name: "Amistades",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     SolicitanteId = table.Column<int>(type: "int", nullable: false),
                     ReceptorId = table.Column<int>(type: "int", nullable: false),
                     FechaAmistad = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -163,19 +198,19 @@ namespace REPSbackend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Amistades", x => new { x.SolicitanteId, x.ReceptorId });
+                    table.PrimaryKey("PK_Amistades", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Amistades_Usuarios_ReceptorId",
                         column: x => x.ReceptorId,
                         principalTable: "Usuarios",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Amistades_Usuarios_SolicitanteId",
                         column: x => x.SolicitanteId,
                         principalTable: "Usuarios",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -213,12 +248,43 @@ namespace REPSbackend.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Entrenamientos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UsuarioId = table.Column<int>(type: "int", nullable: false),
+                    RutinaId = table.Column<int>(type: "int", nullable: true),
+                    Nombre = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Fecha = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DuracionMinutos = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Entrenamientos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Entrenamientos_Rutinas_RutinaId",
+                        column: x => x.RutinaId,
+                        principalTable: "Rutinas",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Entrenamientos_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuarios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "RutinaEjercicios",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     RutinaId = table.Column<int>(type: "int", nullable: false),
                     EjercicioId = table.Column<int>(type: "int", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
                     Orden = table.Column<int>(type: "int", nullable: false),
                     Series = table.Column<int>(type: "int", nullable: false),
                     Repeticiones = table.Column<string>(type: "longtext", nullable: false)
@@ -230,7 +296,7 @@ namespace REPSbackend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RutinaEjercicios", x => new { x.RutinaId, x.EjercicioId });
+                    table.PrimaryKey("PK_RutinaEjercicios", x => x.Id);
                     table.ForeignKey(
                         name: "FK_RutinaEjercicios_Ejercicios_EjercicioId",
                         column: x => x.EjercicioId,
@@ -246,10 +312,72 @@ namespace REPSbackend.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "SeriesLogs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    SesionId = table.Column<int>(type: "int", nullable: false),
+                    EjercicioId = table.Column<int>(type: "int", nullable: false),
+                    NumeroSerie = table.Column<int>(type: "int", nullable: false),
+                    PesoUsado = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    RepsRealizadas = table.Column<int>(type: "int", nullable: false),
+                    Completada = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    EntrenamientoId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SeriesLogs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SeriesLogs_Ejercicios_EjercicioId",
+                        column: x => x.EjercicioId,
+                        principalTable: "Ejercicios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SeriesLogs_Entrenamientos_EntrenamientoId",
+                        column: x => x.EntrenamientoId,
+                        principalTable: "Entrenamientos",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_SeriesLogs_Sesiones_SesionId",
+                        column: x => x.SesionId,
+                        principalTable: "Sesiones",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Amistades_ReceptorId",
                 table: "Amistades",
                 column: "ReceptorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Amistades_SolicitanteId",
+                table: "Amistades",
+                column: "SolicitanteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DetallesMusculares_EjercicioId",
+                table: "DetallesMusculares",
+                column: "EjercicioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Entrenamientos_RutinaId",
+                table: "Entrenamientos",
+                column: "RutinaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Entrenamientos_UsuarioId",
+                table: "Entrenamientos",
+                column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RecordsPersonales_EjercicioId",
+                table: "RecordsPersonales",
+                column: "EjercicioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RutinaEjercicios_EjercicioId",
@@ -257,14 +385,34 @@ namespace REPSbackend.Migrations
                 column: "EjercicioId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RutinaEjercicios_RutinaId",
+                table: "RutinaEjercicios",
+                column: "RutinaId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Rutinas_UsuarioId",
                 table: "Rutinas",
                 column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SerieLog_SesionId",
-                table: "SerieLog",
+                name: "IX_SeriesLogs_EjercicioId",
+                table: "SeriesLogs",
+                column: "EjercicioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SeriesLogs_EntrenamientoId",
+                table: "SeriesLogs",
+                column: "EntrenamientoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SeriesLogs_SesionId",
+                table: "SeriesLogs",
                 column: "SesionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UsuarioLogros_LogroId",
+                table: "UsuarioLogros",
+                column: "LogroId");
         }
 
         /// <inheritdoc />
@@ -283,16 +431,25 @@ namespace REPSbackend.Migrations
                 name: "RutinaEjercicios");
 
             migrationBuilder.DropTable(
-                name: "SerieLog");
+                name: "SeriesLogs");
+
+            migrationBuilder.DropTable(
+                name: "UsuarioLogros");
 
             migrationBuilder.DropTable(
                 name: "Ejercicios");
 
             migrationBuilder.DropTable(
-                name: "Rutinas");
+                name: "Entrenamientos");
 
             migrationBuilder.DropTable(
                 name: "Sesiones");
+
+            migrationBuilder.DropTable(
+                name: "Logros");
+
+            migrationBuilder.DropTable(
+                name: "Rutinas");
 
             migrationBuilder.DropTable(
                 name: "Usuarios");

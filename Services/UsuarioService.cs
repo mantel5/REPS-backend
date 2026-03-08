@@ -7,20 +7,26 @@ namespace REPS_backend.Services
     public class UsuarioService : IUsuarioService
     {
         private readonly IUsuarioRepository _repository;
+        private readonly IRankingService _rankingService;
 
-        public UsuarioService(IUsuarioRepository repository)
+        public UsuarioService(IUsuarioRepository repository, IRankingService rankingService)
         {
             _repository = repository;
+            _rankingService = rankingService;
         }
 
         // ... MÉTODOS EXISTENTES (MiPerfil, BuscarAmigo, Actualizar) ...
         public async Task<UsuarioPerfilDto?> ObtenerMiPerfilAsync(int id)
         {
+            // Forzamos recalcular rangos por si los umbrales han cambiado
+            await _rankingService.UpdateUserRankAsync(id);
+
             var user = await _repository.GetByIdAsync(id);
-            if (user == null) return null;
+            if (user == null || !user.EstaActivo || user.EstaBorrado) return null;
 
             return new UsuarioPerfilDto
             {
+                Id = user.Id,
                 Nombre = user.Nombre,
                 Email = user.Email,
                 AvatarId = user.AvatarId,
@@ -28,10 +34,15 @@ namespace REPS_backend.Services
                 FechaRegistro = user.FechaRegistro,
                 Rol = user.Rol,
                 PuntosTotales = user.PuntosTotales,
+                PuntosRangoGeneral = user.PuntosTotales - user.PuntosLogros,
+                PuntosLogros = user.PuntosLogros,
                 RachaDias = user.RachaDias,
                 RangoGeneral = user.RangoGeneral.ToString(),
-                EsPro = user.EsPro(),
-                UnidadPreferida = user.UnidadPreferida.ToString()
+                Biografia = user.Biografia,
+                EsPerfilPublico = user.EsPerfilPublico,
+                MostrarEstadisticas = user.MostrarEstadisticas,
+                RankingVisible = user.RankingVisible,
+                EsPro = user.EsPro()
             };
         }
 
@@ -48,7 +59,9 @@ namespace REPS_backend.Services
                 PuntosTotales = user.PuntosTotales,
                 RachaDias = user.RachaDias,
                 RangoGeneral = user.RangoGeneral.ToString(),
-                EsPro = user.EsPro()
+                EsPro = user.EsPro(),
+                Biografia = user.Biografia,
+                CodigoAmigo = user.CodigoAmigo
             };
         }
 
@@ -57,8 +70,13 @@ namespace REPS_backend.Services
             var user = await _repository.GetByIdAsync(id);
             if (user == null) return false;
 
-            if (!string.IsNullOrEmpty(dto.Nombre)) user.Nombre = dto.Nombre;
-            if (!string.IsNullOrEmpty(dto.AvatarId)) user.AvatarId = dto.AvatarId;
+            if (dto.Nombre != null) user.Nombre = dto.Nombre;
+            if (dto.AvatarId != null) user.AvatarId = dto.AvatarId;
+            if (dto.Biografia != null) user.Biografia = dto.Biografia;
+            
+            if (dto.EsPerfilPublico.HasValue) user.EsPerfilPublico = dto.EsPerfilPublico.Value;
+            if (dto.MostrarEstadisticas.HasValue) user.MostrarEstadisticas = dto.MostrarEstadisticas.Value;
+            if (dto.RankingVisible.HasValue) user.RankingVisible = dto.RankingVisible.Value;
 
             await _repository.UpdateUsuarioAsync(user);
             return true;
@@ -77,7 +95,7 @@ namespace REPS_backend.Services
             if (user == null) return false;
 
             user.EstaActivo = nuevoEstadoActivo;
-
+            
             await _repository.UpdateUsuarioAsync(user);
             return true;
         }
@@ -88,7 +106,7 @@ namespace REPS_backend.Services
             if (user == null) return false;
 
             user.EstaBorrado = true;
-            user.EstaActivo = false;
+            user.EstaActivo = false; 
 
             await _repository.UpdateUsuarioAsync(user);
             return true;
@@ -98,7 +116,7 @@ namespace REPS_backend.Services
         {
             // 1. Buscamos al futuro amigo
             var amigo = await _repository.GetByCodigoAmigoAsync(codigoAmigo.ToUpper());
-
+            
             // VALIDACIONES:
             // - Si no existe
             // - O si soy yo mismo (mi ID es igual al del amigo)
@@ -134,7 +152,9 @@ namespace REPS_backend.Services
                 PuntosTotales = u.PuntosTotales,
                 RachaDias = u.RachaDias,
                 RangoGeneral = u.RangoGeneral.ToString(),
-                EsPro = u.EsPro()
+                EsPro = u.EsPro(),
+                Biografia = u.Biografia,
+                CodigoAmigo = u.CodigoAmigo
             }).ToList();
         }
 
@@ -151,7 +171,9 @@ namespace REPS_backend.Services
                 PuntosTotales = u.PuntosTotales,
                 RachaDias = u.RachaDias,
                 RangoGeneral = u.RangoGeneral.ToString(),
-                EsPro = u.EsPro()
+                EsPro = u.EsPro(),
+                Biografia = u.Biografia,
+                CodigoAmigo = u.CodigoAmigo
             }).ToList();
         }
 
@@ -168,7 +190,7 @@ namespace REPS_backend.Services
             {
                 // CASO ACEPTAR: Cambiamos el estado a TRUE
                 amistad.Aceptada = true;
-                await _repository.UpdateAmistadAsync(amistad);
+                await _repository.UpdateAmistadAsync(amistad); 
             }
             else
             {
@@ -179,6 +201,26 @@ namespace REPS_backend.Services
             return true;
         }
 
+        public async Task<bool> ActualizarPlanAsync(int userId, PlanSuscripcion nuevoPlan)
+        {
+            var usuario = await _repository.GetByIdAsync(userId);
+            if (usuario == null) return false;
 
+            usuario.PlanActual = nuevoPlan;
+
+            if (nuevoPlan == PlanSuscripcion.ProMensual)
+            {
+                usuario.FechaFinSuscripcion = DateTime.Now.AddDays(30);
+            }
+            else
+            {
+                usuario.FechaFinSuscripcion = DateTime.MinValue;
+            }
+
+            await _repository.UpdateUsuarioAsync(usuario);
+            return true;
+        }
+
+        
     }
 }

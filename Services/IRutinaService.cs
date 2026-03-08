@@ -1,26 +1,23 @@
-﻿using REPS_backend.DTOs.Rutinas;
-using REPS_backend.DTOs.Ejercicios;
-using REPS_backend.Models;
-using REPS_backend.Repositories;
+using REPS_backend.DTOs.Rutinas;
 
 namespace REPS_backend.Services
 {
     public interface IRutinaService
     {
         Task<RutinaDetalleDto> CrearRutinaAsync(RutinaCreateDto dto, int usuarioId);
-        Task<bool> ActualizarRutinaAsync(int id, RutinaUpdateDto dto, int usuarioId);
         Task<List<RutinaItemDto>> ObtenerRutinasPublicasAsync();
-        Task<RutinaDetalleDto?> ObtenerDetalleRutinaAsync(int id);
-        Task<bool> BorrarRutinaAsync(int id, int usuarioId);
-
-        Task<bool> EnviarARevisionAsync(int rutinaId, int usuarioId);
-        Task<IEnumerable<Rutina>> ObtenerRutinasPendientesAsync();
-        Task<bool> ValidarRutinaAsync(int rutinaId, bool aprobar);
-        Task<bool> BanearRutinaAsync(int rutinaId);
-        Task<List<RutinaItemDto>> ObtenerRutinasDeUsuarioAsync(int usuarioId, NivelDificultad? nivel = null, GrupoMuscular? musculo = null);
-        Task<bool> ToggleLikeAsync(int rutinaId, int usuarioId);
-        Task<List<RutinaItemDto>> ObtenerRutinasIAAsync(int solicitarUserId);
-        Task<List<RutinaItemDto>> ObtenerRutinasGuardadasAsync(int usuarioId);
-        Task<RutinaDetalleDto?> ImportarRutinaAsync(int rutinaId, int usuarioId);
+        Task<List<RutinaItemDto>> ObtenerRutinasUsuarioAsync(int usuarioId);
+        Task<RutinaDetalleDto> ObtenerDetalleRutinaAsync(int rutinaId, int usuarioId = 0);
+        Task<RutinaDetalleDto> GenerarRutinaIAAsync(RutinaIARequestDto dto, int usuarioId);
+        Task<int> LikeRutinaAsync(int rutinaId);
+        Task<RutinaDetalleDto> CopiarRutinaAsync(int rutinaId, int usuarioId);
+        Task<bool> EliminarRutinaAsync(int id, int usuarioId);
+        Task<bool> EliminarRutinaAdminAsync(int id);
+        Task<bool> PublicarRutinaAsync(int id, int usuarioId);
+        Task<bool> ValidarRutinaAsync(int id);
+        Task<bool> RechazarRutinaAsync(int id);
+        Task<List<RutinaItemDto>> ObtenerRutinasEnRevisionAsync();
+        Task<List<RutinaItemDto>> ObtenerTodasRutinasAdminAsync();
+        Task<RutinaDetalleDto> ActualizarRutinaAsync(int id, RutinaCreateDto dto, int usuarioId);
     }
 }

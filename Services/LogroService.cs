@@ -10,19 +10,30 @@ namespace REPS_backend.Services
     public class LogroService : ILogroService
     {
         private readonly ILogroRepository _logroRepository;
-        private readonly IRankingService _rankingService;
+        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IEntrenamientoRepository _entrenamientoRepository;
+        private readonly IRecordPersonalService _recordService;
 
-        public LogroService(ILogroRepository logroRepository, IRankingService rankingService)
+        public LogroService(ILogroRepository logroRepository, IUsuarioRepository usuarioRepository, IEntrenamientoRepository entrenamientoRepository, IRecordPersonalService recordService)
         {
             _logroRepository = logroRepository;
-            _rankingService = rankingService;
+            _usuarioRepository = usuarioRepository;
+            _entrenamientoRepository = entrenamientoRepository;
+            _recordService = recordService;
         }
 
         public async Task<List<LogroDTO>> GetLogrosForUserAsync(int userId)
         {
+            var user = await _usuarioRepository.GetByIdAsync(userId);
+            var entrenamientosCount = await _entrenamientoRepository.CountByUsuarioIdAsync(userId);
+            var recordsCount = (await _recordService.ObtenerRecordsUsuarioAsync(userId)).Count;
+            var totalVolume = await _entrenamientoRepository.GetTotalVolumeByUsuarioIdAsync(userId); // Assume this method exists or add it
+
             var allLogros = await _logroRepository.GetAllAsync();
             var userLogros = await _logroRepository.GetUserLogrosAsync(userId);
-            var userLogrosMap = userLogros.ToDictionary(ul => ul.LogroId);
+            var userLogrosMap = userLogros
+                .GroupBy(ul => ul.LogroId)
+                .ToDictionary(g => g.Key, g => g.First());
 
             var result = new List<LogroDTO>();
 
@@ -39,10 +50,61 @@ namespace REPS_backend.Services
                     Desbloqueado = false
                 };
 
+                // Lógica dinámica avanzada para logros
+                if (user != null)
+                {
+                    switch (logro.Titulo)
+                    {
+                        case "Primeros Pasos":
+                            dto.Progreso = entrenamientosCount >= 1 ? 100 : 0;
+                            break;
+                        case "Centurión":
+                        case "Guerrero del Hierro":
+                            dto.Progreso = (int)Math.Min(100, (entrenamientosCount * 100.0) / 100);
+                            break;
+                        case "Racha de Fuego":
+                            dto.Progreso = (int)Math.Min(100, (user.RachaDias * 100.0) / 28);
+                            break;
+                        case "Inquebrantable":
+                            dto.Progreso = (int)Math.Min(100, (user.RachaDias * 100.0) / 60);
+                            break;
+                        case "Constancia":
+                            // 3 sesiones semana. Difícil de calcular sin histórico completo, pero podemos aproximar.
+                            dto.Progreso = entrenamientosCount >= 3 ? 100 : (int)(entrenamientosCount * 33.3);
+                            break;
+                        case "Estrella Ascendente":
+                            // 50 entrenamientos / 30 días - aproximar con total
+                            dto.Progreso = (int)Math.Min(100, (entrenamientosCount * 100.0) / 50);
+                            break;
+                        case "Velocista":
+                            // 10 entrenamientos / semana - aproximar
+                            dto.Progreso = (int)Math.Min(100, (entrenamientosCount * 100.0) / 10);
+                            break;
+                        case "Coleccionista de Records":
+                            dto.Progreso = (int)Math.Min(100, (recordsCount * 100.0) / 5);
+                            break;
+                        case "Maestro del Volumen":
+                            dto.Progreso = (int)Math.Min(100, (totalVolume * 100m) / 100000);
+                            break;
+                        case "Perfeccionista":
+                            // 50 entrenamientos sin fallar - aproximar con total
+                            dto.Progreso = (int)Math.Min(100, (entrenamientosCount * 100.0) / 50);
+                            break;
+                        default:
+                            dto.Progreso = 0;
+                            break;
+                    }
+
+                    if (dto.Progreso >= 100) 
+                    {
+                        // Don't set Desbloqueado here, let CheckAndUnlockAchievementsAsync handle it
+                    }
+                }
+
                 if (userLogrosMap.TryGetValue(logro.Id, out var userLogro))
                 {
-                    dto.Progreso = userLogro.Progreso;
-                    dto.Desbloqueado = userLogro.Desbloqueado;
+                    dto.Progreso = Math.Max(dto.Progreso, userLogro.Progreso);
+                    dto.Desbloqueado = dto.Desbloqueado || userLogro.Desbloqueado;
                     dto.FechaObtencion = userLogro.FechaObtencion;
                 }
 
@@ -100,20 +162,14 @@ namespace REPS_backend.Services
                 return false; // Ya lo tiene
             }
 
-            // 2. Si existe el registro pero no desbloqueado, actualizarlo?
-            // Por simplicidad, asumimos que si no lo tiene desbloqueado, lo creamos o actualizamos
-
+            // 2. Si existe el registro pero no desbloqueado, actualizarlo
             var existing = userLogros.FirstOrDefault(ul => ul.LogroId == logroId);
             if (existing != null)
             {
                 existing.Desbloqueado = true;
                 existing.FechaObtencion = System.DateTime.UtcNow;
                 existing.Progreso = 100;
-                // Deberíamos actualizar en repo, falta metodo UpdateUsuarioLogroAsync.
-                // Como workaround si no quiero tocar repo, puedo asumir que Entity Framework trackea cambios si usamos el mismo contexto. 
-                // Pero LogroRepository usa _context, así que sí trackea si GetUserLogros los trajo.
-                // Sin embargo necesitamos SaveChanges.
-                // Agregaremos un SaveChanges o Update al repo, pero por ahora usemos Add para el caso nuevo.
+                await _logroRepository.UpdateUsuarioLogroAsync(existing);
             }
             else
             {
@@ -128,44 +184,38 @@ namespace REPS_backend.Services
                 await _logroRepository.AddUsuarioLogroAsync(nuevoLogro);
             }
 
-            await _rankingService.UpdateUserRankAsync(userId);
-            await _rankingService.UpdateStreakAsync(userId);
-
             return true;
+        }
+
+        public async Task<List<LogroDTO>> CheckAndUnlockAchievementsAsync(int userId)
+        {
+            var allLogros = await GetLogrosForUserAsync(userId);
+            var newlyUnlocked = new List<LogroDTO>();
+
+            foreach (var logro in allLogros)
+            {
+                if (logro.Progreso >= 100 && !logro.Desbloqueado)
+                {
+                    // Unlock it
+                    await UnlockLogroAsync(userId, logro.Id);
+                    logro.FechaObtencion = DateTime.UtcNow;
+                    newlyUnlocked.Add(logro);
+                }
+            }
+
+            return newlyUnlocked;
         }
 
         public async Task<List<LogroDTO>> GetUltimosLogrosDesbloqueadosAsync(int userId, int count)
         {
-            var userLogros = await _logroRepository.GetUserLogrosAsync(userId);
-            var desbloqueados = userLogros
-                .Where(ul => ul.Desbloqueado)
-                .OrderByDescending(ul => ul.FechaObtencion)
+            var todosLogrosCalculados = await GetLogrosForUserAsync(userId);
+            var desbloqueados = todosLogrosCalculados
+                .Where(l => l.Desbloqueado)
+                .OrderByDescending(l => l.FechaObtencion ?? DateTime.MinValue)
                 .Take(count)
                 .ToList();
 
-            if (!desbloqueados.Any()) return new List<LogroDTO>();
-
-            // Cargar info del logro
-            var result = new List<LogroDTO>();
-            foreach (var ul in desbloqueados)
-            {
-                var logro = await _logroRepository.GetByIdAsync(ul.LogroId);
-                if (logro != null)
-                {
-                    result.Add(new LogroDTO
-                    {
-                        Id = logro.Id,
-                        Titulo = logro.Titulo,
-                        Descripcion = logro.Descripcion,
-                        Puntos = logro.Puntos,
-                        IconoUrl = logro.IconoUrl,
-                        Progreso = 100,
-                        Desbloqueado = true,
-                        FechaObtencion = ul.FechaObtencion
-                    });
-                }
-            }
-            return result;
+            return desbloqueados;
         }
     }
 }

@@ -32,10 +32,17 @@ namespace REPS_backend.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<object>> Login(LoginDto dto)
         {
-            var token = await _authService.LoginAsync(dto);
-            if (token == null) return Unauthorized(new { mensaje = "Credenciales incorrectas" });
-            
-            return Ok(new { token });
+            try
+            {
+                var token = await _authService.LoginAsync(dto);
+                if (token == null) return Unauthorized(new { mensaje = "Credenciales incorrectas" });
+                
+                return Ok(new { token });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
         }
     }
 }

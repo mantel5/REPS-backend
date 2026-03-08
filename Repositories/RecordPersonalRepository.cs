@@ -18,10 +18,20 @@ namespace REPS_backend.Repositories
 
         public async Task<IEnumerable<RecordPersonal>> GetByUserIdAsync(int userId)
         {
-            return await _context.RecordsPersonales
-                .Include(r => r.Ejercicio)
-                .Where(r => r.UsuarioId == userId)
-                .ToListAsync();
+            try 
+            {
+                return await _context.RecordsPersonales
+                    .Include(r => r.Ejercicio)
+                    .Where(r => r.UsuarioId == userId)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                // Loguear el error real
+                Console.WriteLine($"ERROR en RecordPersonalRepository.GetByUserIdAsync: {ex.Message}");
+                if (ex.InnerException != null) Console.WriteLine($"Inner: {ex.InnerException.Message}");
+                throw;
+            }
         }
 
         public async Task<RecordPersonal?> GetBestByExerciseAsync(int userId, int ejercicioId)

@@ -8,9 +8,26 @@ namespace REPS_backend.Repositories
         private readonly ApplicationDbContext _context;
         public EjercicioRepository(ApplicationDbContext context) { _context = context; }
 
+        public async Task<List<Ejercicio>> GetAllAsync()
+        {
+            return await _context.Ejercicios.ToListAsync();
+        }
+
         public async Task<List<Ejercicio>> GetAllPersonalizadosAsync(int userId)
         {
-            return await _context.Ejercicios.Where(e => e.UsuarioCreadorId == null || e.UsuarioCreadorId == userId).ToListAsync();
+            // Retorna: 
+            // 1. Ejercicios del sistema (null)
+            // 2. Ejercicios creados por el usuario
+            // 3. Ejercicios que, aunque no sean suyos ni del sistema, estén en sus rutinas (por si copió una rutina con ejercicios personalizados de otro)
+            var exercisesInRoutines = await _context.RutinaEjercicios
+                .Where(re => re.Rutina.UsuarioId == userId)
+                .Select(re => re.EjercicioId)
+                .Distinct()
+                .ToListAsync();
+
+            return await _context.Ejercicios
+                .Where(e => e.UsuarioCreadorId == null || e.UsuarioCreadorId == userId || exercisesInRoutines.Contains(e.Id))
+                .ToListAsync();
         }
         public async Task<Ejercicio?> GetByIdAsync(int id)
         {

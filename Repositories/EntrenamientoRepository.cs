@@ -42,6 +42,16 @@ namespace REPS_backend.Repositories
                 .ToListAsync();
         }
 
+        public async Task<decimal> GetTotalVolumeByUsuarioIdAsync(int usuarioId)
+        {
+            var totalVolume = await _context.Entrenamientos
+                .Where(e => e.UsuarioId == usuarioId)
+                .SelectMany(e => e.SeriesRealizadas)
+                .Where(s => s.Completada)
+                .SumAsync(s => (decimal?)s.PesoUsado * s.RepsRealizadas) ?? 0;
+            return totalVolume;
+        }
+
         public async Task<Dictionary<int, DateTime>> ObtenerUltimasFechasRutinasAsync(int usuarioId, List<int> rutinaIds)
         {
             var fechas = await _context.Entrenamientos

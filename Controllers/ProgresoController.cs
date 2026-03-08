@@ -23,8 +23,15 @@ namespace REPS_backend.Controllers
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdString, out int userId)) return Unauthorized();
 
-            var progreso = await _progresoService.ObtenerProgresoMuscularAsync(userId);
-            return Ok(progreso);
+            try 
+            {
+                var progreso = await _progresoService.ObtenerProgresoMuscularAsync(userId);
+                return Ok(progreso);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("general")]
@@ -33,8 +40,32 @@ namespace REPS_backend.Controllers
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdString, out int userId)) return Unauthorized();
 
-            var general = await _progresoService.ObtenerProgresoGeneralAsync(userId);
-            return Ok(general);
+            try 
+            {
+                var general = await _progresoService.ObtenerProgresoGeneralAsync(userId);
+                return Ok(general);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("analitica")]
+        public async Task<IActionResult> GetAnalitica()
+        {
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdString, out int userId)) return Unauthorized();
+
+            try 
+            {
+                var analitica = await _progresoService.ObtenerAnaliticaAsync(userId);
+                return Ok(analitica);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

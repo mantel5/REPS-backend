@@ -7,6 +7,7 @@ namespace REPS_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class RankingController : ControllerBase
     {
         private readonly IRankingService _rankingService;
@@ -42,7 +43,7 @@ namespace REPS_backend.Controllers
             {
                 return userId;
             }
-            return 1; // Fallback
+            return 0; // Fallback
         }
     }
 }

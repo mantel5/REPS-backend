@@ -78,6 +78,7 @@ namespace REPS_backend.Services
             {
                 EjercicioId = r.EjercicioId,
                 EjercicioNombre = r.Ejercicio?.Nombre ?? "Ejercicio Desconocido",
+                GrupoMuscular = r.Ejercicio?.GrupoMuscular.ToString() ?? "Otro",
                 PesoMaximo = r.PesoMaximo,
                 Mejora = r.PesoMaximo - r.PesoAnterior,
                 Fecha = r.FechaRecord,

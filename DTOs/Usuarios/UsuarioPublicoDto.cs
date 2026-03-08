@@ -11,5 +11,7 @@ namespace REPS_backend.DTOs.Usuarios
         public int RachaDias { get; set; }
         public string RangoGeneral { get; set; } = string.Empty;
         public bool EsPro { get; set; }
+        public string? Biografia { get; set; }
+        public string CodigoAmigo { get; set; } = string.Empty;
     }
 }

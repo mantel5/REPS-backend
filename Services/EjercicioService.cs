@@ -54,7 +54,8 @@ namespace REPS_backend.Services
                 Id = e.Id,
                 Nombre = e.Nombre,
                 GrupoMuscular = e.GrupoMuscular,
-                ImagenMusculosUrl = e.ImagenMusculosUrl
+                ImagenMusculosUrl = e.ImagenMusculosUrl,
+                EsMio = e.UsuarioCreadorId == userId
             }).ToList();
         }
 

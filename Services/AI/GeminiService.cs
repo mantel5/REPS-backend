@@ -1,10 +1,8 @@
 using REPS_backend.Data;
-using REPS_backend.DTOs.AI;
 using REPS_backend.DTOs.Rutinas;
 using REPS_backend.Models;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace REPS_backend.Services.AI
@@ -18,12 +16,12 @@ namespace REPS_backend.Services.AI
 
         public GeminiService(IConfiguration configuration, ApplicationDbContext context)
         {
-            _apiKey = configuration["Gemini:ApiKey"];
+            _apiKey = configuration["Gemini:ApiKey"] ?? string.Empty;
             _httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(5) };
             _context = context;
         }
 
-        public async Task<string> AnalyzeWorkoutAsync(REPS_backend.Models.Sesion sesion)
+        public async Task<string> AnalyzeWorkoutAsync(Sesion sesion)
         {
             var prompt = $"Actúa como un entrenador experto. Analiza la siguiente sesión y dame un resumen y consejos en ESPAÑOL (máximo 3 frases). " +
                          $"Highlight any achievements or suggest improvements based on volume/intensity if possible.\n\n" +
@@ -31,38 +29,43 @@ namespace REPS_backend.Services.AI
                          $"Duration: {sesion.DuracionRealMinutos} mins\n" +
                          $"Exercises:\n";
 
-            foreach (var serie in sesion.SeriesRealizadas)
+            if (sesion.SeriesRealizadas != null)
             {
-                prompt += $"- Exercise ID {serie.EjercicioId}: {serie.RepsRealizadas} reps @ {serie.PesoUsado}kg (Success: {serie.Completada})\n";
+                foreach (var serie in sesion.SeriesRealizadas)
+                {
+                    prompt += $"- Exercise ID {serie.EjercicioId}: {serie.RepsRealizadas} reps @ {serie.PesoUsado}kg (Success: {serie.Completada})\n";
+                }
             }
 
             return await CallGeminiApiAsync(prompt);
         }
 
-        public async Task<RutinaDetalleDto> GenerateRoutineAsync(RutinaGeneracionDto dto)
+        public async Task<RutinaDetalleDto> GenerateRoutineAsync(RutinaIARequestDto dto)
         {
             var ejerciciosDb = await _context.Ejercicios.Select(e => new { e.Id, e.Nombre }).ToListAsync();
             var ejerciciosLista = string.Join(", ", ejerciciosDb.Select(e => $"{e.Id}:{e.Nombre}"));
 
             var prompt = $@"
 Act as a professional personal trainer. Create a workout routine based on the following criteria:
-Goal: {dto.Objetivo}
-Muscles: {string.Join(", ", dto.GruposMusculares)}
-Duration: {dto.DuracionMinutos} mins
-Experience: {dto.NivelExperiencia}
-Additional Info: {dto.InstruccionesAdicionales}
+Goal: {dto.Goal}
+Level: {dto.Level}
+Duration: {dto.Duration} 
+Focus Areas: {string.Join(", ", dto.Muscles ?? new List<string>())}
+Equipment: {string.Join(", ", dto.Equipment ?? new List<string>())}
 
 IMPORTANT:
 1. Use ONLY exercises from this list if possible (ID:Name): [{ejerciciosLista}]. If you MUST use others, use ID 0.
 2. Return a JSON object strictly following this structure:
 {{
   ""Nombre"": ""Routine Name"",
+  ""Nivel"": ""Principiante o Intermedio o Avanzado"",
+  ""DuracionMinutos"": 60,
   ""Ejercicios"": [
     {{
       ""EjercicioId"": 123, 
-      ""Nombre"": ""Exercise Name"",
+      ""NombreEjercicio"": ""Exercise Name"",
       ""Series"": 3,
-      ""Repeticiones"": ""10-12"" 
+      ""Repeticiones"": ""12""
     }}
   ]
 }}
@@ -77,18 +80,21 @@ Do NOT wrap the JSON in markdown code blocks. Just return the raw JSON string.
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             try
             {
+                Console.WriteLine($"[Gemini JSON Payload]:\n{jsonResponse}");
                 var rutina = JsonSerializer.Deserialize<RutinaDetalleDto>(jsonResponse, options);
-                rutina.CreadorNombre = "AI Trainer";
-                return rutina;
+                return rutina ?? new RutinaDetalleDto();
             }
             catch (JsonException ex)
             {
-                throw new Exception("Failed to parse AI response: " + jsonResponse);
+                Console.WriteLine($"[Gemini Parsing ERROR]: {ex.Message}\n[Payload]: {jsonResponse}");
+                throw new Exception($"Failed to parse AI response. Error: {ex.Message}");
             }
         }
 
         private async Task<string> CallGeminiApiAsync(string textPrompt)
         {
+            if (string.IsNullOrEmpty(_apiKey)) return "Error: Gemini API key is missing.";
+
             var requestBody = new
             {
                 contents = new[]
@@ -99,9 +105,8 @@ Do NOT wrap the JSON in markdown code blocks. Just return the raw JSON string.
 
             var json = JsonSerializer.Serialize(requestBody);
 
-            // Increased to cover 30s+ wait
             int maxRetries = 5;
-            int delay = 5000; // Start with 5 seconds to be safe
+            int delay = 5000;
 
             for (int i = 0; i <= maxRetries; i++)
             {
@@ -134,15 +139,11 @@ Do NOT wrap the JSON in markdown code blocks. Just return the raw JSON string.
                         throw new Exception($"Gemini API Error (Rate Limit/Unavailable after retries): {errorMsg}");
                     }
 
-                    // Wait and retry. 
-                    // Strategy: 5s, 10s, 20s, 40s, 80s. Total wait covers even 60s limits.
-                    Console.WriteLine($"Gemini API Status {(int)response.StatusCode}. Retrying in {delay}ms...");
                     await Task.Delay(delay);
                     delay *= 2;
                     continue;
                 }
 
-                // Other errors
                 var otherErrorMsg = await response.Content.ReadAsStringAsync();
                 throw new Exception($"Gemini API Error ({response.StatusCode}): {otherErrorMsg}");
             }

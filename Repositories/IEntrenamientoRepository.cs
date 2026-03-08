@@ -9,5 +9,6 @@ namespace REPS_backend.Repositories
         Task<List<Entrenamiento>> GetByUsuarioIdWithSeriesAsync(int usuarioId);
         Task<List<Entrenamiento>> GetByUsuarioIdAsync(int usuarioId);
         Task<Dictionary<int, DateTime>> ObtenerUltimasFechasRutinasAsync(int usuarioId, List<int> rutinaIds);
+        Task<decimal> GetTotalVolumeByUsuarioIdAsync(int usuarioId);
     }
 }

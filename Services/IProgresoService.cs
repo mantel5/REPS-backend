@@ -6,5 +6,6 @@ namespace REPS_backend.Services
     {
         Task<List<ProgresoMuscularDto>> ObtenerProgresoMuscularAsync(int usuarioId);
         Task<ProgresoGeneralDto> ObtenerProgresoGeneralAsync(int usuarioId);
+        Task<AnaliticaDto> ObtenerAnaliticaAsync(int usuarioId);
     }
 }

@@ -1,5 +1,4 @@
 using REPS_backend.DTOs.Entrenamientos;
-using REPS_backend.DTOs.Rutinas;
 using REPS_backend.Models;
 using REPS_backend.Repositories;
 
@@ -9,22 +8,22 @@ namespace REPS_backend.Services
     {
         private readonly IEntrenamientoRepository _entrenamientoRepository;
         private readonly IRecordPersonalService _recordService;
-        private readonly REPS_backend.Services.AI.IAIService _aiService;
-        private readonly IRutinaRepository _rutinaRepository;
+        private readonly ILogroService _logroService;
+        private readonly IRankingService _rankingService;
 
         public EntrenamientoService(
             IEntrenamientoRepository entrenamientoRepository,
             IRecordPersonalService recordService,
-            REPS_backend.Services.AI.IAIService aiService,
-            IRutinaRepository rutinaRepository)
+            ILogroService logroService,
+            IRankingService rankingService)
         {
             _entrenamientoRepository = entrenamientoRepository;
             _recordService = recordService;
-            _aiService = aiService;
-            _rutinaRepository = rutinaRepository;
+            _logroService = logroService;
+            _rankingService = rankingService;
         }
 
-        public async Task<EntrenamientoResultadoDto> FinalizarEntrenamientoAsync(int usuarioId, FinalizarEntrenamientoDto dto)
+        public async Task<FinalizarResultadoDto> FinalizarEntrenamientoAsync(int usuarioId, FinalizarEntrenamientoDto dto)
         {
             // 1. Crear el entrenamiento
             var entrenamiento = new Entrenamiento
@@ -37,13 +36,16 @@ namespace REPS_backend.Services
                 SeriesRealizadas = new List<SerieLog>()
             };
 
-            decimal totalVolumen = 0;
-            int totalReps = 0;
-            int totalSeries = 0;
-
             // 2. Procesar ejercicios y series
+            var recordsNuevos = new List<RecordEnSesionDto>();
+            int puntosGanados = 0;
+            const int PUNTOS_POR_EJERCICIO = 10;
+
             if (dto.Ejercicios != null)
             {
+                // Track de músculos donde se batió récord (para evitar duplicar bonus)
+                var musculosConRecord = new HashSet<string>();
+
                 foreach (var ejDto in dto.Ejercicios)
                 {
                     decimal pesoMaximoEjercicio = 0;
@@ -58,32 +60,51 @@ namespace REPS_backend.Services
                                 NumeroSerie = serieDto.NumeroSerie,
                                 PesoUsado = serieDto.Peso,
                                 RepsRealizadas = serieDto.Reps,
-                                Completada = serieDto.Completada,
-                                VelocidadReal = serieDto.VelocidadReal,
-                                TiempoSegundosReal = serieDto.TiempoSegundosReal,
-                                InclinacionReal = serieDto.InclinacionReal,
-                                CaloriasQuemadasReales = serieDto.CaloriasQuemadasReales,
-                                DistanciaReal = serieDto.DistanciaReal
+                                Completada = serieDto.Completada
                             };
                             entrenamiento.SeriesRealizadas.Add(serieLog);
 
-                            // Cálculos
-                            totalSeries++;
-                            totalReps += serieDto.Reps;
-                            totalVolumen += (serieDto.Peso * serieDto.Reps);
-
-                            // Actualizar máximo local
-                            if (serieDto.Peso > pesoMaximoEjercicio)
-                            {
+                            if (serieDto.Completada && serieDto.Peso > pesoMaximoEjercicio)
                                 pesoMaximoEjercicio = serieDto.Peso;
-                            }
                         }
                     }
 
-                    // 3. Procesar Record Personal si hubo levantamiento
+                    // Sumar puntos por ejercicio (si hay al menos una serie completada)
+                    bool tieneSeriesCompletadas = ejDto.Series?.Any(s => s.Completada) ?? false;
+                    if (tieneSeriesCompletadas)
+                        puntosGanados += PUNTOS_POR_EJERCICIO;
+
+                    // 3. Procesar Record Personal
                     if (pesoMaximoEjercicio > 0)
                     {
-                        await _recordService.RegistrarNuevoLevantamientoAsync(usuarioId, ejDto.EjercicioId, pesoMaximoEjercicio);
+                        bool esRecord = await _recordService.RegistrarNuevoLevantamientoAsync(usuarioId, ejDto.EjercicioId, pesoMaximoEjercicio);
+
+                        if (esRecord)
+                        {
+                            // Obtener info del ejercicio para devolver al frontend
+                            var records = await _recordService.ObtenerRecordsUsuarioAsync(usuarioId);
+                            var recordInfo = records.FirstOrDefault(r => r.EjercicioId == ejDto.EjercicioId);
+
+                            if (recordInfo != null)
+                            {
+                                recordsNuevos.Add(new RecordEnSesionDto
+                                {
+                                    EjercicioId = ejDto.EjercicioId,
+                                    EjercicioNombre = recordInfo.EjercicioNombre,
+                                    GrupoMuscular = recordInfo.GrupoMuscular ?? string.Empty,
+                                    PesoMaximo = recordInfo.PesoMaximo,
+                                    Mejora = recordInfo.Mejora
+                                });
+
+                                // Bonus de puntos por músculo (solo 1 vez por músculo por sesión)
+                                var musculo = recordInfo.GrupoMuscular ?? "Otro";
+                                if (!musculosConRecord.Contains(musculo))
+                                {
+                                    musculosConRecord.Add(musculo);
+                                    puntosGanados += 30; // Bonus por batir récord en este músculo
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -91,28 +112,27 @@ namespace REPS_backend.Services
             // 4. Guardar todo (Entrenamiento + Series en cascada)
             await _entrenamientoRepository.AddAsync(entrenamiento);
 
-            // 5. Generar consejo IA
-            // Mapeamos el entrenamiento a Sesion para el servicio de IA (o usamos Entrenamiento directamente si cambiamos la interfaz)
-            // Como Sesion es el modelo base que usa IAIService, lo mapeamos.
-            var sesionParaIA = new Sesion
-            {
-                NombreRutinaSnapshot = entrenamiento.Nombre,
-                DuracionRealMinutos = entrenamiento.DuracionMinutos,
-                SeriesRealizadas = entrenamiento.SeriesRealizadas
-            };
+            // 5. Verificar logros desbloqueados en esta sesión
+            var newlyUnlockedLogros = await _logroService.CheckAndUnlockAchievementsAsync(usuarioId);
 
-            var consejo = await _aiService.AnalyzeWorkoutAsync(sesionParaIA);
+            // 6. Actualizar ranking y puntos totales del usuario
+            await _rankingService.UpdateUserRankAsync(usuarioId);
+            await _rankingService.UpdateStreakAsync(usuarioId);
 
-            return new EntrenamientoResultadoDto
+            return new FinalizarResultadoDto
             {
-                EntrenamientoId = entrenamiento.Id,
-                Mensaje = "Entrenamiento completado con éxito.",
-                ConsejoIA = consejo,
-                SeriesTotales = totalSeries,
-                RepsTotales = totalReps,
-                VolumenTotal = totalVolumen
+                Mensaje = "Entrenamiento guardado y récords actualizados.",
+                PuntosGanados = puntosGanados,
+                RecordsPersonal = recordsNuevos,
+                LogrosDesbloqueados = newlyUnlockedLogros.Select(l => new LogroEnSesionDto
+                {
+                    Id = l.Id,
+                    Titulo = l.Titulo,
+                    Puntos = l.Puntos
+                }).ToList()
             };
         }
+
         public async Task<List<EntrenamientoHistorialDto>> ObtenerHistorialUsuarioAsync(int usuarioId)
         {
             var entrenamientos = await _entrenamientoRepository.GetByUsuarioIdWithSeriesAsync(usuarioId);
@@ -134,43 +154,10 @@ namespace REPS_backend.Services
                             NumeroSerie = s.NumeroSerie,
                             Peso = s.PesoUsado,
                             Reps = s.RepsRealizadas,
-                            Completada = s.Completada,
-                            VelocidadReal = s.VelocidadReal,
-                            TiempoSegundosReal = s.TiempoSegundosReal,
-                            InclinacionReal = s.InclinacionReal,
-                            CaloriasQuemadasReales = s.CaloriasQuemadasReales,
-                            DistanciaReal = s.DistanciaReal
+                            Completada = s.Completada
                         }).ToList()
                     }).ToList()
             }).ToList();
-        }
-
-        public async Task<EntrenamientoInitDto?> IniciarEntrenamientoAsync(int rutinaId)
-        {
-            var rutina = await _rutinaRepository.GetByIdWithEjerciciosAsync(rutinaId);
-            if (rutina == null) return null;
-
-            return new EntrenamientoInitDto
-            {
-                RutinaId = rutina.Id,
-                Nombre = rutina.Nombre,
-                DuracionEstimadaMinutos = rutina.DuracionMinutos,
-                Ejercicios = rutina.Ejercicios.Select(re => new EntrenamientoEjercicioInitDto
-                {
-                    EjercicioId = re.EjercicioId,
-                    NombreEjercicio = re.Ejercicio?.Nombre ?? "Ejercicio",
-                    ImagenMusculosUrl = re.Ejercicio?.ImagenMusculosUrl ?? "",
-                    SeriesObjetivo = re.Series,
-                    RepeticionesObjetivo = re.Repeticiones,
-                    DescansoSegundos = re.DescansoSegundos,
-                    PesoSugerido = re.PesoSugerido,
-                    Tipo = re.Tipo,
-                    EsCardio = re.Ejercicio?.EsCardio ?? false,
-                    VelocidadSugerida = re.VelocidadSugerida,
-                    TiempoSegundosSugerido = re.TiempoSegundosSugerido,
-                    InclinacionSugerida = re.InclinacionSugerida
-                }).ToList()
-            };
         }
     }
 }

@@ -1,0 +1,2083 @@
+{
+  "$schema": "http://json.schemastore.org/sarif-1.0.0",
+  "version": "1.0.0",
+  "runs": [
+    {
+      "tool": {
+        "name": "Compilador de Microsoft (R) Visual C#",
+        "version": "4.14.0.0",
+        "fileVersion": "4.14.0-3.25465.8 (b0a9adbf)",
+        "semanticVersion": "4.14.0",
+        "language": "es-ES"
+      },
+      "results": [
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Nombre\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Rutinas/RutinaItemDto.cs",
+                "region": {
+                  "startLine": 6,
+                  "startColumn": 23,
+                  "endLine": 6,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Rutinas/RutinaItemDto.cs",
+                "region": {
+                  "startLine": 6,
+                  "startColumn": 23,
+                  "endLine": 6,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Nivel\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Rutinas/RutinaItemDto.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 23,
+                  "endLine": 9,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Rutinas/RutinaItemDto.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 23,
+                  "endLine": 9,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Nombre\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Rutinas/RutinaDetalleDto.cs",
+                "region": {
+                  "startLine": 6,
+                  "startColumn": 23,
+                  "endLine": 6,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Rutinas/RutinaDetalleDto.cs",
+                "region": {
+                  "startLine": 6,
+                  "startColumn": 23,
+                  "endLine": 6,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Nivel\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Rutinas/RutinaDetalleDto.cs",
+                "region": {
+                  "startLine": 7,
+                  "startColumn": 23,
+                  "endLine": 7,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Rutinas/RutinaDetalleDto.cs",
+                "region": {
+                  "startLine": 7,
+                  "startColumn": 23,
+                  "endLine": 7,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Estado\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Rutinas/RutinaDetalleDto.cs",
+                "region": {
+                  "startLine": 10,
+                  "startColumn": 23,
+                  "endLine": 10,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Rutinas/RutinaDetalleDto.cs",
+                "region": {
+                  "startLine": 10,
+                  "startColumn": 23,
+                  "endLine": 10,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Ejercicios\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Rutinas/RutinaDetalleDto.cs",
+                "region": {
+                  "startLine": 11,
+                  "startColumn": 41,
+                  "endLine": 11,
+                  "endColumn": 51
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Rutinas/RutinaDetalleDto.cs",
+                "region": {
+                  "startLine": 11,
+                  "startColumn": 41,
+                  "endLine": 11,
+                  "endColumn": 51
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Nombre\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Rutinas/RutinaCreateDto.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 23,
+                  "endLine": 9,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Rutinas/RutinaCreateDto.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 23,
+                  "endLine": 9,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Usuarios\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 16,
+                  "endLine": 8,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 12,
+                  "startColumn": 31,
+                  "endLine": 12,
+                  "endColumn": 39
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Ejercicios\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 16,
+                  "endLine": 8,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 13,
+                  "startColumn": 33,
+                  "endLine": 13,
+                  "endColumn": 43
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"DetallesMusculares\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 16,
+                  "endLine": 8,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 39,
+                  "endLine": 14,
+                  "endColumn": 57
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Rutinas\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 16,
+                  "endLine": 8,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 30,
+                  "endLine": 15,
+                  "endColumn": 37
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"RutinaEjercicios\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 16,
+                  "endLine": 8,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 16,
+                  "startColumn": 39,
+                  "endLine": 16,
+                  "endColumn": 55
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Sesiones\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 16,
+                  "endLine": 8,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 30,
+                  "endLine": 17,
+                  "endColumn": 38
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"RecordsPersonales\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 16,
+                  "endLine": 8,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 18,
+                  "startColumn": 38,
+                  "endLine": 18,
+                  "endColumn": 55
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Logros\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 16,
+                  "endLine": 8,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 19,
+                  "startColumn": 29,
+                  "endLine": 19,
+                  "endColumn": 35
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"UsuarioLogros\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 16,
+                  "endLine": 8,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 20,
+                  "startColumn": 36,
+                  "endLine": 20,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Amistades\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 16,
+                  "endLine": 8,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 21,
+                  "startColumn": 31,
+                  "endLine": 21,
+                  "endColumn": 40
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Entrenamientos\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 16,
+                  "endLine": 8,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 22,
+                  "startColumn": 37,
+                  "endLine": 22,
+                  "endColumn": 51
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"SeriesLogs\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 16,
+                  "endLine": 8,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Data/ApplicationDbContext.cs",
+                "region": {
+                  "startLine": 23,
+                  "startColumn": 32,
+                  "endLine": 23,
+                  "endColumn": 42
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Solicitante\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Models/Amistad.cs",
+                "region": {
+                  "startLine": 11,
+                  "startColumn": 24,
+                  "endLine": 11,
+                  "endColumn": 35
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Models/Amistad.cs",
+                "region": {
+                  "startLine": 11,
+                  "startColumn": 24,
+                  "endLine": 11,
+                  "endColumn": 35
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Receptor\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Models/Amistad.cs",
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 24,
+                  "endLine": 14,
+                  "endColumn": 32
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Models/Amistad.cs",
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 24,
+                  "endLine": 14,
+                  "endColumn": 32
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Nombre\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Ejercicios/EjercicioItemDto.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 23,
+                  "endLine": 8,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Ejercicios/EjercicioItemDto.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 23,
+                  "endLine": 8,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"ImagenMusculosUrl\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Ejercicios/EjercicioItemDto.cs",
+                "region": {
+                  "startLine": 10,
+                  "startColumn": 23,
+                  "endLine": 10,
+                  "endColumn": 40
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Ejercicios/EjercicioItemDto.cs",
+                "region": {
+                  "startLine": 10,
+                  "startColumn": 23,
+                  "endLine": 10,
+                  "endColumn": 40
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Nombre\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Ejercicios/EjercicioCreateDto.cs",
+                "region": {
+                  "startLine": 7,
+                  "startColumn": 23,
+                  "endLine": 7,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Ejercicios/EjercicioCreateDto.cs",
+                "region": {
+                  "startLine": 7,
+                  "startColumn": 23,
+                  "endLine": 7,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"CodigoAmigo\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Controllers/UsuariosController.cs",
+                "region": {
+                  "startLine": 135,
+                  "startColumn": 60,
+                  "endLine": 135,
+                  "endColumn": 71
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Controllers/UsuariosController.cs",
+                "region": {
+                  "startLine": 135,
+                  "startColumn": 60,
+                  "endLine": 135,
+                  "endColumn": 71
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Titulo\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Logros/LogroDTO.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 23,
+                  "endLine": 8,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Logros/LogroDTO.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 23,
+                  "endLine": 8,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Descripcion\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Logros/LogroDTO.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 23,
+                  "endLine": 9,
+                  "endColumn": 34
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Logros/LogroDTO.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 23,
+                  "endLine": 9,
+                  "endColumn": 34
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"IconoUrl\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Logros/LogroDTO.cs",
+                "region": {
+                  "startLine": 11,
+                  "startColumn": 23,
+                  "endLine": 11,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Logros/LogroDTO.cs",
+                "region": {
+                  "startLine": 11,
+                  "startColumn": 23,
+                  "endLine": 11,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Titulo\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Logros/CreateLogroDTO.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 23,
+                  "endLine": 8,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Logros/CreateLogroDTO.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 23,
+                  "endLine": 8,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "El elemento propiedad \"Descripcion\" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required'\"o declarar el propiedad como un valor que acepta valores NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/DTOs/Logros/CreateLogroDTO.cs",
+                "region": {
+                  "startLine": 11,
+                  "startColumn": 23,
+                  "endLine": 11,
+                  "endColumn": 34
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/DTOs/Logros/CreateLogroDTO.cs",
+                "region": {
+                  "startLine": 11,
+                  "startColumn": 23,
+                  "endLine": 11,
+                  "endColumn": 34
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS0168",
+          "level": "warning",
+          "message": "La variable 'e' se ha declarado pero nunca se usa",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Controllers/RutinasController.cs",
+                "region": {
+                  "startLine": 119,
+                  "startColumn": 48,
+                  "endLine": 119,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 3
+          }
+        },
+        {
+          "ruleId": "CS1061",
+          "level": "error",
+          "message": "\"RutinaEjercicio\" no contiene una definición para \"Rutina\" ni un método de extensión accesible \"Rutina\" que acepte un primer argumento del tipo \"RutinaEjercicio\" (¿falta alguna directiva using o una referencia de ensamblado?)",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Repositories/EjercicioRepository.cs",
+                "region": {
+                  "startLine": 23,
+                  "startColumn": 33,
+                  "endLine": 23,
+                  "endColumn": 39
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS8603",
+          "level": "warning",
+          "message": "Posible tipo de valor devuelto de referencia nulo.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/RutinaService.cs",
+                "region": {
+                  "startLine": 149,
+                  "startColumn": 40,
+                  "endLine": 149,
+                  "endColumn": 44
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA2254",
+          "level": "note",
+          "message": "La plantilla de mensaje de registro no debe variar entre las llamadas a \"LoggerExtensions.LogInformation(ILogger, string?, params object?[])\"",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Controllers/EjerciciosController.cs",
+                "region": {
+                  "startLine": 36,
+                  "startColumn": 40,
+                  "endLine": 36,
+                  "endColumn": 50
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA2254",
+          "level": "note",
+          "message": "La plantilla de mensaje de registro no debe variar entre las llamadas a \"LoggerExtensions.LogInformation(ILogger, string?, params object?[])\"",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Controllers/EjerciciosController.cs",
+                "region": {
+                  "startLine": 60,
+                  "startColumn": 40,
+                  "endLine": 60,
+                  "endColumn": 50
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA2254",
+          "level": "note",
+          "message": "La plantilla de mensaje de registro no debe variar entre las llamadas a \"LoggerExtensions.LogInformation(ILogger, string?, params object?[])\"",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Controllers/EjerciciosController.cs",
+                "region": {
+                  "startLine": 81,
+                  "startColumn": 40,
+                  "endLine": 81,
+                  "endColumn": 50
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA2254",
+          "level": "note",
+          "message": "La plantilla de mensaje de registro no debe variar entre las llamadas a \"LoggerExtensions.LogInformation(ILogger, string?, params object?[])\"",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Controllers/EjerciciosController.cs",
+                "region": {
+                  "startLine": 100,
+                  "startColumn": 40,
+                  "endLine": 100,
+                  "endColumn": 50
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA2254",
+          "level": "note",
+          "message": "La plantilla de mensaje de registro no debe variar entre las llamadas a \"LoggerExtensions.LogInformation(ILogger, string?, params object?[])\"",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Controllers/RutinaEjerciciosController.cs",
+                "region": {
+                  "startLine": 40,
+                  "startColumn": 40,
+                  "endLine": 40,
+                  "endColumn": 50
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA2254",
+          "level": "note",
+          "message": "La plantilla de mensaje de registro no debe variar entre las llamadas a \"LoggerExtensions.LogInformation(ILogger, string?, params object?[])\"",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Controllers/RutinaEjerciciosController.cs",
+                "region": {
+                  "startLine": 62,
+                  "startColumn": 40,
+                  "endLine": 62,
+                  "endColumn": 50
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA2254",
+          "level": "note",
+          "message": "La plantilla de mensaje de registro no debe variar entre las llamadas a \"LoggerExtensions.LogInformation(ILogger, string?, params object?[])\"",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Controllers/RutinaEjerciciosController.cs",
+                "region": {
+                  "startLine": 84,
+                  "startColumn": 40,
+                  "endLine": 84,
+                  "endColumn": 50
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA2254",
+          "level": "note",
+          "message": "La plantilla de mensaje de registro no debe variar entre las llamadas a \"LoggerExtensions.LogInformation(ILogger, string?, params object?[])\"",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Controllers/RutinasController.cs",
+                "region": {
+                  "startLine": 30,
+                  "startColumn": 36,
+                  "endLine": 30,
+                  "endColumn": 122
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA2254",
+          "level": "note",
+          "message": "La plantilla de mensaje de registro no debe variar entre las llamadas a \"LoggerExtensions.LogInformation(ILogger, string?, params object?[])\"",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Controllers/RutinasController.cs",
+                "region": {
+                  "startLine": 35,
+                  "startColumn": 44,
+                  "endLine": 35,
+                  "endColumn": 124
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1825",
+          "level": "note",
+          "message": "Evite las asignaciones de matriz de longitud cero innecesarias.  Use Array.Empty<string>() en su lugar.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Program.cs",
+                "region": {
+                  "startLine": 108,
+                  "startColumn": 13,
+                  "endLine": 108,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferir campos \"static readonly\" frente a argumentos de matriz constantes si se llama repetidamente al método llamado y no muta la matriz pasada",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Program.cs",
+                "region": {
+                  "startLine": 108,
+                  "startColumn": 13,
+                  "endLine": 108,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "value"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferir campos \"static readonly\" frente a argumentos de matriz constantes si se llama repetidamente al método llamado y no muta la matriz pasada",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/CloudinaryService.cs",
+                "region": {
+                  "startLine": 26,
+                  "startColumn": 13,
+                  "endLine": 26,
+                  "endColumn": 75
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "allowedMimeTypes"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferir campos \"static readonly\" frente a argumentos de matriz constantes si se llama repetidamente al método llamado y no muta la matriz pasada",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/CloudinaryService.cs",
+                "region": {
+                  "startLine": 27,
+                  "startColumn": 13,
+                  "endLine": 27,
+                  "endColumn": 63
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "allowedExtensions"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferir campos \"static readonly\" frente a argumentos de matriz constantes si se llama repetidamente al método llamado y no muta la matriz pasada",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/CloudinaryService.cs",
+                "region": {
+                  "startLine": 52,
+                  "startColumn": 13,
+                  "endLine": 52,
+                  "endColumn": 67
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "allowedMimeTypes"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferir campos \"static readonly\" frente a argumentos de matriz constantes si se llama repetidamente al método llamado y no muta la matriz pasada",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/CloudinaryService.cs",
+                "region": {
+                  "startLine": 53,
+                  "startColumn": 13,
+                  "endLine": 53,
+                  "endColumn": 46
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "allowedExtensions"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1869",
+          "level": "note",
+          "message": "Evite crear una nueva instancia de \"JsonSerializerOptions\" para cada operación de serialización. En su lugar, almacene en caché y reutilice instancias.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/AI/GeminiService.cs",
+                "region": {
+                  "startLine": 80,
+                  "startColumn": 27,
+                  "endLine": 80,
+                  "endColumn": 91
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Es preferible comparar \"Count\" con 0 en lugar de usar \"Any()\", tanto por claridad como por rendimiento.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/DashboardService.cs",
+                "region": {
+                  "startLine": 70,
+                  "startColumn": 25,
+                  "endLine": 70,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "El miembro \"CalcularTiempoAtras\" no tiene acceso a los datos de la instancia y se puede marcar como static.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/RecordPersonalService.cs",
+                "region": {
+                  "startLine": 89,
+                  "startColumn": 24,
+                  "endLine": 89,
+                  "endColumn": 43
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Es preferible comparar \"Count\" con 0 en lugar de usar \"Any()\", tanto por claridad como por rendimiento.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/RutinaService.cs",
+                "region": {
+                  "startLine": 183,
+                  "startColumn": 40,
+                  "endLine": 183,
+                  "endColumn": 56
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1868",
+          "level": "note",
+          "message": "No restrinja \"HashSet.Add(string)\" con \"HashSet.Contains(string)\"",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/EntrenamientoService.cs",
+                "region": {
+                  "startLine": 101,
+                  "startColumn": 38,
+                  "endLine": 101,
+                  "endColumn": 73
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Services/EntrenamientoService.cs",
+                "region": {
+                  "startLine": 101,
+                  "startColumn": 33,
+                  "endLine": 105,
+                  "endColumn": 34
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Services/EntrenamientoService.cs",
+                "region": {
+                  "startLine": 103,
+                  "startColumn": 37,
+                  "endLine": 103,
+                  "endColumn": 68
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1854",
+          "level": "note",
+          "message": "Preferir una llamada \"TryGetValue\" en lugar de un acceso al indexador del diccionario protegido por una comprobación \"ContainsKey\" para evitar la doble búsqueda",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/RankingService.cs",
+                "region": {
+                  "startLine": 187,
+                  "startColumn": 30,
+                  "endLine": 187,
+                  "endColumn": 65
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Services/RankingService.cs",
+                "region": {
+                  "startLine": 187,
+                  "startColumn": 68,
+                  "endLine": 187,
+                  "endColumn": 91
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1854",
+          "level": "note",
+          "message": "Preferir una llamada \"TryGetValue\" en lugar de un acceso al indexador del diccionario protegido por una comprobación \"ContainsKey\" para evitar la doble búsqueda",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/RankingService.cs",
+                "region": {
+                  "startLine": 91,
+                  "startColumn": 19,
+                  "endLine": 91,
+                  "endColumn": 54
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Services/RankingService.cs",
+                "region": {
+                  "startLine": 92,
+                  "startColumn": 40,
+                  "endLine": 92,
+                  "endColumn": 63
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1854",
+          "level": "note",
+          "message": "Preferir una llamada \"TryGetValue\" en lugar de un acceso al indexador del diccionario protegido por una comprobación \"ContainsKey\" para evitar la doble búsqueda",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/ProgresoService.cs",
+                "region": {
+                  "startLine": 91,
+                  "startColumn": 34,
+                  "endLine": 91,
+                  "endColumn": 67
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Services/ProgresoService.cs",
+                "region": {
+                  "startLine": 91,
+                  "startColumn": 70,
+                  "endLine": 91,
+                  "endColumn": 91
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1854",
+          "level": "note",
+          "message": "Preferir una llamada \"TryGetValue\" en lugar de un acceso al indexador del diccionario protegido por una comprobación \"ContainsKey\" para evitar la doble búsqueda",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/ProgresoService.cs",
+                "region": {
+                  "startLine": 92,
+                  "startColumn": 41,
+                  "endLine": 92,
+                  "endColumn": 76
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/a/Front/Services/ProgresoService.cs",
+                "region": {
+                  "startLine": 92,
+                  "startColumn": 79,
+                  "endLine": 92,
+                  "endColumn": 102
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "El miembro \"MapRutinaToItemDto\" no tiene acceso a los datos de la instancia y se puede marcar como static.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/DashboardService.cs",
+                "region": {
+                  "startLine": 118,
+                  "startColumn": 31,
+                  "endLine": 118,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "El miembro \"CalcularPorcentajeSmart\" no tiene acceso a los datos de la instancia y se puede marcar como static.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/RutinaService.cs",
+                "region": {
+                  "startLine": 169,
+                  "startColumn": 25,
+                  "endLine": 169,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "El miembro \"CalcularDuracionInterna\" no tiene acceso a los datos de la instancia y se puede marcar como static.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/RutinaService.cs",
+                "region": {
+                  "startLine": 181,
+                  "startColumn": 21,
+                  "endLine": 181,
+                  "endColumn": 44
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "El miembro \"MapToDetalleDto\" no tiene acceso a los datos de la instancia y se puede marcar como static.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/RutinaService.cs",
+                "region": {
+                  "startLine": 279,
+                  "startColumn": 34,
+                  "endLine": 279,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Es preferible comparar \"Count\" con 0 en lugar de usar \"Any()\", tanto por claridad como por rendimiento.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/ProgresoService.cs",
+                "region": {
+                  "startLine": 164,
+                  "startColumn": 18,
+                  "endLine": 164,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "El miembro \"ConvertPuntosARango\" no tiene acceso a los datos de la instancia y se puede marcar como static.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/RankingService.cs",
+                "region": {
+                  "startLine": 105,
+                  "startColumn": 23,
+                  "endLine": 105,
+                  "endColumn": 42
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "El miembro \"CalculateMuscleProgressFromPoints\" no tiene acceso a los datos de la instancia y se puede marcar como static.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/RankingService.cs",
+                "region": {
+                  "startLine": 195,
+                  "startColumn": 61,
+                  "endLine": 195,
+                  "endColumn": 94
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "El miembro \"CalcularRango\" no tiene acceso a los datos de la instancia y se puede marcar como static.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/a/Front/Services/ProgresoService.cs",
+                "region": {
+                  "startLine": 130,
+                  "startColumn": 71,
+                  "endLine": 130,
+                  "endColumn": 84
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        }
+      ],
+      "rules": {
+        "CA1822": {
+          "id": "CA1822",
+          "shortDescription": "Marcar miembros como static",
+          "fullDescription": "Los miembros que no tienen acceso a datos de instancia o que llaman a métodos de instancia se pueden marcar como static. Después de marcar los métodos como static, el compilador emitirá los sitios de llamada no virtuales para estos miembros. Esto puede proporcionar una mejora apreciable del rendimiento del código sensible al rendimiento.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1822",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "PortedFromFxCop",
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1825": {
+          "id": "CA1825",
+          "shortDescription": "Evite las asignaciones de matriz de longitud cero",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1825",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1854": {
+          "id": "CA1854",
+          "shortDescription": "Preferir el método \"IDictionary.TryGetValue(TKey, out TValue)\"",
+          "fullDescription": "Preferir una llamada \"TryGetValue\" a un acceso al indexador del diccionario protegido por una comprobación \"ContainsKey\". Tanto \"ContainsKey\" como el indexador buscarían de forma exhaustiva, por lo que el uso de \"TryGetValue\" elimina la búsqueda adicional.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1854",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1860": {
+          "id": "CA1860",
+          "shortDescription": "Evitar usar el método de extensión \"Enumerable.Any()\"",
+          "fullDescription": "Es preferible usar las propiedades \"IsEmpty\", \"Count\" o \"Length\", si hay alguna disponible, en lugar de llamar a \"Enumerable.Any()\". La intención es más clara y tiene un mejor rendimiento que usar el método de extensión \"Enumerable.Any()\".",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1860",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1861": {
+          "id": "CA1861",
+          "shortDescription": "Evitar matrices constantes como argumentos",
+          "fullDescription": "Las matrices constantes pasadas como argumentos no se reutilizan cuando se llaman repetidamente, lo que implica que se cree una nueva matriz cada vez. Considere la posibilidad de extraerlas a campos \"static readonly\" para mejorar el rendimiento si la matriz pasada no se muta dentro del método llamado.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1861",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1868": {
+          "id": "CA1868",
+          "shortDescription": "Llamada innecesaria a \"Contains(item)\"",
+          "fullDescription": "No restrinja \"Add(item)\" o \"Remove(item)\" con \"Contains(item)\" para el conjunto. Los dos anteriores ya comprueban si el elemento existe y devolverán si se agregó o quitó.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1868",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1869": {
+          "id": "CA1869",
+          "shortDescription": "Almacenamiento en caché y reutilización de instancias de \"JsonSerializerOptions\"",
+          "fullDescription": "Evite crear una nueva instancia de \"JsonSerializerOptions\" para cada operación de serialización. En su lugar, almacene en caché y reutilice instancias. Las instancias \"JsonSerializerOptions\" de uso único pueden degradar considerablemente el rendimiento de la aplicación.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1869",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA2254": {
+          "id": "CA2254",
+          "shortDescription": "La plantilla debe ser una expresión estática",
+          "fullDescription": "La plantilla de mensaje de registro no debe variar entre llamadas.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2254",
+          "properties": {
+            "category": "Usage",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CS0168": {
+          "id": "CS0168",
+          "shortDescription": "La variable está declarada pero nunca se usa",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0168)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "CS1061": {
+          "id": "CS1061",
+          "defaultLevel": "error",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS1061)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry",
+              "NotConfigurable"
+            ]
+          }
+        },
+        "CS8603": {
+          "id": "CS8603",
+          "shortDescription": "Posible tipo de valor devuelto de referencia nulo",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8603)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "CS8618": {
+          "id": "CS8618",
+          "shortDescription": "Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador \"required\" o declararlo como un valor que acepta valores NULL.",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8618)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

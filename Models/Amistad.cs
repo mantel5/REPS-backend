@@ -5,6 +5,7 @@ namespace REPS_backend.Models
 {
     public class Amistad
     {
+        public int Id { get; set; }
 
         public int SolicitanteId { get; set; }
         public Usuario Solicitante { get; set; }

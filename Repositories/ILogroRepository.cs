@@ -11,5 +11,6 @@ namespace REPS_backend.Repositories
         Task<Logro> AddAsync(Logro logro);
         Task<IEnumerable<UsuarioLogro>> GetUserLogrosAsync(int userId);
         Task AddUsuarioLogroAsync(UsuarioLogro usuarioLogro);
+        Task UpdateUsuarioLogroAsync(UsuarioLogro usuarioLogro);
     }
 }

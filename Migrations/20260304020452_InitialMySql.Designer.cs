@@ -2,35 +2,30 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using REPS_backend.Data;
 
 #nullable disable
 
-namespace REPSbackend.Migrations
+namespace REPS_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260206025134_AddEntrenamientos")]
-    partial class AddEntrenamientos
+    [Migration("20260304020452_InitialMySql")]
+    partial class InitialMySql
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
-
-            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("REPS_backend.Models.Amistad", b =>
                 {
-                    b.Property<int>("SolicitanteId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReceptorId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<bool>("Aceptada")
@@ -39,9 +34,17 @@ namespace REPSbackend.Migrations
                     b.Property<DateTime>("FechaAmistad")
                         .HasColumnType("datetime(6)");
 
-                    b.HasKey("SolicitanteId", "ReceptorId");
+                    b.Property<int>("ReceptorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SolicitanteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("ReceptorId");
+
+                    b.HasIndex("SolicitanteId");
 
                     b.ToTable("Amistades");
                 });
@@ -51,8 +54,6 @@ namespace REPSbackend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("DescripcionImpacto")
                         .IsRequired()
@@ -70,6 +71,8 @@ namespace REPSbackend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EjercicioId");
+
                     b.ToTable("DetallesMusculares");
                 });
 
@@ -78,8 +81,6 @@ namespace REPSbackend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("DescripcionTecnica")
                         .IsRequired()
@@ -110,8 +111,6 @@ namespace REPSbackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<int>("DuracionMinutos")
                         .HasColumnType("int");
 
@@ -122,28 +121,7 @@ namespace REPSbackend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UsuarioId");
-
-                    b.ToTable("Entrenamientos");
-                });
-
-            modelBuilder.Entity("REPS_backend.Models.Like", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("FechaLike")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("RutinaId")
+                    b.Property<int?>("RutinaId")
                         .HasColumnType("int");
 
                     b.Property<int>("UsuarioId")
@@ -153,10 +131,9 @@ namespace REPSbackend.Migrations
 
                     b.HasIndex("RutinaId");
 
-                    b.HasIndex("UsuarioId", "RutinaId")
-                        .IsUnique();
+                    b.HasIndex("UsuarioId");
 
-                    b.ToTable("Likes");
+                    b.ToTable("Entrenamientos");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.Logro", b =>
@@ -164,8 +141,6 @@ namespace REPSbackend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
@@ -192,8 +167,6 @@ namespace REPSbackend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("EjercicioId")
                         .HasColumnType("int");
@@ -223,7 +196,8 @@ namespace REPSbackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<int>("Descargas")
+                        .HasColumnType("int");
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
@@ -267,16 +241,14 @@ namespace REPSbackend.Migrations
 
             modelBuilder.Entity("REPS_backend.Models.RutinaEjercicio", b =>
                 {
-                    b.Property<int>("RutinaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EjercicioId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<int>("DescansoSegundos")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id")
+                    b.Property<int>("EjercicioId")
                         .HasColumnType("int");
 
                     b.Property<int>("Orden")
@@ -292,15 +264,20 @@ namespace REPSbackend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("RutinaId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Series")
                         .HasColumnType("int");
 
                     b.Property<int>("Tipo")
                         .HasColumnType("int");
 
-                    b.HasKey("RutinaId", "EjercicioId");
+                    b.HasKey("Id");
 
                     b.HasIndex("EjercicioId");
+
+                    b.HasIndex("RutinaId");
 
                     b.ToTable("RutinaEjercicios");
                 });
@@ -311,12 +288,13 @@ namespace REPSbackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<bool>("Completada")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<int>("EjercicioId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EntrenamientoId")
                         .HasColumnType("int");
 
                     b.Property<int>("NumeroSerie")
@@ -333,9 +311,13 @@ namespace REPSbackend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EjercicioId");
+
+                    b.HasIndex("EntrenamientoId");
+
                     b.HasIndex("SesionId");
 
-                    b.ToTable("SerieLog");
+                    b.ToTable("SeriesLogs");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.Sesion", b =>
@@ -343,8 +325,6 @@ namespace REPSbackend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DuracionRealMinutos")
                         .HasColumnType("int");
@@ -375,8 +355,6 @@ namespace REPSbackend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AvatarId")
                         .IsRequired()
@@ -446,8 +424,6 @@ namespace REPSbackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<bool>("Desbloqueado")
                         .HasColumnType("tinyint(1)");
 
@@ -467,9 +443,6 @@ namespace REPSbackend.Migrations
 
                     b.HasIndex("LogroId");
 
-                    b.HasIndex("UsuarioId", "LogroId")
-                        .IsUnique();
-
                     b.ToTable("UsuarioLogros");
                 });
 
@@ -478,13 +451,13 @@ namespace REPSbackend.Migrations
                     b.HasOne("REPS_backend.Models.Usuario", "Receptor")
                         .WithMany()
                         .HasForeignKey("ReceptorId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("REPS_backend.Models.Usuario", "Solicitante")
                         .WithMany()
                         .HasForeignKey("SolicitanteId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Receptor");
@@ -492,24 +465,20 @@ namespace REPSbackend.Migrations
                     b.Navigation("Solicitante");
                 });
 
-            modelBuilder.Entity("REPS_backend.Models.Entrenamiento", b =>
+            modelBuilder.Entity("REPS_backend.Models.DetalleMuscular", b =>
                 {
-                    b.HasOne("REPS_backend.Models.Usuario", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioId")
+                    b.HasOne("REPS_backend.Models.Ejercicio", null)
+                        .WithMany("MusculosInvolucrados")
+                        .HasForeignKey("EjercicioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("REPS_backend.Models.Like", b =>
+            modelBuilder.Entity("REPS_backend.Models.Entrenamiento", b =>
                 {
                     b.HasOne("REPS_backend.Models.Rutina", "Rutina")
                         .WithMany()
-                        .HasForeignKey("RutinaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RutinaId");
 
                     b.HasOne("REPS_backend.Models.Usuario", "Usuario")
                         .WithMany()
@@ -563,11 +532,23 @@ namespace REPSbackend.Migrations
 
             modelBuilder.Entity("REPS_backend.Models.SerieLog", b =>
                 {
+                    b.HasOne("REPS_backend.Models.Ejercicio", "Ejercicio")
+                        .WithMany()
+                        .HasForeignKey("EjercicioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("REPS_backend.Models.Entrenamiento", null)
+                        .WithMany("SeriesRealizadas")
+                        .HasForeignKey("EntrenamientoId");
+
                     b.HasOne("REPS_backend.Models.Sesion", null)
                         .WithMany("SeriesRealizadas")
                         .HasForeignKey("SesionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Ejercicio");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.UsuarioLogro", b =>
@@ -578,15 +559,17 @@ namespace REPSbackend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("REPS_backend.Models.Usuario", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Logro");
+                });
 
-                    b.Navigation("Usuario");
+            modelBuilder.Entity("REPS_backend.Models.Ejercicio", b =>
+                {
+                    b.Navigation("MusculosInvolucrados");
+                });
+
+            modelBuilder.Entity("REPS_backend.Models.Entrenamiento", b =>
+                {
+                    b.Navigation("SeriesRealizadas");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.Rutina", b =>

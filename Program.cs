@@ -5,116 +5,96 @@ using Microsoft.OpenApi.Models;
 using REPS_backend.Data;
 using REPS_backend.Repositories;
 using REPS_backend.Services;
-using System.Text;
-using System.Text.Json.Serialization;
 using REPS_backend.Services.AI;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// -----------------------------------------------------------------------------
-// 1. BASE DE DATOS
-// -----------------------------------------------------------------------------
+// 1. Configuración de Base de Datos
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(connectionString,
-        new MySqlServerVersion(new Version(8, 0, 45)),
-        mySqlOptions => mySqlOptions.EnableRetryOnFailure())
-);
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-// -----------------------------------------------------------------------------
-// 2. INYECCIÓN DE DEPENDENCIAS (Repositorios y Servicios)
-// -----------------------------------------------------------------------------
-
-// Usuarios y Auth
+// 2. Repositorios
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-
-// Ejercicios
 builder.Services.AddScoped<IEjercicioRepository, EjercicioRepository>();
-builder.Services.AddScoped<IEjercicioService, EjercicioService>();
-
-// Rutinas
 builder.Services.AddScoped<IRutinaRepository, RutinaRepository>();
-builder.Services.AddScoped<IRutinaService, RutinaService>();
-builder.Services.AddScoped<IRecordPersonalRepository, RecordPersonalRepository>();
-builder.Services.AddScoped<IRecordPersonalService, RecordPersonalService>();
-builder.Services.AddScoped<IRankingService, RankingService>();
-builder.Services.AddScoped<ILogroRepository, LogroRepository>();
-builder.Services.AddScoped<ILogroService, LogroService>();
-
-// Rutina-Ejercicios (FALTABAN ESTOS, necesarios para RutinaEjerciciosController)
 builder.Services.AddScoped<IRutinaEjercicioRepository, RutinaEjercicioRepository>();
-builder.Services.AddScoped<IRutinaEjercicioService, RutinaEjercicioService>();
-
-// Entrenamientos
-builder.Services.AddScoped<IEntrenamientoRepository, EntrenamientoRepository>();
-builder.Services.AddScoped<IEntrenamientoService, EntrenamientoService>();
-
-// Logros
+builder.Services.AddScoped<IRecordPersonalRepository, RecordPersonalRepository>();
 builder.Services.AddScoped<ILogroRepository, LogroRepository>();
+builder.Services.AddScoped<IEntrenamientoRepository, EntrenamientoRepository>();
+
+// 3. Servicios
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IEjercicioService, EjercicioService>();
+builder.Services.AddScoped<IRutinaService, RutinaService>();
+builder.Services.AddScoped<IRutinaEjercicioService, RutinaEjercicioService>();
+builder.Services.AddScoped<IEntrenamientoService, EntrenamientoService>();
 builder.Services.AddScoped<ILogroService, LogroService>();
-
-// Dashboard
-builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IProgresoService, ProgresoService>();
-
-// AI Services
+builder.Services.AddScoped<IRankingService, RankingService>();
+builder.Services.AddScoped<IRecordPersonalService, RecordPersonalService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IAIService, GeminiService>();
 
+// 4. Cloudinary
+builder.Services.Configure<REPS_backend.Configurations.CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
-
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
+// 5. CORS: Permitir frontend (Vite por defecto es 5173 o similar)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        // Esto permite que los Enums se vean como texto ("Pecho") en lugar de números (0)
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
+});
 
+// 5. Autenticación JWT
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var secretKey = jwtSettings["SecretKey"] ?? "REPS_Secret_Key_Default_2025_REPS_REPS";
+var key = Encoding.ASCII.GetBytes(secretKey);
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
-    options.SaveToken = true;
     options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-
-        ValidIssuer = builder.Configuration["Jwt:Issuer"]!,
-        ValidAudience = builder.Configuration["Jwt:Audience"]!,
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = true,
+        ValidIssuer = jwtSettings["Issuer"] ?? "REPS_Backend",
+        ValidateAudience = true,
+        ValidAudience = jwtSettings["Audience"] ?? "REPS_Frontend",
+        ClockSkew = TimeSpan.Zero
     };
 });
 
+builder.Services.AddControllers();
+
+// 6. Swagger con Soporte para JWT
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "REPS API", Version = "v1" });
-
-    // Configuración del candadito para meter el Token en Swagger
-    var securityScheme = new OpenApiSecurityScheme
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
         Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "JWT Authorization header using the Bearer scheme.",
-    };
-
-    c.AddSecurityDefinition("Bearer", securityScheme);
-
-    var securityRequirement = new OpenApiSecurityRequirement
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
             new OpenApiSecurityScheme
@@ -127,55 +107,28 @@ builder.Services.AddSwaggerGen(c =>
             },
             new string[] {}
         }
-    };
-
-    c.AddSecurityRequirement(securityRequirement);
-});
-
-// CORS (Para que el Frontend pueda llamar al Backend)
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("PermitirTodo", policy =>
-    {
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
     });
 });
 
-builder.Services.AddEndpointsApiExplorer();
-
 var app = builder.Build();
 
-
-// 1. Inicializador de Base de Datos (EL SEEDER AUTOMÁTICO) 🆕
-// Esto se ejecuta cada vez que arranca la app para comprobar si hay ejercicios
+// Inicializar Base de Datos (Seed Data)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<ApplicationDbContext>();
-        // Llamamos a la clase estática DbInitializer
-        DbInitializer.Initialize(context);
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Ocurrió un error al sembrar la base de datos.");
-    }
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    REPS_backend.Data.DbInitializer.Initialize(context);
 }
 
-// 2. Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseCors("AllowFrontend");
 
-// 3. Seguridad y Controladores
-app.UseCors("PermitirTodo");
+// app.UseHttpsRedirection(); // Comentamos para local dev
 
 app.UseAuthentication();
 app.UseAuthorization();

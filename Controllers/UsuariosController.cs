@@ -13,10 +13,12 @@ namespace REPS_backend.Controllers
     public class UsuariosController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
+        private readonly ICloudinaryService _cloudinaryService;
 
-        public UsuariosController(IUsuarioService usuarioService)
+        public UsuariosController(IUsuarioService usuarioService, ICloudinaryService cloudinaryService)
         {
             _usuarioService = usuarioService;
+            _cloudinaryService = cloudinaryService;
         }
 
 
@@ -27,9 +29,29 @@ namespace REPS_backend.Controllers
             if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
 
             var perfil = await _usuarioService.ObtenerMiPerfilAsync(userId);
-            if (perfil == null) return NotFound("Usuario no encontrado.");
+            if (perfil == null) return Unauthorized("Cuenta desactivada o eliminada.");
 
             return Ok(perfil);
+        }
+
+        [HttpPost("perfil/avatar-upload")]
+        public async Task<IActionResult> UploadAvatar([FromForm] IFormFile file)
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+
+            if (file == null || file.Length == 0)
+                return BadRequest("Debes seleccionar un archivo");
+
+            try
+            {
+                var avatarUrl = await _cloudinaryService.UploadAvatarAsync(file);
+                return Ok(new { avatarUrl = avatarUrl });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
 
         [HttpPut("perfil")]
@@ -143,6 +165,37 @@ namespace REPS_backend.Controllers
             if (!exito) return BadRequest("No se encontró la solicitud.");
 
             return Ok(new { mensaje = dto.Aceptar ? "¡Solicitud Aceptada! Ahora sois amigos." : "Solicitud rechazada." });
+        }
+
+        public class UpdatePlanRequest { public int PlanId { get; set; } }
+
+        [HttpPut("plan")]
+        public async Task<IActionResult> UpdatePlan([FromBody] UpdatePlanRequest request)
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+
+            if (!Enum.IsDefined(typeof(PlanSuscripcion), request.PlanId))
+                return BadRequest("Plan no válido.");
+
+            var plan = (PlanSuscripcion)request.PlanId;
+            var exito = await _usuarioService.ActualizarPlanAsync(userId, plan);
+
+            if (!exito) return BadRequest("No se pudo actualizar el plan.");
+
+            return Ok(new { mensaje = $"Plan actualizado a {plan}" });
+        }
+
+        [HttpDelete("mi-perfil")]
+        public async Task<IActionResult> EliminarMiCuenta()
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+
+            var exito = await _usuarioService.EliminarUsuarioLogicoAsync(userId);
+            if (!exito) return NotFound("Usuario no encontrado");
+
+            return Ok(new { mensaje = "Cuenta eliminada correctamente." });
         }
     }
 }

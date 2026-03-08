@@ -4,27 +4,3 @@ GET {{REPS_backend_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
-
-# -----------------------
-# LOGROS (ACHIEVEMENTS)
-# -----------------------
-
-### Obtener Logros de un Usuario (Dashboard/Comunidad)
-GET {{REPS_backend_HostAddress}}/api/logro/user/1
-Accept: application/json
-
-### Obtener Logros Recientes (Dashboard)
-GET {{REPS_backend_HostAddress}}/api/logro/recent/1
-Accept: application/json
-
-### Crear Logro (ADMIN - Requiere Token Bearer)
-POST {{REPS_backend_HostAddress}}/api/logro
-Content-Type: application/json
-Authorization: Bearer <TU_TOKEN_ADMIN_AQUI>
-
-{
-  "titulo": "Racha de Fuego",
-  "descripcion": "28 días consecutivos",
-  "puntos": 50,
-  "iconoUrl": "fire_icon.png"
-}

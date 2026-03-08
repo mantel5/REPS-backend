@@ -12,27 +12,27 @@ namespace REPS_backend.Controllers
     public class EntrenamientosController : ControllerBase
     {
         private readonly IEntrenamientoService _entrenamientoService;
+        private readonly IRankingService _rankingService;
 
-        public EntrenamientosController(IEntrenamientoService entrenamientoService)
+        public EntrenamientosController(IEntrenamientoService entrenamientoService, IRankingService rankingService)
         {
             _entrenamientoService = entrenamientoService;
+            _rankingService = rankingService;
         }
 
         [HttpPost("finalizar")]
-        public async Task<ActionResult<EntrenamientoResultadoDto>> FinalizarEntrenamiento([FromBody] FinalizarEntrenamientoDto dto)
+        public async Task<IActionResult> FinalizarEntrenamiento([FromBody] FinalizarEntrenamientoDto dto)
         {
             var userId = GetCurrentUserId();
             if (userId == 0) return Unauthorized();
 
             var resultado = await _entrenamientoService.FinalizarEntrenamientoAsync(userId, dto);
+
+            // Recalcular ranking y racha después de cada entrenamiento
+            await _rankingService.UpdateUserRankAsync(userId);
+            await _rankingService.UpdateStreakAsync(userId);
+
             return Ok(resultado);
-        }
-        [HttpGet("iniciar/{rutinaId}")]
-        public async Task<ActionResult<EntrenamientoInitDto>> IniciarEntrenamiento(int rutinaId)
-        {
-            var initDto = await _entrenamientoService.IniciarEntrenamientoAsync(rutinaId);
-            if (initDto == null) return NotFound("Rutina no encontrada");
-            return Ok(initDto);
         }
 
         [HttpGet]

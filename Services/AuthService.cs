@@ -52,6 +52,11 @@ namespace REPS_backend.Services
                 return null;
             }
 
+            if (!usuario.EstaActivo || usuario.EstaBorrado)
+            {
+                throw new Exception("Tu cuenta ha sido desactivada o eliminada. Contacta con soporte.");
+            }
+
             return GenerateToken(usuario);
         }
 
@@ -74,12 +79,14 @@ namespace REPS_backend.Services
 
         private string GenerateToken(Usuario usuario)
         {
-            var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]); 
+            var jwtSettings = _config.GetSection("JwtSettings");
+            var secretKey = jwtSettings["SecretKey"] ?? "SuperSecretKeyForREPSApplication2025!";
+            var key = Encoding.ASCII.GetBytes(secretKey);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Issuer = _config["Jwt:Issuer"],
-                Audience = _config["Jwt:Audience"],
+                Issuer = jwtSettings["Issuer"] ?? "REPS_Backend",
+                Audience = jwtSettings["Audience"] ?? "REPS_Frontend",
                 
                 Subject = new ClaimsIdentity(new[]
                 {
