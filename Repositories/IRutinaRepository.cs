@@ -9,10 +9,21 @@ namespace REPS_backend.Repositories
         
         // Obtener una por ID (con sus ejercicios incluidos)
         Task<Rutina?> GetByIdAsync(int id);
+        Task<Rutina?> GetByIdWithEjerciciosAsync(int id) => GetByIdAsync(id); // Alias/Default implementation
         
+        // Obtener por Usuario
+        Task<List<Rutina>> GetByUsuarioIdAsync(int usuarioId);
+
+        // Obtener en revisión (Admin)
+        Task<List<Rutina>> GetAllEnRevisionAsync();
+
+        // Obtener todas (Admin)
+        Task<List<Rutina>> GetAllAdminAsync();
+
         // Crear
         Task AddAsync(Rutina rutina);
-        
-        // (Opcional por ahora: Update y Delete)
+        Task UpdateAsync(Rutina rutina);
+        // Eliminar
+        Task DeleteAsync(int id);
     }
 }

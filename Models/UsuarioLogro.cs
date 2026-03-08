@@ -5,8 +5,10 @@
         public int Id { get; set; }
         public int UsuarioId { get; set; }
         public int LogroId { get; set; }
+        public virtual Logro Logro { get; set; } = null!;
         
         public double Progreso { get; set; } 
         public bool Desbloqueado { get; set; } 
+        public DateTime? FechaObtencion { get; set; }
     }
 }

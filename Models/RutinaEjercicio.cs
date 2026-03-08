@@ -4,7 +4,9 @@
     {
         public int Id { get; set; }
         public int RutinaId { get; set; }
+        public virtual Rutina Rutina { get; set; } = null!;
         public int EjercicioId { get; set; }
+        public virtual Ejercicio Ejercicio { get; set; } = null!;
         public int Orden { get; set; } 
         
         public int Series { get; set; } 

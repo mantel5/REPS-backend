@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using REPS_backend.Data;
 
@@ -18,9 +17,34 @@ namespace REPS_backend.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            modelBuilder.Entity("REPS_backend.Models.Amistad", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Aceptada")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime>("FechaAmistad")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("ReceptorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SolicitanteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceptorId");
+
+                    b.HasIndex("SolicitanteId");
+
+                    b.ToTable("Amistades");
+                });
 
             modelBuilder.Entity("REPS_backend.Models.DetalleMuscular", b =>
                 {
@@ -28,21 +52,19 @@ namespace REPS_backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<string>("DescripcionImpacto")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("EjercicioId")
                         .HasColumnType("int");
 
                     b.Property<bool>("EsPrincipal")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("NombreMusculo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -57,26 +79,87 @@ namespace REPS_backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<string>("DescripcionTecnica")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("GrupoMuscular")
+                        .HasColumnType("int");
 
                     b.Property<string>("ImagenMusculosUrl")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<int?>("UsuarioCreadorId")
                         .HasColumnType("int");
 
+                    b.Property<string>("VideoUrl")
+                        .HasColumnType("longtext");
+
                     b.HasKey("Id");
 
                     b.ToTable("Ejercicios");
+                });
+
+            modelBuilder.Entity("REPS_backend.Models.Entrenamiento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("DuracionMinutos")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("RutinaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RutinaId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Entrenamientos");
+                });
+
+            modelBuilder.Entity("REPS_backend.Models.Logro", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("IconoUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Puntos")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Logros");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.RecordPersonal", b =>
@@ -85,24 +168,24 @@ namespace REPS_backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<int>("EjercicioId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("FechaRecord")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<decimal>("PesoAnterior")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<decimal>("PesoMaximo")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EjercicioId");
 
                     b.ToTable("RecordsPersonales");
                 });
@@ -113,30 +196,34 @@ namespace REPS_backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("CreadorOriginalNombre")
+                        .HasColumnType("longtext");
 
                     b.Property<int>("Descargas")
                         .HasColumnType("int");
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("DuracionMinutos")
                         .HasColumnType("int");
 
+                    b.Property<bool>("EsCopia")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<bool>("EsGeneradaPorIA")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("EsPublica")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<int>("Estado")
                         .HasColumnType("int");
 
                     b.Property<string>("ImagenUrl")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("Likes")
                         .HasColumnType("int");
@@ -146,12 +233,14 @@ namespace REPS_backend.Migrations
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Rutinas");
                 });
@@ -161,8 +250,6 @@ namespace REPS_backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DescansoSegundos")
                         .HasColumnType("int");
@@ -174,14 +261,14 @@ namespace REPS_backend.Migrations
                         .HasColumnType("int");
 
                     b.Property<double>("PesoSugerido")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<decimal>("PorcentajeDelPeso")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("Repeticiones")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("RutinaId")
                         .HasColumnType("int");
@@ -194,6 +281,8 @@ namespace REPS_backend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EjercicioId");
+
                     b.HasIndex("RutinaId");
 
                     b.ToTable("RutinaEjercicios");
@@ -205,31 +294,36 @@ namespace REPS_backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<bool>("Completada")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<int>("EjercicioId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EntrenamientoId")
                         .HasColumnType("int");
 
                     b.Property<int>("NumeroSerie")
                         .HasColumnType("int");
 
                     b.Property<decimal>("PesoUsado")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<int>("RepsRealizadas")
                         .HasColumnType("int");
 
-                    b.Property<int>("SesionId")
+                    b.Property<int?>("SesionId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EjercicioId");
+
+                    b.HasIndex("EntrenamientoId");
+
                     b.HasIndex("SesionId");
 
-                    b.ToTable("SerieLog");
+                    b.ToTable("SeriesLogs");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.Sesion", b =>
@@ -238,20 +332,18 @@ namespace REPS_backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<int>("DuracionRealMinutos")
                         .HasColumnType("int");
 
                     b.Property<bool>("EstaFinalizada")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("NombreRutinaSnapshot")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("PuntosGanados")
                         .HasColumnType("int");
@@ -270,28 +362,57 @@ namespace REPS_backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<string>("AvatarId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Biografia")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CodigoAmigo")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("EsPerfilPublico")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("EstaActivo")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("EstaBorrado")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime>("FechaFinSuscripcion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("FechaRegistro")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("FechaUltimaActividad")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("MostrarEstadisticas")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("PlanActual")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PuntosLogros")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PuntosRecords")
                         .HasColumnType("int");
 
                     b.Property<int>("PuntosTotales")
@@ -300,17 +421,66 @@ namespace REPS_backend.Migrations
                     b.Property<int>("RachaDias")
                         .HasColumnType("int");
 
-                    b.Property<string>("RangoGeneral")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("RangoGeneral")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("RankingVisible")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Rol")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("REPS_backend.Models.UsuarioLogro", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Desbloqueado")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("FechaObtencion")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("LogroId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Progreso")
+                        .HasColumnType("double");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LogroId");
+
+                    b.ToTable("UsuarioLogros");
+                });
+
+            modelBuilder.Entity("REPS_backend.Models.Amistad", b =>
+                {
+                    b.HasOne("REPS_backend.Models.Usuario", "Receptor")
+                        .WithMany()
+                        .HasForeignKey("ReceptorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("REPS_backend.Models.Usuario", "Solicitante")
+                        .WithMany()
+                        .HasForeignKey("SolicitanteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Receptor");
+
+                    b.Navigation("Solicitante");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.DetalleMuscular", b =>
@@ -322,27 +492,100 @@ namespace REPS_backend.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("REPS_backend.Models.Entrenamiento", b =>
+                {
+                    b.HasOne("REPS_backend.Models.Rutina", "Rutina")
+                        .WithMany()
+                        .HasForeignKey("RutinaId");
+
+                    b.HasOne("REPS_backend.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Rutina");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("REPS_backend.Models.RecordPersonal", b =>
+                {
+                    b.HasOne("REPS_backend.Models.Ejercicio", "Ejercicio")
+                        .WithMany()
+                        .HasForeignKey("EjercicioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ejercicio");
+                });
+
+            modelBuilder.Entity("REPS_backend.Models.Rutina", b =>
+                {
+                    b.HasOne("REPS_backend.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("REPS_backend.Models.RutinaEjercicio", b =>
                 {
+                    b.HasOne("REPS_backend.Models.Ejercicio", "Ejercicio")
+                        .WithMany()
+                        .HasForeignKey("EjercicioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("REPS_backend.Models.Rutina", null)
                         .WithMany("Ejercicios")
                         .HasForeignKey("RutinaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Ejercicio");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.SerieLog", b =>
                 {
-                    b.HasOne("REPS_backend.Models.Sesion", null)
-                        .WithMany("SeriesRealizadas")
-                        .HasForeignKey("SesionId")
+                    b.HasOne("REPS_backend.Models.Ejercicio", "Ejercicio")
+                        .WithMany()
+                        .HasForeignKey("EjercicioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("REPS_backend.Models.Entrenamiento", null)
+                        .WithMany("SeriesRealizadas")
+                        .HasForeignKey("EntrenamientoId");
+
+                    b.HasOne("REPS_backend.Models.Sesion", null)
+                        .WithMany("SeriesRealizadas")
+                        .HasForeignKey("SesionId");
+
+                    b.Navigation("Ejercicio");
+                });
+
+            modelBuilder.Entity("REPS_backend.Models.UsuarioLogro", b =>
+                {
+                    b.HasOne("REPS_backend.Models.Logro", "Logro")
+                        .WithMany()
+                        .HasForeignKey("LogroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Logro");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.Ejercicio", b =>
                 {
                     b.Navigation("MusculosInvolucrados");
+                });
+
+            modelBuilder.Entity("REPS_backend.Models.Entrenamiento", b =>
+                {
+                    b.Navigation("SeriesRealizadas");
                 });
 
             modelBuilder.Entity("REPS_backend.Models.Rutina", b =>
