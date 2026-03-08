@@ -43,7 +43,7 @@ namespace REPS_backend.Controllers
             var userId = GetCurrentUserId(); // Metodo helper
             if (userId == 0) return Unauthorized();
 
-            var result = await _logroService.UnlockLogroAsync(userId, logroId);
+            var result = await _logroService.UnlockLogroAndAddPointsAsync(userId, logroId);
             if (result)
             {
                 return Ok(new { Message = "¡Logro desbloqueado!", LogroId = logroId });

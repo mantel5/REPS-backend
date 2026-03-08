@@ -13,13 +13,20 @@ namespace REPS_backend.Services
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IEntrenamientoRepository _entrenamientoRepository;
         private readonly IRecordPersonalService _recordService;
+        private readonly IRankingService _rankingService;
 
-        public LogroService(ILogroRepository logroRepository, IUsuarioRepository usuarioRepository, IEntrenamientoRepository entrenamientoRepository, IRecordPersonalService recordService)
+        public LogroService(
+            ILogroRepository logroRepository, 
+            IUsuarioRepository usuarioRepository, 
+            IEntrenamientoRepository entrenamientoRepository, 
+            IRecordPersonalService recordService,
+            IRankingService rankingService)
         {
             _logroRepository = logroRepository;
             _usuarioRepository = usuarioRepository;
             _entrenamientoRepository = entrenamientoRepository;
             _recordService = recordService;
+            _rankingService = rankingService;
         }
 
         public async Task<List<LogroDTO>> GetLogrosForUserAsync(int userId)
@@ -196,8 +203,8 @@ namespace REPS_backend.Services
             {
                 if (logro.Progreso >= 100 && !logro.Desbloqueado)
                 {
-                    // Unlock it
-                    await UnlockLogroAsync(userId, logro.Id);
+                    // Unlock it AND add points
+                    await UnlockLogroAndAddPointsAsync(userId, logro.Id);
                     logro.FechaObtencion = DateTime.UtcNow;
                     newlyUnlocked.Add(logro);
                 }
@@ -216,6 +223,64 @@ namespace REPS_backend.Services
                 .ToList();
 
             return desbloqueados;
+        }
+
+        public async Task<int> GetPuntosLogroAsync(int logroId)
+        {
+            var logro = await _logroRepository.GetByIdAsync(logroId);
+            return logro?.Puntos ?? 0;
+        }
+
+        public async Task<bool> UnlockLogroAndAddPointsAsync(int userId, int logroId)
+        {
+            // 1. Verificar si ya lo tiene
+            var userLogros = await _logroRepository.GetUserLogrosAsync(userId);
+            if (userLogros.Any(ul => ul.LogroId == logroId && ul.Desbloqueado))
+            {
+                return false; // Ya lo tiene
+            }
+
+            // 2. Obtener los puntos del logro
+            var logro = await _logroRepository.GetByIdAsync(logroId);
+            if (logro == null) return false;
+
+            int puntosLogro = logro.Puntos;
+
+            // 3. Si existe el registro pero no desbloqueado, actualizarlo
+            var existing = userLogros.FirstOrDefault(ul => ul.LogroId == logroId);
+            if (existing != null)
+            {
+                existing.Desbloqueado = true;
+                existing.FechaObtencion = System.DateTime.UtcNow;
+                existing.Progreso = 100;
+                await _logroRepository.UpdateUsuarioLogroAsync(existing);
+            }
+            else
+            {
+                var nuevoLogro = new UsuarioLogro
+                {
+                    UsuarioId = userId,
+                    LogroId = logroId,
+                    Desbloqueado = true,
+                    FechaObtencion = System.DateTime.UtcNow,
+                    Progreso = 100
+                };
+                await _logroRepository.AddUsuarioLogroAsync(nuevoLogro);
+            }
+
+            // 4. Actualizar los puntos del usuario
+            var usuario = await _usuarioRepository.GetByIdAsync(userId);
+            if (usuario != null)
+            {
+                usuario.PuntosLogros += puntosLogro;
+                usuario.PuntosTotales += puntosLogro;
+                await _usuarioRepository.UpdateUsuarioAsync(usuario);
+                
+                // 5. Actualizar el rango del usuario
+                await _rankingService.UpdateUserRankAsync(userId);
+            }
+
+            return true;
         }
     }
 }
