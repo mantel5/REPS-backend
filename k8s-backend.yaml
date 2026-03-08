@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: reps-backend
-        image: <tu_usuario_dockerhub>/reps-backend:latest
+        image: <danic19>/reps-backend:latest
         ports:
         - containerPort: 5000
 ---
