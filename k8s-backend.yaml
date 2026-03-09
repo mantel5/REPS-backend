@@ -34,23 +34,6 @@ spec:
           value: "Production"
         - name: ASPNETCORE_URLS
           value: "http://+:5000"
-        # Health checks
-        readinessProbe:
-          httpGet:
-            path: /swagger/index.html
-            port: 5000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        livenessProbe:
-          httpGet:
-            path: /swagger/index.html
-            port: 5000
-          initialDelaySeconds: 60
-          periodSeconds: 15
-          timeoutSeconds: 5
-          failureThreshold: 3
         # Recursos (ajusta según tus necesidades)
         resources:
           requests:
@@ -73,4 +56,3 @@ spec:
     port: 5000
     targetPort: 5000
     name: http
-
