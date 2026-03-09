@@ -1,4 +1,4 @@
-name: Build and Deploy Backend to Kubernetes
+name: Build and Push Backend to Docker Hub
 
 on:
   push:
@@ -33,41 +33,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  deploy:
-    name: Deploy to Kubernetes
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up kubectl
-        uses: azure/k8s-set-context@v4
-        with:
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
-
-      - name: Deploy MySQL
-        run: |
-          kubectl apply -f k8s-mysql.yaml
-          echo "Waiting for MySQL to be ready..."
-          kubectl wait --for=condition=available --timeout=120s deployment/mysql-deployment
-
-      - name: Deploy Backend
-        run: |
-          kubectl apply -f k8s-backend.yaml
-          echo "Waiting for Backend to be ready..."
-          kubectl wait --for=condition=available --timeout=180s deployment/reps-backend-deployment
-
-      - name: Verify Backend
-        run: |
-          echo "=== Backend Pods ==="
-          kubectl get pods -l app=reps-backend
-          echo ""
-          echo "=== Backend Logs ==="
-          kubectl logs -l app=reps-backend --tail=20
 
