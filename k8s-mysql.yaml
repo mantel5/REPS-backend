@@ -1,4 +1,17 @@
-# Manifiesto para MySQL en Kubernetes
+# Manifiesto para MySQL en Kubernetes - CORREGIDO
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secrets
+type: Opaque
+data:
+  # Encode tus contraseñas en base64:
+  # echo -n "Daniel123" | base64
+  root-password: RGFuaWVsMzEyMw==
+  username: cm9vdA==
+  password: RGFuaWVsMzEyMw==
+  database: cmVwc19kYg==
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -8,6 +21,8 @@ spec:
   selector:
     matchLabels:
       app: mysql
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -18,18 +33,56 @@ spec:
         image: mysql:8.0
         env:
         - name: MYSQL_ROOT_PASSWORD
-          value: "rootpassword"
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: root-password
         - name: MYSQL_DATABASE
-          value: "repsdb"
+          value: "reps_db"
         - name: MYSQL_USER
-          value: "repsuser"
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: username
         - name: MYSQL_PASSWORD
-          value: "repspassword"
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: password
         ports:
         - containerPort: 3306
+          name: mysql
         volumeMounts:
         - name: mysql-persistent-storage
           mountPath: /var/lib/mysql
+        # Health check para MySQL
+        livenessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          timeoutSeconds: 3
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
@@ -44,9 +97,10 @@ spec:
   selector:
     app: mysql
   ports:
-    - protocol: TCP
-      port: 3306
-      targetPort: 3306
+  - protocol: TCP
+    port: 3306
+    targetPort: 3306
+    name: mysql
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -58,3 +112,4 @@ spec:
   resources:
     requests:
       storage: 1Gi
+

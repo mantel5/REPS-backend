@@ -1,8 +1,10 @@
-# Manifiesto para el backend
+# Manifiesto para el backend - CORREGIDO
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: reps-backend-deployment
+  labels:
+    app: reps-backend
 spec:
   replicas: 1
   selector:
@@ -13,11 +15,50 @@ spec:
       labels:
         app: reps-backend
     spec:
+      # Init container para esperar a MySQL
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.36
+        command: ['sh', '-c', 'echo "Waiting for MySQL..." && nslookup mysql-service && until nc -z mysql-service 3306; do echo "Waiting for MySQL..."; sleep 5; done; echo "MySQL is up!"']
       containers:
       - name: reps-backend
         image: danic19/reps-backend:latest
         ports:
         - containerPort: 5000
+          name: http
+        # Variables de entorno CRÍTICAS
+        env:
+        - name: ConnectionStrings__DefaultConnection
+          value: "server=mysql-service;port=3306;database=reps_db;user=root;password=Daniel123"
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: ASPNETCORE_URLS
+          value: "http://+:5000"
+        # Health checks
+        readinessProbe:
+          httpGet:
+            path: /swagger/index.html
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /swagger/index.html
+            port: 5000
+          initialDelaySeconds: 60
+          periodSeconds: 15
+          timeoutSeconds: 5
+          failureThreshold: 3
+        # Recursos (ajusta según tus necesidades)
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
@@ -28,6 +69,8 @@ spec:
   selector:
     app: reps-backend
   ports:
-    - protocol: TCP
-      port: 5000
-      targetPort: 5000
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
+    name: http
+
