@@ -42,7 +42,7 @@ builder.Services.AddScoped<IAIService, GeminiService>();
 builder.Services.Configure<REPS_backend.Configurations.CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
-// 5. CORS: Permitir frontend (Vite por defecto es 5173 o similar)
+// 5. CORS: Permitir frontend
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -112,11 +112,15 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Inicializar Base de Datos (Seed Data)
+// --- INICIALIZAR BASE DE DATOS (Corrección aquí) ---
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ApplicationDbContext>();
+    
+    // ESTA LÍNEA aplica tus migraciones y crea las tablas en AWS automáticamente
+    context.Database.Migrate(); 
+    
     REPS_backend.Data.DbInitializer.Initialize(context);
 }
 
@@ -127,12 +131,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowFrontend");
-
-// app.UseHttpsRedirection(); // Comentamos para local dev
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
