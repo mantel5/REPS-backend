@@ -7,17 +7,20 @@ namespace REPS_backend.Services
     public class EntrenamientoService : IEntrenamientoService
     {
         private readonly IEntrenamientoRepository _entrenamientoRepository;
+        private readonly IRutinaRepository _rutinaRepository;
         private readonly IRecordPersonalService _recordService;
         private readonly ILogroService _logroService;
         private readonly IRankingService _rankingService;
 
         public EntrenamientoService(
             IEntrenamientoRepository entrenamientoRepository,
+            IRutinaRepository rutinaRepository,
             IRecordPersonalService recordService,
             ILogroService logroService,
             IRankingService rankingService)
         {
             _entrenamientoRepository = entrenamientoRepository;
+            _rutinaRepository = rutinaRepository;
             _recordService = recordService;
             _logroService = logroService;
             _rankingService = rankingService;
@@ -118,6 +121,48 @@ namespace REPS_backend.Services
             // 6. Actualizar ranking y puntos totales del usuario
             await _rankingService.UpdateUserRankAsync(usuarioId);
             await _rankingService.UpdateStreakAsync(usuarioId);
+
+            // 7. Actualizar pesos sugeridos en la rutina (si existe y pertenece al usuario)
+            if (dto.RutinaId.HasValue && dto.RutinaId.Value > 0)
+            {
+                // Verificar que la rutina pertenece al usuario antes de actualizar
+                var rutina = await _rutinaRepository.GetByIdAsync(dto.RutinaId.Value);
+                if (rutina != null && rutina.UsuarioId == usuarioId)
+                {
+                    // Crear diccionario de pesos máximos por ejercicio
+                    var pesosPorEjercicio = new Dictionary<int, double>();
+                    
+                    if (dto.Ejercicios != null)
+                    {
+                        foreach (var ejDto in dto.Ejercicios)
+                        {
+                            double pesoMaximo = 0;
+                            if (ejDto.Series != null)
+                            {
+                                foreach (var serieDto in ejDto.Series)
+                                {
+                                    if (serieDto.Completada && (double)serieDto.Peso > pesoMaximo)
+                                    {
+                                        pesoMaximo = (double)serieDto.Peso;
+                                    }
+                                }
+                            }
+                            
+                            // Solo guardar si hay al menos una serie completada
+                            if (pesoMaximo > 0)
+                            {
+                                pesosPorEjercicio[ejDto.EjercicioId] = pesoMaximo;
+                            }
+                        }
+                    }
+
+                    // Actualizar los pesos sugeridos en la rutina
+                    if (pesosPorEjercicio.Count > 0)
+                    {
+                        await _rutinaRepository.ActualizarPesosSugeridosAsync(dto.RutinaId.Value, pesosPorEjercicio);
+                    }
+                }
+            }
 
             return new FinalizarResultadoDto
             {

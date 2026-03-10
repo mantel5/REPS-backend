@@ -25,5 +25,8 @@ namespace REPS_backend.Repositories
         Task UpdateAsync(Rutina rutina);
         // Eliminar
         Task DeleteAsync(int id);
+
+        // Actualizar pesos sugeridos de ejercicios en una rutina
+        Task ActualizarPesosSugeridosAsync(int rutinaId, Dictionary<int, double> pesosPorEjercicioId);
     }
 }

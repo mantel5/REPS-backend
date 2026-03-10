@@ -100,5 +100,27 @@ namespace REPS_backend.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task ActualizarPesosSugeridosAsync(int rutinaId, Dictionary<int, double> pesosPorEjercicioId)
+        {
+            // Obtener los ejercicios de la rutina que coincidan con los ejercicioIds recibidos
+            var rutinaEjercicios = await _context.RutinaEjercicios
+                .Where(re => re.RutinaId == rutinaId && pesosPorEjercicioId.Keys.Contains(re.EjercicioId))
+                .ToListAsync();
+
+            foreach (var re in rutinaEjercicios)
+            {
+                if (pesosPorEjercicioId.TryGetValue(re.EjercicioId, out double nuevoPeso))
+                {
+                    // Solo actualizar si el nuevo peso es mayor que el actual
+                    if (nuevoPeso > re.PesoSugerido)
+                    {
+                        re.PesoSugerido = nuevoPeso;
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
     }
 }
