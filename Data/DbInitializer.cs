@@ -10,6 +10,26 @@ namespace REPS_backend.Data
             // 1. Crea la base de datos si no existe
             context.Database.EnsureCreated();
 
+            // Seed Usuario Admin
+            var admin = context.Usuarios.FirstOrDefault(u => u.Email == "admin@reps.com");
+            if (admin == null)
+            {
+                admin = new Usuario
+                {
+                    Nombre = "Admin",
+                    Email = "admin@reps.com",
+                    Rol = Rol.Admin,
+                    PlanActual = PlanSuscripcion.Gratuito,
+                    FechaRegistro = DateTime.UtcNow,
+                    PuntosTotales = 0,
+                    RachaDias = 0,
+                    CodigoAmigo = "ADMIN01"
+                };
+                admin.SetPassword("Admin123!");
+                context.Usuarios.Add(admin);
+                context.SaveChanges();
+            }
+
             var dani = context.Usuarios.FirstOrDefault(u => u.Email == "Dani@gmail.com");
             if (dani != null) {
                 dani.SetPassword("Daniel123");
